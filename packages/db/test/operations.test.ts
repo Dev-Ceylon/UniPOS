@@ -5,8 +5,16 @@ import { exportBackup, restoreBackup } from "../src/services/backup";
 import { exportProductsCsv, importProductsCsv, saveProduct } from "../src/services/catalog";
 import { eraseCustomer, exportCustomerData, issueGiftCard, loyaltyBalance } from "../src/services/customers";
 import {
-  adjustStock, completeStocktake, createPurchaseOrder, createTransfer, markOrdered, receivePurchaseOrder,
-  receiveTransfer, recordCounts, sendTransfer, startStocktake,
+  adjustStock,
+  completeStocktake,
+  createPurchaseOrder,
+  createTransfer,
+  markOrdered,
+  receivePurchaseOrder,
+  receiveTransfer,
+  recordCounts,
+  sendTransfer,
+  startStocktake,
 } from "../src/services/inventory";
 import { createRefund, voidSale } from "../src/services/sales";
 import { closeShift, openShift } from "../src/services/shifts";
@@ -46,7 +54,9 @@ describe("refunds and voids", () => {
     expect(await level(tea.variant.id)).toBe(48);
     const r2 = await tx((t) => createRefund(t, T.ctx, { originalSaleId: saleId, lines: [{ lineId, qty: 2 }], restock: false, reason: "Changed mind" }));
     expect(r1.total + r2.total).toBe(-3540);
-    await expect(tx((t) => createRefund(t, T.ctx, { originalSaleId: saleId, lines: [{ lineId, qty: 1 }], restock: false, reason: "x" }))).rejects.toThrow(/only 0 left/);
+    await expect(tx((t) => createRefund(t, T.ctx, { originalSaleId: saleId, lines: [{ lineId, qty: 1 }], restock: false, reason: "x" }))).rejects.toThrow(
+      /only 0 left/,
+    );
     const audit = await tx((t) => t.auditLog.count({ where: { action: "sale.refund", entityId: saleId } }));
     expect(audit).toBe(2);
   });
@@ -75,7 +85,18 @@ describe("shifts", () => {
     await expect(tx((t) => openShift(t, T.ctx, T.locationId, 0))).rejects.toThrow(/already open/);
     await sell([{ variantId: tea.variant.id, price: 1180, qty: 2, rules: tea.rules }], { shiftId: shift.id, extraCash: 140 });
     await sell([{ variantId: tea.variant.id, price: 1180, qty: 1, rules: tea.rules }], { shiftId: shift.id, tender: "card" });
-    await applySyncBatch(T.ctx, "dev", [{ opId: uuidv7(), type: "cash.movement", payload: { clientId: uuidv7(), shiftId: shift.id, type: "out", amount: 500, reason: "Milk", createdAt: new Date().toISOString() } }], db);
+    await applySyncBatch(
+      T.ctx,
+      "dev",
+      [
+        {
+          opId: uuidv7(),
+          type: "cash.movement",
+          payload: { clientId: uuidv7(), shiftId: shift.id, type: "out", amount: 500, reason: "Milk", createdAt: new Date().toISOString() },
+        },
+      ],
+      db,
+    );
     const res = await tx((t) => closeShift(t, T.ctx, shift.id, { denominations: { "10000": 1, "2000": 1, "100": 3 } }));
     // expected = 10000 float + 2360 cash sales − 500 out = 11860; counted 12300
     expect(res.expected).toBe(11860);
@@ -110,7 +131,9 @@ describe("inventory", () => {
     expect(await level(v)).toBe(7); // 1 not received returned to source
 
     const supplier = await tx((t) => t.supplier.create({ data: { name: "Wholesale" } }));
-    const po = await tx((t) => createPurchaseOrder(t, T.ctx, { supplierId: supplier.id, locationId: T.locationId, lines: [{ variantId: v, qty: 10, unitCost: 42000 }] }));
+    const po = await tx((t) =>
+      createPurchaseOrder(t, T.ctx, { supplierId: supplier.id, locationId: T.locationId, lines: [{ variantId: v, qty: 10, unitCost: 42000 }] }),
+    );
     expect(po.total).toBe(420000);
     await tx((t) => markOrdered(t, T.ctx, po.id));
     const pol = await tx((t) => t.purchaseOrderLine.findFirstOrThrow({ where: { orderId: po.id } }));
@@ -128,7 +151,13 @@ describe("inventory", () => {
 describe("catalog", () => {
   it("saves products with variants and rejects duplicate SKUs", async () => {
     const p = await tx((t) =>
-      saveProduct(t, T.ctx, { name: "T-shirt", variants: [{ name: "S", sku: "TS-S", price: 150000 }, { name: "M", sku: "TS-M", price: 150000 }] }),
+      saveProduct(t, T.ctx, {
+        name: "T-shirt",
+        variants: [
+          { name: "S", sku: "TS-S", price: 150000 },
+          { name: "M", sku: "TS-M", price: 150000 },
+        ],
+      }),
     );
     expect(p.variants).toHaveLength(2);
     const updated = await tx((t) =>

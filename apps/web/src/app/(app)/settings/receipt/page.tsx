@@ -10,7 +10,14 @@ export default async function ReceiptPage() {
   return (
     <div>
       <PageHeader title="Receipt template" description="Applies to printed, PDF and emailed receipts." />
-      <ReceiptEditor initial={ctx.settings.receipt} businessName={ctx.tenant.name} locationName={loc?.name ?? ""} address={loc?.address ?? ""} currency={ctx.currency} timeZone={ctx.timezone} />
+      <ReceiptEditor
+        initial={ctx.settings.receipt}
+        businessName={ctx.tenant.name}
+        locationName={loc?.name ?? ""}
+        address={loc?.address ?? ""}
+        currency={ctx.currency}
+        timeZone={ctx.timezone}
+      />
     </div>
   );
 }

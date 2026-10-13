@@ -28,14 +28,23 @@ export function QuoteActions({
         </Button>
       ) : null}
       {quote.saleId ? (
-        <Link className="inline-flex h-10 items-center rounded-[var(--radius)] bg-primary px-4 text-sm font-medium text-primary-fg" href={`/sales/${quote.saleId}`}>
+        <Link
+          className="inline-flex h-10 items-center rounded-[var(--radius)] bg-primary px-4 text-sm font-medium text-primary-fg"
+          href={`/sales/${quote.saleId}`}
+        >
           View sale
         </Link>
       ) : (
         <Button
           onClick={() => {
             // Load the quote into the register cart; the sale links back to the quote on sync.
-            const cart = { ...emptyCart(), lines: quote.lines as CartLine[], customerId: quote.customerId, customerName: quote.customerName, quoteId: quote.id };
+            const cart = {
+              ...emptyCart(),
+              lines: quote.lines as CartLine[],
+              customerId: quote.customerId,
+              customerName: quote.customerName,
+              quoteId: quote.id,
+            };
             localStorage.setItem(`unipos_cart_${tenantId}_${locationId}`, JSON.stringify(cart));
             router.push("/register");
           }}

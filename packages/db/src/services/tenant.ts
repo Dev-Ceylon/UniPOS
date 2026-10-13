@@ -77,7 +77,9 @@ export async function bootstrapTenant(input: BootstrapInput, client: PrismaClien
         taxClassId = tc.id;
         await tx.taxClass.create({ data: { name: "Zero rated" } });
       }
-      await writeAudit(tx, { memberId: input.ownerMemberId, name: input.ownerName }, "tenant.create", "Tenant", input.tenantId, { after: { businessType: input.businessType } });
+      await writeAudit(tx, { memberId: input.ownerMemberId, name: input.ownerName }, "tenant.create", "Tenant", input.tenantId, {
+        after: { businessType: input.businessType },
+      });
       if (input.seedDemo) await seedDemoCatalog(tx, input.businessType, location.id, taxClassId);
       return { locationId: location.id, roles, taxClassId };
     },
@@ -137,14 +139,41 @@ export async function seedDemoCatalog(tx: Tx, type: BusinessType, locationId: st
   let modifierGroupIds: string[] = [];
   if (restaurant) {
     const spice = await tx.modifierGroup.create({
-      data: { name: "Spice level", minSelect: 0, maxSelect: 1, modifiers: [{ name: "Mild", priceDelta: 0 }, { name: "Medium", priceDelta: 0 }, { name: "Hot", priceDelta: 0 }] },
+      data: {
+        name: "Spice level",
+        minSelect: 0,
+        maxSelect: 1,
+        modifiers: [
+          { name: "Mild", priceDelta: 0 },
+          { name: "Medium", priceDelta: 0 },
+          { name: "Hot", priceDelta: 0 },
+        ],
+      },
     });
     const extras = await tx.modifierGroup.create({
-      data: { name: "Extras", minSelect: 0, maxSelect: 3, modifiers: [{ name: "Extra egg", priceDelta: 8000 }, { name: "Extra chicken", priceDelta: 30000 }, { name: "Papadam", priceDelta: 5000 }] },
+      data: {
+        name: "Extras",
+        minSelect: 0,
+        maxSelect: 3,
+        modifiers: [
+          { name: "Extra egg", priceDelta: 8000 },
+          { name: "Extra chicken", priceDelta: 30000 },
+          { name: "Papadam", priceDelta: 5000 },
+        ],
+      },
     });
     modifierGroupIds = [spice.id, extras.id];
     for (let i = 1; i <= 8; i++) {
-      await tx.diningTable.create({ data: { locationId, name: `T${i}`, seats: i % 3 === 0 ? 6 : 4, area: i <= 6 ? "Main" : "Terrace", x: ((i - 1) % 4) * 140, y: Math.floor((i - 1) / 4) * 140 } });
+      await tx.diningTable.create({
+        data: {
+          locationId,
+          name: `T${i}`,
+          seats: i % 3 === 0 ? 6 : 4,
+          area: i <= 6 ? "Main" : "Terrace",
+          x: ((i - 1) % 4) * 140,
+          y: Math.floor((i - 1) / 4) * 140,
+        },
+      });
     }
   }
   let i = 0;
@@ -165,7 +194,9 @@ export async function seedDemoCatalog(tx: Tx, type: BusinessType, locationId: st
       include: { variants: true },
     });
     if (!restaurant && !service) {
-      await recordMovements(tx, [{ variantId: product.variants[0]!.id, locationId, qtyChange: 20 + ((i * 7) % 30), reason: "opening", note: "Demo opening stock" }]);
+      await recordMovements(tx, [
+        { variantId: product.variants[0]!.id, locationId, qtyChange: 80 + ((i * 7) % 40), reason: "opening", note: "Demo opening stock" },
+      ]);
       await tx.stockLevel.update({ where: { variantId_locationId: { variantId: product.variants[0]!.id, locationId } }, data: { reorderPoint: 10 } });
     }
   }

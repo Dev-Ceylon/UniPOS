@@ -14,7 +14,11 @@ export default async function EditProduct({ params }: { params: Promise<{ id: st
   const data = await read(ctx, async (tx) => {
     const product = await tx.product.findUnique({ where: { id }, include: { variants: { where: { deletedAt: null }, orderBy: { createdAt: "asc" } } } });
     if (!product || product.deletedAt) return null;
-    const movements = await tx.stockMovement.findMany({ where: { variantId: { in: product.variants.map((v) => v.id) } }, orderBy: { createdAt: "desc" }, take: 25 });
+    const movements = await tx.stockMovement.findMany({
+      where: { variantId: { in: product.variants.map((v) => v.id) } },
+      orderBy: { createdAt: "desc" },
+      take: 25,
+    });
     return { product, movements, opts: await formOptions(ctx, tx) };
   });
   if (!data) notFound();
@@ -55,7 +59,9 @@ export default async function EditProduct({ params }: { params: Promise<{ id: st
                     {mv.reason.replace("_", " ")}
                     {mv.note ? <span className="text-muted"> · {mv.note}</span> : null}
                   </Td>
-                  <Td className={`tabular text-right ${mv.qtyChange < 0 ? "text-danger" : "text-success"}`}>{mv.qtyChange > 0 ? `+${mv.qtyChange}` : mv.qtyChange}</Td>
+                  <Td className={`tabular text-right ${mv.qtyChange < 0 ? "text-danger" : "text-success"}`}>
+                    {mv.qtyChange > 0 ? `+${mv.qtyChange}` : mv.qtyChange}
+                  </Td>
                 </tr>
               ))}
             </tbody>

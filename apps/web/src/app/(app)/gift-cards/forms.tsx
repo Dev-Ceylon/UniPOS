@@ -34,7 +34,16 @@ export function IssueGiftCard({ currency }: { currency: string }) {
             onSubmit={(e) => {
               e.preventDefault();
               const fd = new FormData(e.currentTarget);
-              run(() => issueGiftCardAction({ value: String(fd.get("value")), code: String(fd.get("code") ?? ""), customerId: "", expiresAt: String(fd.get("expiresAt") ?? "") }), { onOk: setCode, success: "Gift card issued" });
+              run(
+                () =>
+                  issueGiftCardAction({
+                    value: String(fd.get("value")),
+                    code: String(fd.get("code") ?? ""),
+                    customerId: "",
+                    expiresAt: String(fd.get("expiresAt") ?? ""),
+                  }),
+                { onOk: setCode, success: "Gift card issued" },
+              );
             }}
           >
             <Field label={`Value (${currency})`} htmlFor="gc-value">

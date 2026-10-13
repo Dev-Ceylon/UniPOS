@@ -5,8 +5,7 @@ import { BUSINESS_TYPES, MODULE_IDS } from "./modules";
 import { DEFAULT_RECEIPT_TEMPLATE } from "./receipt";
 
 const minor = z.number().int().safe();
-const optionalText = (max = 200) =>
-  z.preprocess((v) => (typeof v === "string" && v.trim() === "" ? null : v), z.string().trim().max(max).nullish());
+const optionalText = (max = 200) => z.preprocess((v) => (typeof v === "string" && v.trim() === "" ? null : v), z.string().trim().max(max).nullish());
 
 export const VariantInputSchema = z.object({
   id: z.string().optional(),
@@ -39,7 +38,10 @@ export const CategoryInputSchema = z.object({
   name: z.string().trim().min(1).max(100),
   parentId: z.string().nullish(),
   sortOrder: z.number().int().default(0),
-  color: z.string().regex(/^#[0-9a-fA-F]{6}$/).nullish(),
+  color: z
+    .string()
+    .regex(/^#[0-9a-fA-F]{6}$/)
+    .nullish(),
 });
 
 export const TaxRuleInputSchema = z.object({
@@ -69,7 +71,12 @@ export const CustomerInputSchema = z.object({
 
 export const LocationInputSchema = z.object({
   name: z.string().trim().min(1).max(100),
-  code: z.string().trim().min(1).max(8).regex(/^[A-Z0-9]+$/, "Use capital letters and digits"),
+  code: z
+    .string()
+    .trim()
+    .min(1)
+    .max(8)
+    .regex(/^[A-Z0-9]+$/, "Use capital letters and digits"),
   address: optionalText(500),
   phone: optionalText(40),
   receiptHeader: optionalText(500),
@@ -105,7 +112,10 @@ export const ReceiptTemplateSchema = z.object({
 });
 
 export const ThemeSchema = z.object({
-  primary: z.string().regex(/^#[0-9a-fA-F]{6}$/).default("#1877F2"),
+  primary: z
+    .string()
+    .regex(/^#[0-9a-fA-F]{6}$/)
+    .default("#1464D2"),
   radius: z.enum(["none", "sm", "md", "lg"]).default("md"),
 });
 

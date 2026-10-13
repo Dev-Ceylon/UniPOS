@@ -60,8 +60,10 @@ function serialized(tx: Tx): Tx {
     queue = next.catch(() => undefined);
     return next;
   };
-  const wrapFn = (target: object, fn: (...a: unknown[]) => unknown) =>
-    (...args: unknown[]) => enqueue(() => fn.apply(target, args) as PromiseLike<unknown>);
+  const wrapFn =
+    (target: object, fn: (...a: unknown[]) => unknown) =>
+    (...args: unknown[]) =>
+      enqueue(() => fn.apply(target, args) as PromiseLike<unknown>);
   const delegates = new Map<PropertyKey, unknown>();
   return new Proxy(tx, {
     get(target, prop, receiver) {

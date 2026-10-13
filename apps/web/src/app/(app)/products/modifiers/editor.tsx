@@ -27,7 +27,14 @@ function GroupCard({ group, currency }: { group: G; currency: string }) {
         }}
       >
         <CardHeader>
-          <Input aria-label="Group name" required value={g.name} placeholder="New group" onChange={(e) => setG({ ...g, name: e.target.value })} className="max-w-xs font-semibold" />
+          <Input
+            aria-label="Group name"
+            required
+            value={g.name}
+            placeholder="New group"
+            onChange={(e) => setG({ ...g, name: e.target.value })}
+            className="max-w-xs font-semibold"
+          />
           {g.id ? (
             <Button size="sm" variant="ghost" aria-label="Delete group" onClick={() => run(() => deleteModifierGroup(g.id!), { success: "Deleted" })}>
               <Trash2 className="h-4 w-4" />
@@ -37,16 +44,41 @@ function GroupCard({ group, currency }: { group: G; currency: string }) {
         <CardBody className="flex flex-col gap-2">
           <div className="flex gap-3">
             <Field label="Min" htmlFor={`min-${g.id}`}>
-              <Input id={`min-${g.id}`} type="number" min={0} value={g.minSelect} onChange={(e) => setG({ ...g, minSelect: Number(e.target.value) })} className="w-20" />
+              <Input
+                id={`min-${g.id}`}
+                type="number"
+                min={0}
+                value={g.minSelect}
+                onChange={(e) => setG({ ...g, minSelect: Number(e.target.value) })}
+                className="w-20"
+              />
             </Field>
             <Field label="Max" htmlFor={`max-${g.id}`}>
-              <Input id={`max-${g.id}`} type="number" min={1} value={g.maxSelect} onChange={(e) => setG({ ...g, maxSelect: Number(e.target.value) })} className="w-20" />
+              <Input
+                id={`max-${g.id}`}
+                type="number"
+                min={1}
+                value={g.maxSelect}
+                onChange={(e) => setG({ ...g, maxSelect: Number(e.target.value) })}
+                className="w-20"
+              />
             </Field>
           </div>
           {g.mods.map((m, i) => (
             <div key={i} className="flex gap-2">
-              <Input aria-label="Option name" value={m.name} required onChange={(e) => setG({ ...g, mods: g.mods.map((x, j) => (j === i ? { ...x, name: e.target.value } : x)) })} />
-              <Input aria-label="Extra price" inputMode="decimal" value={m.price} onChange={(e) => setG({ ...g, mods: g.mods.map((x, j) => (j === i ? { ...x, price: e.target.value } : x)) })} className="w-32" />
+              <Input
+                aria-label="Option name"
+                value={m.name}
+                required
+                onChange={(e) => setG({ ...g, mods: g.mods.map((x, j) => (j === i ? { ...x, name: e.target.value } : x)) })}
+              />
+              <Input
+                aria-label="Extra price"
+                inputMode="decimal"
+                value={m.price}
+                onChange={(e) => setG({ ...g, mods: g.mods.map((x, j) => (j === i ? { ...x, price: e.target.value } : x)) })}
+                className="w-32"
+              />
               <Button size="icon" variant="ghost" aria-label="Remove option" onClick={() => setG({ ...g, mods: g.mods.filter((_, j) => j !== i) })}>
                 <Trash2 className="h-4 w-4" />
               </Button>

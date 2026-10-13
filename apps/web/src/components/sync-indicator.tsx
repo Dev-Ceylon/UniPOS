@@ -21,7 +21,11 @@ export function SyncIndicator() {
       aria-live="polite"
       data-testid="sync-indicator"
     >
-      {!s.online ? <CloudOff className="h-4 w-4 text-warning" aria-hidden /> : <RefreshCw className={`h-4 w-4 ${s.syncing ? "animate-spin" : ""}`} aria-hidden />}
+      {!s.online ? (
+        <CloudOff className="h-4 w-4 text-warning" aria-hidden />
+      ) : (
+        <RefreshCw className={`h-4 w-4 ${s.syncing ? "animate-spin" : ""}`} aria-hidden />
+      )}
       <span className="hidden md:inline">{label}</span>
       {s.pending ? <Badge tone="warning">{s.pending}</Badge> : null}
       {s.rejected ? <Badge tone="danger">{s.rejected}!</Badge> : null}

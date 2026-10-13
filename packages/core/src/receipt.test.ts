@@ -38,7 +38,10 @@ describe("receipt", () => {
   });
 
   it("hides optional parts", () => {
-    const r = buildReceipt({ ...sale, isRefund: true, change: 0 }, { ...DEFAULT_RECEIPT_TEMPLATE, showTaxBreakdown: false, showCashier: false, showBarcode: false, footer: "", logoText: "KADE" });
+    const r = buildReceipt(
+      { ...sale, isRefund: true, change: 0 },
+      { ...DEFAULT_RECEIPT_TEMPLATE, showTaxBreakdown: false, showCashier: false, showBarcode: false, footer: "", logoText: "KADE" },
+    );
     expect(r.title).toBe("KADE");
     expect(r.meta[0]!.label).toBe("Refund");
     expect(r.totals.some((t) => t.label === "Tax")).toBe(true);

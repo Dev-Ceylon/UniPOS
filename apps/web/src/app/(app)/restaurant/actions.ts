@@ -15,7 +15,9 @@ export async function saveTable(id: string | null, input: unknown) {
     "restaurant.manage",
     async (ctx, tx) => {
       const d = TableSchema.parse(input);
-      const t = id ? await tx.diningTable.update({ where: { id }, data: d }) : await tx.diningTable.create({ data: { ...d, locationId: ctx.locationId, x: 20, y: 20 } });
+      const t = id
+        ? await tx.diningTable.update({ where: { id }, data: d })
+        : await tx.diningTable.create({ data: { ...d, locationId: ctx.locationId, x: 20, y: 20 } });
       await writeAudit(tx, { memberId: ctx.member.id, name: ctx.member.name }, "table.save", "DiningTable", t.id);
       return t.id;
     },

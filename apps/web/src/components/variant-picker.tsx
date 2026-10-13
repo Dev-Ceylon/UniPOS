@@ -5,7 +5,15 @@ import { useEffect, useState } from "react";
 import { searchVariants, type VariantHit } from "@/lib/search-actions";
 
 /** Type-ahead product search; Enter on an exact barcode/SKU picks it immediately (scanner friendly). */
-export function VariantPicker({ onPick, currency, placeholder = "Search or scan a product" }: { onPick: (v: VariantHit) => void; currency: string; placeholder?: string }) {
+export function VariantPicker({
+  onPick,
+  currency,
+  placeholder = "Search or scan a product",
+}: {
+  onPick: (v: VariantHit) => void;
+  currency: string;
+  placeholder?: string;
+}) {
   const [q, setQ] = useState("");
   const [hits, setHits] = useState<VariantHit[]>([]);
   const [open, setOpen] = useState(false);
@@ -43,7 +51,9 @@ export function VariantPicker({ onPick, currency, placeholder = "Search or scan 
             e.preventDefault();
             const res = await searchVariants(q);
             if (res.ok) {
-              const exact = res.data.find((v) => v.barcode === q.trim() || v.sku?.toLowerCase() === q.trim().toLowerCase()) ?? (res.data.length === 1 ? res.data[0] : undefined);
+              const exact =
+                res.data.find((v) => v.barcode === q.trim() || v.sku?.toLowerCase() === q.trim().toLowerCase()) ??
+                (res.data.length === 1 ? res.data[0] : undefined);
               if (exact) pick(exact);
               else setHits(res.data);
             }

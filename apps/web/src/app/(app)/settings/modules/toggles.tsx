@@ -37,7 +37,15 @@ export function ModuleToggles({ modules, enabled }: { modules: (ModuleMeta & { d
               </div>
               <label className="inline-flex cursor-pointer items-center">
                 <span className="sr-only">Enable {m.name}</span>
-                <input type="checkbox" role="switch" className="peer sr-only" checked={on.has(m.id)} disabled={m.required} onChange={() => toggle(m)} data-testid={`module-${m.id}`} />
+                <input
+                  type="checkbox"
+                  role="switch"
+                  className="peer sr-only"
+                  checked={on.has(m.id)}
+                  disabled={m.required}
+                  onChange={() => toggle(m)}
+                  data-testid={`module-${m.id}`}
+                />
                 <span className="h-6 w-11 rounded-full bg-border transition peer-checked:bg-primary peer-focus-visible:ring-2 peer-focus-visible:ring-ring peer-disabled:opacity-50 relative after:absolute after:left-0.5 after:top-0.5 after:h-5 after:w-5 after:rounded-full after:bg-white after:transition peer-checked:after:translate-x-5" />
               </label>
             </li>

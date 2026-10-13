@@ -64,7 +64,14 @@ export async function emailReceipt(saleId: string, email: string) {
         customer: sale.customer?.name,
         table: sale.tableName,
         isRefund: sale.isRefund,
-        lines: sale.lines.map((l) => ({ name: l.name, qty: l.qty, unitPrice: l.unitPrice, total: l.total, discount: l.lineDiscount + l.orderDiscount, modifiers: l.modifiers as { name: string; priceDelta: number }[] })),
+        lines: sale.lines.map((l) => ({
+          name: l.name,
+          qty: l.qty,
+          unitPrice: l.unitPrice,
+          total: l.total,
+          discount: l.lineDiscount + l.orderDiscount,
+          modifiers: l.modifiers as { name: string; priceDelta: number }[],
+        })),
         subtotal: sale.subtotal,
         discountTotal: sale.discountTotal,
         taxes: sale.taxes as unknown as TaxLine[],
@@ -106,7 +113,11 @@ export async function listTables() {
   return action(
     "restaurant.use",
     async (ctx, tx) => {
-      const tables = await tx.diningTable.findMany({ where: { locationId: ctx.locationId, deletedAt: null }, include: { tab: true }, orderBy: [{ area: "asc" }, { name: "asc" }] });
+      const tables = await tx.diningTable.findMany({
+        where: { locationId: ctx.locationId, deletedAt: null },
+        include: { tab: true },
+        orderBy: [{ area: "asc" }, { name: "asc" }],
+      });
       return tables.map((t) => ({
         id: t.id,
         name: t.name,
@@ -167,7 +178,9 @@ export async function sendToKitchen(tableId: string | null, tableName: string | 
             tableName,
             tabId: tableId,
             course,
-            items: toSend.filter((l) => (l.course ?? 1) === course).map((l) => ({ name: l.name, qty: l.send, modifiers: l.modifiers.map((m) => m.name), note: l.note ?? null })),
+            items: toSend
+              .filter((l) => (l.course ?? 1) === course)
+              .map((l) => ({ name: l.name, qty: l.send, modifiers: l.modifiers.map((m) => m.name), note: l.note ?? null })),
           },
         });
         tickets++;

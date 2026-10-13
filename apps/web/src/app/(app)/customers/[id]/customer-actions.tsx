@@ -11,7 +11,10 @@ export function PrivacyActions({ id }: { id: string }) {
   const [open, setOpen] = useState(false);
   return (
     <>
-      <a href={`/api/v1/customers/${id}/export`} className="inline-flex h-10 items-center rounded-[var(--radius)] border border-border bg-surface px-4 text-sm font-medium hover:bg-surface-2">
+      <a
+        href={`/api/v1/customers/${id}/export`}
+        className="inline-flex h-10 items-center rounded-[var(--radius)] border border-border bg-surface px-4 text-sm font-medium hover:bg-surface-2"
+      >
         Export data
       </a>
       <Button variant="danger" onClick={() => setOpen(true)}>
@@ -21,7 +24,12 @@ export function PrivacyActions({ id }: { id: string }) {
         <p className="text-sm">
           This removes the name, phone, email, notes and loyalty history. Sales stay in your records without the customer link. This cannot be undone.
         </p>
-        <Button className="mt-4 w-full" variant="danger" loading={pending} onClick={() => run(() => eraseCustomerAction(id), { success: "Customer erased", onOk: () => router.push("/customers") })}>
+        <Button
+          className="mt-4 w-full"
+          variant="danger"
+          loading={pending}
+          onClick={() => run(() => eraseCustomerAction(id), { success: "Customer erased", onOk: () => router.push("/customers") })}
+        >
           Erase permanently
         </Button>
       </Dialog>

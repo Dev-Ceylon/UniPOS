@@ -1,7 +1,28 @@
 import { describe, expect, it } from "vitest";
 import { normalize, SearchIndex } from "./search";
 
-const words = ["tea", "coffee", "milk", "sugar", "rice", "flour", "soap", "biscuit", "noodles", "chilli", "curry", "powder", "oil", "salt", "bread", "butter", "jam", "juice", "water", "soda"];
+const words = [
+  "tea",
+  "coffee",
+  "milk",
+  "sugar",
+  "rice",
+  "flour",
+  "soap",
+  "biscuit",
+  "noodles",
+  "chilli",
+  "curry",
+  "powder",
+  "oil",
+  "salt",
+  "bread",
+  "butter",
+  "jam",
+  "juice",
+  "water",
+  "soda",
+];
 
 function makeProducts(n: number) {
   return Array.from({ length: n }, (_, i) => ({

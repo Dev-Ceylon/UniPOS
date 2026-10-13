@@ -47,6 +47,14 @@ export function toFormData(
     imageUrl: p.imageUrl ?? "",
     modifierGroupIds: p.modifierGroupIds,
     customFields: (p.customFields as Record<string, unknown>) ?? {},
-    variants: p.variants.map((v) => ({ id: v.id, name: v.name, sku: v.sku ?? "", barcode: v.barcode ?? "", price: toDecimalString(v.price, currency), cost: toDecimalString(v.cost, currency), opening: "" })),
+    variants: p.variants.map((v) => ({
+      id: v.id,
+      name: v.name,
+      sku: v.sku ?? "",
+      barcode: v.barcode ?? "",
+      price: toDecimalString(v.price, currency),
+      cost: toDecimalString(v.cost, currency),
+      opening: "",
+    })),
   };
 }

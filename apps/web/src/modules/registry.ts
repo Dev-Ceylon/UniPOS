@@ -14,7 +14,21 @@ import { manifest as quotes } from "./quotes/manifest";
 import { manifest as expenses } from "./expenses/manifest";
 import type { ModuleManifest } from "./types";
 
-export const MODULE_REGISTRY: ModuleManifest[] = [core, register, catalog, inventory, multilocation, purchasing, customers, loyalty, giftcards, reports, restaurant, quotes, expenses];
+export const MODULE_REGISTRY: ModuleManifest[] = [
+  core,
+  register,
+  catalog,
+  inventory,
+  multilocation,
+  purchasing,
+  customers,
+  loyalty,
+  giftcards,
+  reports,
+  restaurant,
+  quotes,
+  expenses,
+];
 
 export const ALL_NAV: NavItemMeta[] = MODULE_REGISTRY.flatMap((m) => m.nav);
 

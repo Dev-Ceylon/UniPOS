@@ -18,8 +18,16 @@ export default async function SalesPage({ searchParams }: { searchParams: Promis
   const page = Math.max(1, Number(sp.page) || 1);
   const where = {
     createdAt: { gte: zonedToUtc(`${from}T00:00:00`, ctx.timezone), lt: new Date(zonedToUtc(`${to}T00:00:00`, ctx.timezone).getTime() + 86400_000) },
-    ...(sp.status === "refunds" ? { isRefund: true } : sp.status === "voided" ? { status: "voided" } : sp.status === "flagged" ? { flags: { isEmpty: false } } : {}),
-    ...(sp.q ? { OR: [{ number: { contains: sp.q, mode: "insensitive" as const } }, { customer: { name: { contains: sp.q, mode: "insensitive" as const } } }] } : {}),
+    ...(sp.status === "refunds"
+      ? { isRefund: true }
+      : sp.status === "voided"
+        ? { status: "voided" }
+        : sp.status === "flagged"
+          ? { flags: { isEmpty: false } }
+          : {}),
+    ...(sp.q
+      ? { OR: [{ number: { contains: sp.q, mode: "insensitive" as const } }, { customer: { name: { contains: sp.q, mode: "insensitive" as const } } }] }
+      : {}),
     ...(sp.location === "all" ? {} : { locationId: ctx.locationId }),
   };
   const [sales, count, agg] = await read(ctx, (tx) =>
@@ -30,7 +38,11 @@ export default async function SalesPage({ searchParams }: { searchParams: Promis
     ]),
   );
   const m = (v: number) => money(v, ctx.currency, ctx.locale);
-  const qs = (patch: Record<string, string | number>) => new URLSearchParams({ ...Object.fromEntries(Object.entries(sp).filter(([, v]) => v) as [string, string][]), ...Object.fromEntries(Object.entries(patch).map(([k, v]) => [k, String(v)])) }).toString();
+  const qs = (patch: Record<string, string | number>) =>
+    new URLSearchParams({
+      ...Object.fromEntries(Object.entries(sp).filter(([, v]) => v) as [string, string][]),
+      ...Object.fromEntries(Object.entries(patch).map(([k, v]) => [k, String(v)])),
+    }).toString();
   return (
     <div>
       <PageHeader title={t("sales")} description={`${count} sales · ${m(agg._sum.total ?? 0)} net`} />
@@ -86,7 +98,7 @@ export default async function SalesPage({ searchParams }: { searchParams: Promis
             {sales.map((s) => (
               <tr key={s.id}>
                 <Td>
-                  <Link href={`/sales/${s.id}`} className="font-medium text-primary underline">
+                  <Link href={`/sales/${s.id}`} className="font-medium text-primary-ink underline">
                     {s.number}
                   </Link>{" "}
                   {s.isRefund ? <Badge tone="warning">Refund</Badge> : null} {s.status === "voided" ? <Badge tone="danger">Voided</Badge> : null}{" "}
@@ -104,11 +116,23 @@ export default async function SalesPage({ searchParams }: { searchParams: Promis
         {!sales.length ? <EmptyState title="No sales in this period" /> : null}
         {count > 50 ? (
           <div className="flex justify-between p-3 text-sm">
-            {page > 1 ? <Link className="text-primary underline" href={`/sales?${qs({ page: page - 1 })}`}>Previous</Link> : <span />}
+            {page > 1 ? (
+              <Link className="text-primary-ink underline" href={`/sales?${qs({ page: page - 1 })}`}>
+                Previous
+              </Link>
+            ) : (
+              <span />
+            )}
             <span className="text-muted">
               Page {page} of {Math.ceil(count / 50)}
             </span>
-            {page * 50 < count ? <Link className="text-primary underline" href={`/sales?${qs({ page: page + 1 })}`}>Next</Link> : <span />}
+            {page * 50 < count ? (
+              <Link className="text-primary-ink underline" href={`/sales?${qs({ page: page + 1 })}`}>
+                Next
+              </Link>
+            ) : (
+              <span />
+            )}
           </div>
         ) : null}
       </Card>

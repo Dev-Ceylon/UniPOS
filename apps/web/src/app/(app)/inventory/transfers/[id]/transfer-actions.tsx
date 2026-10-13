@@ -4,7 +4,17 @@ import { useState } from "react";
 import { useAction } from "@/components/use-action";
 import { transferStep } from "../../actions";
 
-export function TransferActions({ id, status, atDestination, lines }: { id: string; status: string; atDestination: boolean; lines: { id: string; name: string; qty: number }[] }) {
+export function TransferActions({
+  id,
+  status,
+  atDestination,
+  lines,
+}: {
+  id: string;
+  status: string;
+  atDestination: boolean;
+  lines: { id: string; name: string; qty: number }[];
+}) {
   const { run, pending } = useAction();
   const [open, setOpen] = useState(false);
   const [rec, setRec] = useState<Record<string, number>>(Object.fromEntries(lines.map((l) => [l.id, l.qty])));
@@ -41,7 +51,15 @@ export function TransferActions({ id, status, atDestination, lines }: { id: stri
               <span>
                 {l.name} <span className="text-muted">(sent {l.qty})</span>
               </span>
-              <Input aria-label={`Received ${l.name}`} type="number" min={0} max={l.qty} className="w-20" value={rec[l.id]} onChange={(e) => setRec((r) => ({ ...r, [l.id]: Math.min(l.qty, Math.max(0, Number(e.target.value) || 0)) }))} />
+              <Input
+                aria-label={`Received ${l.name}`}
+                type="number"
+                min={0}
+                max={l.qty}
+                className="w-20"
+                value={rec[l.id]}
+                onChange={(e) => setRec((r) => ({ ...r, [l.id]: Math.min(l.qty, Math.max(0, Number(e.target.value) || 0)) }))}
+              />
             </li>
           ))}
         </ul>

@@ -16,7 +16,9 @@ export function FloorPlan({ tables }: { tables: T[] }) {
     <div className="flex flex-col gap-3">
       <div className="flex flex-wrap gap-2">
         <Button onClick={() => setEdit("new")}>Add table</Button>
-        <span className="text-sm text-muted">{tables.length} tables · {tables.filter((t) => t.occupied).length} occupied · areas: {areas.join(", ") || "—"}</span>
+        <span className="text-sm text-muted">
+          {tables.length} tables · {tables.filter((t) => t.occupied).length} occupied · areas: {areas.join(", ") || "—"}
+        </span>
       </div>
       <Card
         className="relative h-[480px] overflow-auto bg-surface-2"
@@ -61,7 +63,11 @@ export function FloorPlan({ tables }: { tables: T[] }) {
       <ul className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
         {tables.map((t) => (
           <li key={t.id}>
-            <button type="button" className="flex w-full items-center justify-between rounded border border-border bg-surface px-3 py-2 text-left text-sm" onClick={() => setEdit(t)}>
+            <button
+              type="button"
+              className="flex w-full items-center justify-between rounded border border-border bg-surface px-3 py-2 text-left text-sm"
+              onClick={() => setEdit(t)}
+            >
               <span>
                 {t.name} · {t.area}
               </span>
@@ -77,7 +83,16 @@ export function FloorPlan({ tables }: { tables: T[] }) {
             onSubmit={(e) => {
               e.preventDefault();
               const fd = new FormData(e.currentTarget);
-              run(() => saveTable(edit === "new" ? null : edit.id, { name: fd.get("name"), seats: Number(fd.get("seats")), area: fd.get("area"), shape: fd.get("shape") }), { success: "Saved", onOk: () => setEdit(null) });
+              run(
+                () =>
+                  saveTable(edit === "new" ? null : edit.id, {
+                    name: fd.get("name"),
+                    seats: Number(fd.get("seats")),
+                    area: fd.get("area"),
+                    shape: fd.get("shape"),
+                  }),
+                { success: "Saved", onOk: () => setEdit(null) },
+              );
             }}
           >
             <Field label="Name" htmlFor="t-name">
@@ -103,7 +118,11 @@ export function FloorPlan({ tables }: { tables: T[] }) {
             </Field>
             <div className="flex justify-between">
               {edit !== "new" ? (
-                <Button variant="ghost" className="text-danger" onClick={() => confirm("Delete table?") && run(() => deleteTable(edit.id), { onOk: () => setEdit(null) })}>
+                <Button
+                  variant="ghost"
+                  className="text-danger"
+                  onClick={() => confirm("Delete table?") && run(() => deleteTable(edit.id), { onOk: () => setEdit(null) })}
+                >
                   Delete
                 </Button>
               ) : (

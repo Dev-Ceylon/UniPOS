@@ -6,7 +6,21 @@ import { ReceiptView } from "@/components/receipt-view";
 import { useAction } from "@/components/use-action";
 import { saveReceipt } from "../actions";
 
-export function ReceiptEditor({ initial, businessName, locationName, address, currency, timeZone }: { initial: ReceiptTemplate; businessName: string; locationName: string; address: string; currency: string; timeZone: string }) {
+export function ReceiptEditor({
+  initial,
+  businessName,
+  locationName,
+  address,
+  currency,
+  timeZone,
+}: {
+  initial: ReceiptTemplate;
+  businessName: string;
+  locationName: string;
+  address: string;
+  currency: string;
+  timeZone: string;
+}) {
   const [t, setT] = useState(initial);
   const { run, pending } = useAction();
   const set = <K extends keyof ReceiptTemplate>(k: K, v: ReceiptTemplate[K]) => setT((x) => ({ ...x, [k]: v }));

@@ -72,13 +72,19 @@ describe("loyalty", () => {
 
 describe("csv", () => {
   it("round-trips with quoting and blocks formula injection", () => {
-    const csv = toCsv([{ name: 'Tea, "Ceylon"', price: "1.00" }, { name: "=SUM(A1)", price: "-2" }]);
+    const csv = toCsv([
+      { name: 'Tea, "Ceylon"', price: "1.00" },
+      { name: "=SUM(A1)", price: "-2" },
+    ]);
     expect(csv).toContain('"Tea, ""Ceylon"""');
     expect(csv).toContain("'=SUM(A1)");
     const rows = parseCsvObjects(csv);
     expect(rows[0]).toEqual({ name: 'Tea, "Ceylon"', price: "1.00" });
     expect(rows[1]!.price).toBe("-2");
-    expect(parseCsv("a,b\n1,\"x\ny\"\r\n")).toEqual([["a", "b"], ["1", "x\ny"]]);
+    expect(parseCsv('a,b\n1,"x\ny"\r\n')).toEqual([
+      ["a", "b"],
+      ["1", "x\ny"],
+    ]);
     expect(parseCsvObjects("")).toEqual([]);
     expect(toCsv([{ a: null }])).toBe("a\r\n\r\n");
   });
@@ -116,7 +122,7 @@ describe("custom fields", () => {
     });
     expect(() => parseCustomFields(defs, {})).toThrow();
     expect(() => parseCustomFields(defs, { brand: "x", size: "XL" })).toThrow();
-    expect(buildCustomFieldSchema([]).parse(undefined ?? {})).toEqual({});
+    expect(buildCustomFieldSchema([]).parse({})).toEqual({});
   });
 });
 

@@ -185,7 +185,14 @@ export class SyncEngine {
     if (!sale || sale.status !== "rejected") return;
     await this.db.transaction("rw", this.db.sales, this.db.outbox, async () => {
       await this.db.sales.update(clientId, { status: "pending", error: undefined });
-      await this.db.outbox.put({ opId: uuidv7(), type: "sale.create", payload: sale.payload, createdAt: new Date().toISOString(), attempts: 0, nextAttemptAt: 0 });
+      await this.db.outbox.put({
+        opId: uuidv7(),
+        type: "sale.create",
+        payload: sale.payload,
+        createdAt: new Date().toISOString(),
+        attempts: 0,
+        nextAttemptAt: 0,
+      });
     });
     await this.flush(true);
   }

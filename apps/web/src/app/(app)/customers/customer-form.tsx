@@ -32,7 +32,9 @@ export function CustomerForm({ customer, customFields }: { customer: CustomerDat
           onSubmit={(e) => {
             e.preventDefault();
             const fd = new FormData(e.currentTarget);
-            const cf = Object.fromEntries(customFields.map((d) => [d.key, d.type === "boolean" ? fd.get(`cf_${d.key}`) === "on" : String(fd.get(`cf_${d.key}`) ?? "")]));
+            const cf = Object.fromEntries(
+              customFields.map((d) => [d.key, d.type === "boolean" ? fd.get(`cf_${d.key}`) === "on" : String(fd.get(`cf_${d.key}`) ?? "")]),
+            );
             run(
               () =>
                 saveCustomer(customer?.id ?? null, {
@@ -73,7 +75,12 @@ export function CustomerForm({ customer, customFields }: { customer: CustomerDat
             d.type === "boolean" ? (
               <Checkbox key={d.key} name={`cf_${d.key}`} defaultChecked={!!customer?.customFields[d.key]} label={d.label} />
             ) : (
-              <Field key={d.key} label={`${d.label}${d.required ? " *" : ""}`} htmlFor={`cf_${d.key}`} error={fieldErrors[`customFields.${d.key}`] ?? fieldErrors[d.key]}>
+              <Field
+                key={d.key}
+                label={`${d.label}${d.required ? " *" : ""}`}
+                htmlFor={`cf_${d.key}`}
+                error={fieldErrors[`customFields.${d.key}`] ?? fieldErrors[d.key]}
+              >
                 {d.type === "select" ? (
                   <Select id={`cf_${d.key}`} name={`cf_${d.key}`} defaultValue={String(customer?.customFields[d.key] ?? "")}>
                     <option value="">—</option>
@@ -82,7 +89,12 @@ export function CustomerForm({ customer, customFields }: { customer: CustomerDat
                     ))}
                   </Select>
                 ) : (
-                  <Input id={`cf_${d.key}`} name={`cf_${d.key}`} type={d.type === "number" ? "number" : d.type === "date" ? "date" : "text"} defaultValue={String(customer?.customFields[d.key] ?? "")} />
+                  <Input
+                    id={`cf_${d.key}`}
+                    name={`cf_${d.key}`}
+                    type={d.type === "number" ? "number" : d.type === "date" ? "date" : "text"}
+                    defaultValue={String(customer?.customFields[d.key] ?? "")}
+                  />
                 )}
               </Field>
             ),

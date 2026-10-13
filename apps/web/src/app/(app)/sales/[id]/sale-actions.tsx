@@ -87,7 +87,10 @@ export function SaleActions({
             {lines.map((l) => (
               <li key={l.id} className="flex items-center justify-between gap-3">
                 <span className="text-sm">
-                  {l.name} <span className="text-muted">({l.refundable} of {l.qty} refundable · {formatMoney(l.total, currency)})</span>
+                  {l.name}{" "}
+                  <span className="text-muted">
+                    ({l.refundable} of {l.qty} refundable · {formatMoney(l.total, currency)})
+                  </span>
                 </span>
                 <Input
                   aria-label={`Refund quantity for ${l.name}`}

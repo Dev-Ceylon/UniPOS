@@ -31,7 +31,11 @@ export default async function ProductsPage({ searchParams }: { searchParams: Pro
     Promise.all([
       tx.product.findMany({
         where,
-        include: { category: true, taxClass: true, variants: { where: { deletedAt: null }, include: { stockLevels: { where: { locationId: ctx.locationId } } } } },
+        include: {
+          category: true,
+          taxClass: true,
+          variants: { where: { deletedAt: null }, include: { stockLevels: { where: { locationId: ctx.locationId } } } },
+        },
         orderBy: { name: "asc" },
         take: 50,
         skip: (page - 1) * 50,
@@ -50,32 +54,16 @@ export default async function ProductsPage({ searchParams }: { searchParams: Pro
         description={`${count} products`}
         actions={
           <>
-            <LinkButton href="/products/categories">
-              Categories
-            </LinkButton>
-            {can(ctx.member, "settings.edit") ? (
-              <LinkButton href="/products/taxes">
-                Taxes
-              </LinkButton>
-            ) : null}
-            {restaurant && can(ctx.member, "restaurant.manage") ? (
-              <LinkButton href="/products/modifiers">
-                Modifiers
-              </LinkButton>
-            ) : null}
+            <LinkButton href="/products/categories">Categories</LinkButton>
+            {can(ctx.member, "settings.edit") ? <LinkButton href="/products/taxes">Taxes</LinkButton> : null}
+            {restaurant && can(ctx.member, "restaurant.manage") ? <LinkButton href="/products/modifiers">Modifiers</LinkButton> : null}
             {can(ctx.member, "products.import") ? (
               <>
-                <LinkButton href="/products/import">
-                  Import
-                </LinkButton>
-                <LinkButton href="/api/v1/products/export">
-                  Export CSV
-                </LinkButton>
+                <LinkButton href="/products/import">Import</LinkButton>
+                <LinkButton href="/api/v1/products/export">Export CSV</LinkButton>
               </>
             ) : null}
-            <LinkButton href={`/products/labels${q ? `?q=${encodeURIComponent(q)}` : ""}`}>
-              Labels
-            </LinkButton>
+            <LinkButton href={`/products/labels${q ? `?q=${encodeURIComponent(q)}` : ""}`}>Labels</LinkButton>
             {edit ? (
               <LinkButton href="/products/new" variant="primary">
                 New product
@@ -117,12 +105,22 @@ export default async function ProductsPage({ searchParams }: { searchParams: Pro
                   <tr key={v.id}>
                     <Td>
                       {i === 0 ? (
-                        <Link href={`/products/${p.id}`} className="font-medium text-primary underline">
+                        <Link href={`/products/${p.id}`} className="font-medium text-primary-ink underline">
                           {p.name}
                         </Link>
                       ) : null}
-                      {v.name ? <span className="text-muted"> {i === 0 ? "— " : "↳ "}{v.name}</span> : null}
-                      {i === 0 && p.favourite ? <Badge className="ml-1" tone="primary">★</Badge> : null}
+                      {v.name ? (
+                        <span className="text-muted">
+                          {" "}
+                          {i === 0 ? "— " : "↳ "}
+                          {v.name}
+                        </span>
+                      ) : null}
+                      {i === 0 && p.favourite ? (
+                        <Badge className="ml-1" tone="primary">
+                          ★
+                        </Badge>
+                      ) : null}
                       {i === 0 && p.type !== "standard" ? <Badge className="ml-1">{p.type}</Badge> : null}
                     </Td>
                     <Td className="text-xs text-muted">
@@ -133,7 +131,9 @@ export default async function ProductsPage({ searchParams }: { searchParams: Pro
                     <Td className="tabular text-right">{m(v.price)}</Td>
                     <Td className="tabular text-right">
                       {p.trackStock ? (
-                        <span className={(lvl?.onHand ?? 0) < 0 ? "text-danger" : isLowStock(lvl?.onHand ?? 0, lvl?.reorderPoint) ? "text-warning" : ""}>{lvl?.onHand ?? 0}</span>
+                        <span className={(lvl?.onHand ?? 0) < 0 ? "text-danger" : isLowStock(lvl?.onHand ?? 0, lvl?.reorderPoint) ? "text-warning" : ""}>
+                          {lvl?.onHand ?? 0}
+                        </span>
                       ) : (
                         <span className="text-muted">—</span>
                       )}
@@ -145,17 +145,44 @@ export default async function ProductsPage({ searchParams }: { searchParams: Pro
           </tbody>
         </Table>
         {!products.length ? (
-          <EmptyState title="No products found" action={edit ? <Link className="text-primary underline" href="/products/new">Add a product</Link> : undefined}>
+          <EmptyState
+            title="No products found"
+            action={
+              edit ? (
+                <Link className="text-primary-ink underline" href="/products/new">
+                  Add a product
+                </Link>
+              ) : undefined
+            }
+          >
             Add products one by one or import a CSV.
           </EmptyState>
         ) : null}
         {count > 50 ? (
           <div className="flex justify-between p-3 text-sm">
-            {page > 1 ? <Link className="text-primary underline" href={`/products?${new URLSearchParams({ ...(q ? { q } : {}), ...(sp.category ? { category: sp.category } : {}), page: String(page - 1) })}`}>Previous</Link> : <span />}
+            {page > 1 ? (
+              <Link
+                className="text-primary-ink underline"
+                href={`/products?${new URLSearchParams({ ...(q ? { q } : {}), ...(sp.category ? { category: sp.category } : {}), page: String(page - 1) })}`}
+              >
+                Previous
+              </Link>
+            ) : (
+              <span />
+            )}
             <span className="text-muted">
               Page {page} of {Math.ceil(count / 50)}
             </span>
-            {page * 50 < count ? <Link className="text-primary underline" href={`/products?${new URLSearchParams({ ...(q ? { q } : {}), ...(sp.category ? { category: sp.category } : {}), page: String(page + 1) })}`}>Next</Link> : <span />}
+            {page * 50 < count ? (
+              <Link
+                className="text-primary-ink underline"
+                href={`/products?${new URLSearchParams({ ...(q ? { q } : {}), ...(sp.category ? { category: sp.category } : {}), page: String(page + 1) })}`}
+              >
+                Next
+              </Link>
+            ) : (
+              <span />
+            )}
           </div>
         ) : null}
       </Card>

@@ -55,7 +55,12 @@ export function NewExpense({ currency, categories }: { currency: string; categor
 export function DeleteExpense({ id }: { id: string }) {
   const { run } = useAction();
   return (
-    <Button size="icon" variant="ghost" aria-label="Delete expense" onClick={() => confirm("Delete this expense?") && run(() => deleteExpense(id), { success: "Deleted" })}>
+    <Button
+      size="icon"
+      variant="ghost"
+      aria-label="Delete expense"
+      onClick={() => confirm("Delete this expense?") && run(() => deleteExpense(id), { success: "Deleted" })}
+    >
       <Trash2 className="h-4 w-4" />
     </Button>
   );

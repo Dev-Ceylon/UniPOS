@@ -24,7 +24,12 @@ export default async function TransferPage({ params }: { params: Promise<{ id: s
         actions={
           <>
             <Badge tone={t.status === "received" ? "success" : t.status === "in_transit" ? "warning" : "neutral"}>{t.status.replace("_", " ")}</Badge>
-            <TransferActions id={t.id} status={t.status} atDestination={ctx.locationId === t.toLocationId} lines={t.lines.map((l) => ({ id: l.id, name: l.name, qty: l.qty }))} />
+            <TransferActions
+              id={t.id}
+              status={t.status}
+              atDestination={ctx.locationId === t.toLocationId}
+              lines={t.lines.map((l) => ({ id: l.id, name: l.name, qty: l.qty }))}
+            />
           </>
         }
       />

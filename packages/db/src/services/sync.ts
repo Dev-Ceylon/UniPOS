@@ -59,7 +59,8 @@ export async function applySale(tx: Tx, ctx: TenantContext, p: SalePayload, devi
   }
   if (totals.discountTotal > 0) {
     if (!can(seller.member, "sales.discount")) flags.push("discount_unauthorized");
-    else if (discountRatioBp(totals) > ctx.settings.discountThresholdBp && !can(seller.member, "sales.discount_override")) flags.push("discount_over_threshold");
+    else if (discountRatioBp(totals) > ctx.settings.discountThresholdBp && !can(seller.member, "sales.discount_override"))
+      flags.push("discount_over_threshold");
   }
 
   let shiftId = p.shiftId ?? null;
@@ -218,7 +219,9 @@ export async function applyCashMovement(tx: Tx, ctx: TenantContext, p: CashMovem
   await tx.cashMovement.create({
     data: { id: p.clientId, shiftId: p.shiftId, type: p.type, amount: p.amount, reason: p.reason, memberId: ctx.member.id, createdAt: new Date(p.createdAt) },
   });
-  await writeAudit(tx, { memberId: ctx.member.id, name: ctx.member.name }, `cash.${p.type}`, "Shift", p.shiftId, { after: { amount: p.amount, reason: p.reason } });
+  await writeAudit(tx, { memberId: ctx.member.id, name: ctx.member.name }, `cash.${p.type}`, "Shift", p.shiftId, {
+    after: { amount: p.amount, reason: p.reason },
+  });
   return { opId: "", status: "applied", serverId: p.clientId };
 }
 

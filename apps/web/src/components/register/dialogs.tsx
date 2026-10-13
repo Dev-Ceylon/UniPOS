@@ -180,7 +180,19 @@ export function DiscountDialog({
 }
 
 /** Override a line's unit price (needs sales.price_override). */
-export function PriceDialog({ open, currency, price, onClose, onApply }: { open: boolean; currency: string; price: number; onClose: () => void; onApply: (minor: number) => void }) {
+export function PriceDialog({
+  open,
+  currency,
+  price,
+  onClose,
+  onApply,
+}: {
+  open: boolean;
+  currency: string;
+  price: number;
+  onClose: () => void;
+  onApply: (minor: number) => void;
+}) {
   const [value, setValue] = useState("");
   const [error, setError] = useState<string | null>(null);
   useEffect(() => {
@@ -247,7 +259,16 @@ export function CustomerDialog({
     }
   }, [open]);
   const needle = q.trim().toLowerCase();
-  const results = (needle ? customers.filter((c) => c.name.toLowerCase().includes(needle) || (c.phone ?? "").replace(/\s/g, "").includes(needle.replace(/\s/g, "")) || (c.email ?? "").toLowerCase().includes(needle)) : customers).slice(0, 30);
+  const results = (
+    needle
+      ? customers.filter(
+          (c) =>
+            c.name.toLowerCase().includes(needle) ||
+            (c.phone ?? "").replace(/\s/g, "").includes(needle.replace(/\s/g, "")) ||
+            (c.email ?? "").toLowerCase().includes(needle),
+        )
+      : customers
+  ).slice(0, 30);
   return (
     <Dialog open={open} onClose={onClose} title="Customer" size="md">
       {!creating ? (
@@ -283,7 +304,11 @@ export function CustomerDialog({
           onSubmit={async (e) => {
             e.preventDefault();
             const fd = new FormData(e.currentTarget);
-            const err = await onCreate({ name: String(fd.get("name")), phone: String(fd.get("phone") || "") || undefined, email: String(fd.get("email") || "") || undefined });
+            const err = await onCreate({
+              name: String(fd.get("name")),
+              phone: String(fd.get("phone") || "") || undefined,
+              email: String(fd.get("email") || "") || undefined,
+            });
             if (err) setError(err);
           }}
         >
@@ -318,7 +343,8 @@ export function CameraScanner({ open, onClose, onCode }: { open: boolean; onClos
     let stream: MediaStream | null = null;
     let raf = 0;
     let stopped = false;
-    const Detector = (globalThis as unknown as { BarcodeDetector?: new (o: unknown) => { detect: (v: HTMLVideoElement) => Promise<{ rawValue: string }[]> } }).BarcodeDetector;
+    const Detector = (globalThis as unknown as { BarcodeDetector?: new (o: unknown) => { detect: (v: HTMLVideoElement) => Promise<{ rawValue: string }[]> } })
+      .BarcodeDetector;
     if (!Detector) {
       setError("Camera scanning needs a Chromium browser (Chrome, Edge). Use a USB scanner or type the code.");
       return;
@@ -356,7 +382,11 @@ export function CameraScanner({ open, onClose, onCode }: { open: boolean; onClos
   }, [open, onCode]);
   return (
     <Dialog open={open} onClose={onClose} title="Scan with camera">
-      {error ? <Alert tone="warning">{error}</Alert> : <video ref={video} className="w-full rounded-lg bg-black" muted playsInline aria-label="Camera preview" />}
+      {error ? (
+        <Alert tone="warning">{error}</Alert>
+      ) : (
+        <video ref={video} className="w-full rounded-lg bg-black" muted playsInline aria-label="Camera preview" />
+      )}
     </Dialog>
   );
 }

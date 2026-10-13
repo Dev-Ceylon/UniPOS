@@ -20,7 +20,12 @@ export async function searchVariants(q: string) {
       where: {
         deletedAt: null,
         product: { deletedAt: null },
-        OR: [{ barcode: term }, { sku: { contains: term, mode: "insensitive" } }, { product: { name: { contains: term, mode: "insensitive" } } }, { name: { contains: term, mode: "insensitive" } }],
+        OR: [
+          { barcode: term },
+          { sku: { contains: term, mode: "insensitive" } },
+          { product: { name: { contains: term, mode: "insensitive" } } },
+          { name: { contains: term, mode: "insensitive" } },
+        ],
       },
       include: { product: true, stockLevels: { where: { locationId: ctx.locationId } } },
       take: 20,
@@ -43,7 +48,10 @@ export async function searchCustomers(q: string) {
     const term = q.trim();
     if (!term) return [];
     return tx.customer.findMany({
-      where: { deletedAt: null, OR: [{ name: { contains: term, mode: "insensitive" } }, { phone: { contains: term } }, { email: { contains: term, mode: "insensitive" } }] },
+      where: {
+        deletedAt: null,
+        OR: [{ name: { contains: term, mode: "insensitive" } }, { phone: { contains: term } }, { email: { contains: term, mode: "insensitive" } }],
+      },
       select: { id: true, name: true, phone: true, email: true },
       take: 15,
     });

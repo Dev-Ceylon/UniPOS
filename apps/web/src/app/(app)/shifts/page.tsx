@@ -122,7 +122,11 @@ export default async function ShiftsPage() {
                 <Td>{s.closedAt ? dateTime(s.closedAt, ctx.timezone, ctx.locale) : ""}</Td>
                 <Td className="tabular text-right">{m(s.expectedCash ?? 0)}</Td>
                 <Td className="tabular text-right">{m(s.countedCash ?? 0)}</Td>
-                <Td className={`tabular text-right font-medium ${(s.variance ?? 0) < 0 ? "text-danger" : (s.variance ?? 0) > 0 ? "text-warning" : "text-success"}`}>{m(s.variance ?? 0)}</Td>
+                <Td
+                  className={`tabular text-right font-medium ${(s.variance ?? 0) < 0 ? "text-danger" : (s.variance ?? 0) > 0 ? "text-warning" : "text-success"}`}
+                >
+                  {m(s.variance ?? 0)}
+                </Td>
               </tr>
             ))}
           </tbody>

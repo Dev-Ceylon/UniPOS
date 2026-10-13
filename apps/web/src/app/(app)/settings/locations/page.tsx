@@ -14,7 +14,15 @@ export default async function LocationsPage() {
       <PageHeader title="Locations" description="Each location has its own stock, receipt header and tax region." />
       <LocationsEditor
         canEdit={can(ctx.member, "settings.edit")}
-        locations={locations.map((l) => ({ id: l.id, name: l.name, code: l.code, address: l.address ?? "", phone: l.phone ?? "", receiptHeader: l.receiptHeader ?? "", taxRegion: l.taxRegion ?? "" }))}
+        locations={locations.map((l) => ({
+          id: l.id,
+          name: l.name,
+          code: l.code,
+          address: l.address ?? "",
+          phone: l.phone ?? "",
+          receiptHeader: l.receiptHeader ?? "",
+          taxRegion: l.taxRegion ?? "",
+        }))}
       />
     </div>
   );

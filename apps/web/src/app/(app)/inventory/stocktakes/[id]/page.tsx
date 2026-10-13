@@ -24,7 +24,14 @@ export default async function StocktakePage({ params }: { params: Promise<{ id: 
         lines={st.s.lines
           .map((l) => {
             const v = byId.get(l.variantId);
-            return { variantId: l.variantId, name: v ? (v.name ? `${v.product.name} — ${v.name}` : v.product.name) : "?", sku: v?.sku ?? null, barcode: v?.barcode ?? null, expected: l.expected, counted: l.counted };
+            return {
+              variantId: l.variantId,
+              name: v ? (v.name ? `${v.product.name} — ${v.name}` : v.product.name) : "?",
+              sku: v?.sku ?? null,
+              barcode: v?.barcode ?? null,
+              expected: l.expected,
+              counted: l.counted,
+            };
           })
           .sort((a, b) => a.name.localeCompare(b.name))}
       />

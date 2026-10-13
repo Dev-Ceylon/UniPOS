@@ -11,7 +11,9 @@ let cake: Awaited<ReturnType<typeof createProduct>>;
 
 const op = (payload: ReturnType<typeof salePayload>): SyncOp => ({ opId: uuidv7(), type: "sale.create", payload });
 const level = (variantId: string) =>
-  withTenant(T.tenantId, (tx) => tx.stockLevel.findUnique({ where: { variantId_locationId: { variantId, locationId: T.locationId } } }), { client: db }).then((l) => l?.onHand ?? 0);
+  withTenant(T.tenantId, (tx) => tx.stockLevel.findUnique({ where: { variantId_locationId: { variantId, locationId: T.locationId } } }), { client: db }).then(
+    (l) => l?.onHand ?? 0,
+  );
 
 beforeAll(async () => {
   T = await createTenant("Sync Shop");
@@ -26,7 +28,9 @@ describe("sync endpoint logic", () => {
     const [r1] = await applySyncBatch(T.ctx, "dev-1", [o], db);
     expect(r1).toMatchObject({ status: "applied", serverId: o.payload.clientId, flags: [] });
     expect(await level(tea.variant.id)).toBe(98);
-    const sale = await withTenant(T.tenantId, (tx) => tx.sale.findUnique({ where: { id: o.payload.clientId }, include: { payments: true, lines: true } }), { client: db });
+    const sale = await withTenant(T.tenantId, (tx) => tx.sale.findUnique({ where: { id: o.payload.clientId }, include: { payments: true, lines: true } }), {
+      client: db,
+    });
     expect(sale!.total).toBe(2360);
     expect(sale!.change).toBe(640);
     expect(sale!.payments[0]!.amount).toBe(2360); // change taken off cash

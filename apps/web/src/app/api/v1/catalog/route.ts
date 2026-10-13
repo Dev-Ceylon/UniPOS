@@ -33,7 +33,14 @@ export async function GET(req: Request) {
     const taxByClass = new Map(
       taxClasses.map((tc) => [
         tc.id,
-        rulesForRegion(tc.rules, location.taxRegion).map((r): TaxRule => ({ id: r.id, name: r.name, rateBp: r.rateBp, inclusive: r.inclusive, compound: r.compound, priority: r.priority })),
+        rulesForRegion(tc.rules, location.taxRegion).map((r): TaxRule => ({
+          id: r.id,
+          name: r.name,
+          rateBp: r.rateBp,
+          inclusive: r.inclusive,
+          compound: r.compound,
+          priority: r.priority,
+        })),
       ]),
     );
     const points = new Map(loyalty.map((l) => [l.customerId, l._sum.points ?? 0]));
@@ -58,7 +65,13 @@ export async function GET(req: Request) {
         imageUrl: v.product.imageUrl,
       })),
       categories: categories.map((c) => ({ id: c.id, name: c.name, sortOrder: c.sortOrder, color: c.color })),
-      modifierGroups: modifierGroups.map((g) => ({ id: g.id, name: g.name, minSelect: g.minSelect, maxSelect: g.maxSelect, modifiers: g.modifiers as { name: string; priceDelta: number }[] })),
+      modifierGroups: modifierGroups.map((g) => ({
+        id: g.id,
+        name: g.name,
+        minSelect: g.minSelect,
+        maxSelect: g.maxSelect,
+        modifiers: g.modifiers as { name: string; priceDelta: number }[],
+      })),
       customers: customers.map((c) => ({ id: c.id, name: c.name, phone: c.phone, email: c.email, points: points.get(c.id) ?? 0 })),
     };
   });

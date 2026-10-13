@@ -28,11 +28,17 @@ export const SaleLinePayloadSchema = z.object({
   id: uuid,
   variantId: z.string().min(1),
   name: z.string().min(1).max(200),
-  qty: z.number().int().refine((q) => q !== 0, "Quantity cannot be zero"),
+  qty: z
+    .number()
+    .int()
+    .refine((q) => q !== 0, "Quantity cannot be zero"),
   unitPrice: minor,
   catalogPrice: minor.optional(),
   unitCost: minor.optional(),
-  modifiers: z.array(z.object({ name: z.string().max(100), priceDelta: minor })).max(30).default([]),
+  modifiers: z
+    .array(z.object({ name: z.string().max(100), priceDelta: minor }))
+    .max(30)
+    .default([]),
   discount: DiscountSchema.nullish(),
   taxRules: z.array(TaxRuleSnapshotSchema).max(10).default([]),
   note: z.string().max(200).optional(),

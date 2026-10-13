@@ -126,7 +126,10 @@ export function PaymentDialog({
             <p className="text-sm text-muted">{t("amountDue")}</p>
             <p className="tabular text-3xl font-bold">{m(total)}</p>
             <p className="mt-2 text-sm text-muted">
-              {t("remaining")}: <span className="tabular font-semibold text-fg" data-testid="remaining">{m(remaining)}</span>
+              {t("remaining")}:{" "}
+              <span className="tabular font-semibold text-fg" data-testid="remaining">
+                {m(remaining)}
+              </span>
             </p>
             {summary?.change ? (
               <p className="mt-1 text-lg font-semibold text-success" data-testid="change-due">
@@ -153,7 +156,13 @@ export function PaymentDialog({
         <div className="flex flex-col gap-3">
           <div className="grid grid-cols-3 gap-2" role="radiogroup" aria-label="Tender">
             {tenders.map((tn) => (
-              <Button key={tn} variant={tender === tn ? "primary" : "outline"} aria-pressed={tender === tn} onClick={() => setTender(tn)} data-testid={`tender-${tn}`}>
+              <Button
+                key={tn}
+                variant={tender === tn ? "primary" : "outline"}
+                aria-pressed={tender === tn}
+                onClick={() => setTender(tn)}
+                data-testid={`tender-${tn}`}
+              >
                 {t(tn)}
               </Button>
             ))}
@@ -176,7 +185,9 @@ export function PaymentDialog({
             </div>
             {tender !== "cash" ? (
               <Input
-                placeholder={tender === "gift_card" ? "Gift card code" : tender === "points" ? "Points note (optional)" : `${t("reference")} (e.g. last 4 digits)`}
+                placeholder={
+                  tender === "gift_card" ? "Gift card code" : tender === "points" ? "Points note (optional)" : `${t("reference")} (e.g. last 4 digits)`
+                }
                 aria-label={t("reference")}
                 value={reference}
                 onChange={(e) => setReference(e.target.value)}
@@ -190,7 +201,11 @@ export function PaymentDialog({
                 ))}
               </div>
             )}
-            {tender === "points" && customerPoints !== null ? <p className="text-xs text-muted">Balance: {customerPoints} points = {m(customerPoints * pointValue)}</p> : null}
+            {tender === "points" && customerPoints !== null ? (
+              <p className="text-xs text-muted">
+                Balance: {customerPoints} points = {m(customerPoints * pointValue)}
+              </p>
+            ) : null}
             {tender === "card" ? <p className="text-xs text-muted">Take the card payment on the separate terminal, then record it here.</p> : null}
           </form>
           {error ? <Alert tone="danger">{error}</Alert> : null}

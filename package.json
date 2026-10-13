@@ -2,10 +2,12 @@
   "name": "unipos",
   "private": true,
   "version": "0.1.0",
-  "description": "UniPOS — modular, offline-first point of sale",
+  "description": "UniPOS \u2014 modular, offline-first point of sale",
   "license": "MIT",
   "packageManager": "pnpm@10.28.0",
-  "engines": { "node": ">=22" },
+  "engines": {
+    "node": ">=22"
+  },
   "scripts": {
     "dev": "pnpm --filter @unipos/web dev",
     "build": "pnpm --filter @unipos/db generate && pnpm --filter @unipos/web build",
@@ -19,6 +21,30 @@
     "test:e2e": "pnpm --filter @unipos/web test:e2e",
     "db:migrate": "pnpm --filter @unipos/db migrate:deploy",
     "db:seed": "pnpm --filter @unipos/db seed",
-    "prepare": "husky || true"
+    "prepare": "husky || true",
+    "changeset": "changeset"
+  },
+  "lint-staged": {
+    "*.{ts,tsx,mjs}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{json,css,yml,yaml}": [
+      "prettier --write"
+    ]
+  },
+  "devDependencies": {
+    "@changesets/cli": "^3.0.3",
+    "@commitlint/cli": "^21.2.3",
+    "@commitlint/config-conventional": "^21.2.3",
+    "@eslint/js": "^9.39.5",
+    "@next/eslint-plugin-next": "16.4.0",
+    "eslint": "^9.39.5",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "husky": "^9.1.7",
+    "lint-staged": "^17.6.0",
+    "prettier": "^3.9.10",
+    "typescript": "~5.9.3",
+    "typescript-eslint": "^8.71.2"
   }
 }

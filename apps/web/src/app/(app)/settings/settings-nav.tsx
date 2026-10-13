@@ -12,7 +12,10 @@ export function SettingsNav({ sections }: { sections: { href: string; label: str
           key={s.href}
           href={s.href}
           aria-current={path === s.href ? "page" : undefined}
-          className={cn("whitespace-nowrap rounded-lg px-3 py-2 text-sm font-medium", path === s.href ? "bg-primary-soft text-primary" : "hover:bg-surface-2")}
+          className={cn(
+            "whitespace-nowrap rounded-lg px-3 py-2 text-sm font-medium",
+            path === s.href ? "bg-primary-soft text-primary-ink" : "hover:bg-surface-2",
+          )}
         >
           {s.label}
         </Link>

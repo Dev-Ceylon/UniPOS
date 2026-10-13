@@ -59,7 +59,8 @@ export function Register(p: RegisterProps) {
 
   const products = useLiveQuery(() => db.products.toArray(), [db]);
   const categories = useLiveQuery(() => db.categories.orderBy("sortOrder").toArray(), [db]) ?? [];
-  const modifierGroups = useLiveQuery(() => db.modifierGroups.toArray(), [db]) ?? [];
+  const modifierGroupsQ = useLiveQuery(() => db.modifierGroups.toArray(), [db]);
+  const modifierGroups = useMemo(() => modifierGroupsQ ?? [], [modifierGroupsQ]);
   const customers = useLiveQuery(() => db.customers.toArray(), [db]) ?? [];
   const held = useLiveQuery(() => db.held.orderBy("createdAt").reverse().toArray(), [db]) ?? [];
   const index = useMemo(() => new SearchIndex(products ?? []), [products]);
@@ -70,7 +71,9 @@ export function Register(p: RegisterProps) {
   const [shift, setShift] = useState(p.shift);
   const [catalogError, setCatalogError] = useState<string | null>(null);
   const [loadingCatalog, setLoadingCatalog] = useState(false);
-  const [dialog, setDialog] = useState<null | "pay" | "customer" | "orderDiscount" | "lineDiscount" | "price" | "held" | "camera" | "shift" | "covers" | "shortcuts">(null);
+  const [dialog, setDialog] = useState<
+    null | "pay" | "customer" | "orderDiscount" | "lineDiscount" | "price" | "held" | "camera" | "shift" | "covers" | "shortcuts"
+  >(null);
   const [modProduct, setModProduct] = useState<CachedProduct | null>(null);
   const [done, setDone] = useState<null | { payload: SalePayload; receipt: ReturnType<typeof buildReceipt>; change: number }>(null);
   const [tables, setTables] = useState<TableInfo[]>([]);
@@ -204,7 +207,14 @@ export function Register(p: RegisterProps) {
           cashier: p.member.name,
           customer: state.customerName,
           table: state.tableName,
-          lines: totals.lines.map((l) => ({ name: l.name, qty: l.qty, unitPrice: l.unitPrice, total: l.total, discount: l.lineDiscount + l.orderDiscount, modifiers: l.modifiers })),
+          lines: totals.lines.map((l) => ({
+            name: l.name,
+            qty: l.qty,
+            unitPrice: l.unitPrice,
+            total: l.total,
+            discount: l.lineDiscount + l.orderDiscount,
+            modifiers: l.modifiers,
+          })),
           subtotal: totals.subtotal,
           discountTotal: totals.discountTotal,
           taxes: totals.taxes,
@@ -319,7 +329,12 @@ export function Register(p: RegisterProps) {
 
   async function holdSale() {
     if (!state.lines.length || state.tableId) return;
-    await db.held.put({ id: uuidv7(), label: state.customerName ?? `${state.lines[0]!.name}${state.lines.length > 1 ? ` +${state.lines.length - 1}` : ""}`, createdAt: new Date().toISOString(), cart: state });
+    await db.held.put({
+      id: uuidv7(),
+      label: state.customerName ?? `${state.lines[0]!.name}${state.lines.length > 1 ? ` +${state.lines.length - 1}` : ""}`,
+      createdAt: new Date().toISOString(),
+      cart: state,
+    });
     dispatch({ type: "clear" });
     toast.success(t("hold"));
   }
@@ -414,10 +429,18 @@ export function Register(p: RegisterProps) {
         </div>
         <div className="flex gap-2 overflow-x-auto px-3 pb-2" role="tablist" aria-label="Categories">
           {[{ id: "fav", name: t("favourites") }, { id: "all", name: t("allItems") }, ...categories].map((c) => (
-            <Button key={c.id} role="tab" className="shrink-0 whitespace-nowrap" aria-selected={category === c.id && !query} size="sm" variant={category === c.id && !query ? "primary" : "secondary"} onClick={() => {
-              setCategory(c.id);
-              setQuery("");
-            }}>
+            <Button
+              key={c.id}
+              role="tab"
+              className="shrink-0 whitespace-nowrap"
+              aria-selected={category === c.id && !query}
+              size="sm"
+              variant={category === c.id && !query ? "primary" : "secondary"}
+              onClick={() => {
+                setCategory(c.id);
+                setQuery("");
+              }}
+            >
               {c.name}
             </Button>
           ))}
@@ -427,7 +450,10 @@ export function Register(p: RegisterProps) {
             <Alert tone="danger">{catalogError}</Alert>
           </div>
         ) : null}
-        <div className="grid min-h-0 flex-1 auto-rows-min grid-cols-2 gap-2 overflow-y-auto p-3 pt-0 sm:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5" data-testid="product-grid">
+        <div
+          className="grid min-h-0 flex-1 auto-rows-min grid-cols-2 gap-2 overflow-y-auto p-3 pt-0 sm:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5"
+          data-testid="product-grid"
+        >
           {products === undefined ? <p className="col-span-full p-6 text-center text-muted">{t("loadingCatalog")}</p> : null}
           {results.map((prod) => (
             <button
@@ -441,14 +467,14 @@ export function Register(p: RegisterProps) {
                 {prod.variantName ? <span className="text-muted"> — {prod.variantName}</span> : null}
               </span>
               <span className="mt-2 flex items-end justify-between gap-1">
-                <span className="tabular font-semibold text-primary">{m(prod.price)}</span>
-                {prod.onHand !== null ? (
-                  <span className={cn("text-xs", prod.onHand <= 0 ? "text-danger" : "text-muted")}>{prod.onHand} left</span>
-                ) : null}
+                <span className="tabular font-semibold text-primary-ink">{m(prod.price)}</span>
+                {prod.onHand !== null ? <span className={cn("text-xs", prod.onHand <= 0 ? "text-danger" : "text-muted")}>{prod.onHand} left</span> : null}
               </span>
             </button>
           ))}
-          {products && !results.length ? <p className="col-span-full p-6 text-center text-muted">{query ? t("notFound", { code: query }) : "No products yet. Add products in Products."}</p> : null}
+          {products && !results.length ? (
+            <p className="col-span-full p-6 text-center text-muted">{query ? t("notFound", { code: query }) : "No products yet. Add products in Products."}</p>
+          ) : null}
         </div>
       </section>
 
@@ -458,10 +484,14 @@ export function Register(p: RegisterProps) {
           <div className="min-w-0">
             <h2 className="font-semibold">
               {state.tableName ? `${t("table")} ${state.tableName}` : t("cart")}
-              {state.covers ? <span className="ml-1 text-sm font-normal text-muted">· {state.covers} {t("covers")}</span> : null}
+              {state.covers ? (
+                <span className="ml-1 text-sm font-normal text-muted">
+                  · {state.covers} {t("covers")}
+                </span>
+              ) : null}
             </h2>
             {p.modules.includes("customers") ? (
-              <button type="button" className="flex items-center gap-1 truncate text-sm text-primary hover:underline" onClick={() => setDialog("customer")}>
+              <button type="button" className="flex items-center gap-1 truncate text-sm text-primary-ink hover:underline" onClick={() => setDialog("customer")}>
                 <UserRound className="h-3.5 w-3.5" aria-hidden />
                 {state.customerName ?? t("noCustomer")}
                 {customer?.points ? <Badge tone="primary">{customer.points} pts</Badge> : null}
@@ -473,10 +503,22 @@ export function Register(p: RegisterProps) {
               <Play className="h-4 w-4" aria-hidden />
               {held.length ? <Badge tone="warning">{held.length}</Badge> : null}
             </Button>
-            <Button variant="ghost" size="sm" onClick={() => void holdSale()} disabled={!state.lines.length || !!state.tableId} aria-label={`${t("hold")} (F8)`}>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => void holdSale()}
+              disabled={!state.lines.length || !!state.tableId}
+              aria-label={`${t("hold")} (F8)`}
+            >
               <Pause className="h-4 w-4" aria-hidden />
             </Button>
-            <Button variant="ghost" size="sm" onClick={() => dispatch({ type: "clear" })} disabled={!state.lines.length && !state.customerId} aria-label={t("clear")}>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => dispatch({ type: "clear" })}
+              disabled={!state.lines.length && !state.customerId}
+              aria-label={t("clear")}
+            >
               <X className="h-4 w-4" aria-hidden />
             </Button>
           </div>
@@ -500,7 +542,11 @@ export function Register(p: RegisterProps) {
                       {src.unitPrice !== src.catalogPrice ? <span className="ml-1 text-warning">(was {m(src.catalogPrice)})</span> : null}
                       {l.modifiers.length ? ` · ${l.modifiers.map((x) => x.name).join(", ")}` : ""}
                       {src.note ? ` · “${src.note}”` : ""}
-                      {src.sentQty ? <span className="ml-1 text-success">· {t("sent")} {src.sentQty}</span> : null}
+                      {src.sentQty ? (
+                        <span className="ml-1 text-success">
+                          · {t("sent")} {src.sentQty}
+                        </span>
+                      ) : null}
                     </p>
                     {l.lineDiscount + l.orderDiscount ? <p className="text-xs text-success">−{m(l.lineDiscount + l.orderDiscount)}</p> : null}
                   </div>
@@ -574,7 +620,9 @@ export function Register(p: RegisterProps) {
           </dl>
           {discountBlocked ? (
             <div className="mt-2">
-              <Alert tone="warning">Discount above {(p.settings.discountThresholdBp / 100).toFixed(0)}% needs a manager. Switch cashier to a manager to continue.</Alert>
+              <Alert tone="warning">
+                Discount above {(p.settings.discountThresholdBp / 100).toFixed(0)}% needs a manager. Switch cashier to a manager to continue.
+              </Alert>
             </div>
           ) : null}
           <div className="mt-3 grid grid-cols-3 gap-2">
@@ -602,7 +650,13 @@ export function Register(p: RegisterProps) {
             ) : (
               <span />
             )}
-            <Button size="lg" className="col-span-3 h-14 text-lg" disabled={!state.lines.length || discountBlocked || totals.total < 0} onClick={() => setDialog("pay")} data-testid="pay-button">
+            <Button
+              size="lg"
+              className="col-span-3 h-14 text-lg"
+              disabled={!state.lines.length || discountBlocked || totals.total < 0}
+              onClick={() => setDialog("pay")}
+              data-testid="pay-button"
+            >
               {t("pay")} {m(totals.total)} <Kbd>F4</Kbd>
             </Button>
           </div>
@@ -703,10 +757,10 @@ export function Register(p: RegisterProps) {
                 <Button
                   size="sm"
                   onClick={async () => {
-                    if (state.lines.length) await holdSale();
-                    dispatch({ type: "load", state: h.cart as never });
-                    await db.held.delete(h.id);
                     setDialog(null);
+                    if (state.lines.length) await holdSale();
+                    await db.held.delete(h.id);
+                    dispatch({ type: "load", state: h.cart as never });
                   }}
                 >
                   {t("resume")}

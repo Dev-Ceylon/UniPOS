@@ -25,7 +25,9 @@ export default async function InventoryPage({ searchParams }: { searchParams: Pr
     }),
   );
   let rows = variants.map((v) => ({ v, onHand: v.stockLevels[0]?.onHand ?? 0, reorder: v.stockLevels[0]?.reorderPoint ?? null }));
-  const valuation = inventoryValuation(rows.map((r) => ({ variantId: r.v.id, name: r.v.product.name, onHand: r.onHand, unitCost: r.v.cost, price: r.v.price, reorderPoint: r.reorder })));
+  const valuation = inventoryValuation(
+    rows.map((r) => ({ variantId: r.v.id, name: r.v.product.name, onHand: r.onHand, unitCost: r.v.cost, price: r.v.price, reorderPoint: r.reorder })),
+  );
   if (sp.filter === "low") rows = rows.filter((r) => isLowStock(r.onHand, r.reorder));
   if (sp.filter === "negative") rows = rows.filter((r) => r.onHand < 0);
   const m = (v: number) => money(v, ctx.currency, ctx.locale);
@@ -38,7 +40,9 @@ export default async function InventoryPage({ searchParams }: { searchParams: Pr
         actions={
           <>
             {can(ctx.member, "inventory.stocktake") ? <LinkButton href="/inventory/stocktakes">Stocktakes</LinkButton> : null}
-            {ctx.tenant.modules.includes("multilocation") && can(ctx.member, "inventory.transfer") ? <LinkButton href="/inventory/transfers">Transfers</LinkButton> : null}
+            {ctx.tenant.modules.includes("multilocation") && can(ctx.member, "inventory.transfer") ? (
+              <LinkButton href="/inventory/transfers">Transfers</LinkButton>
+            ) : null}
           </>
         }
       />
@@ -46,7 +50,12 @@ export default async function InventoryPage({ searchParams }: { searchParams: Pr
         <Stat label="Stock items" value={valuation.skus} />
         <Stat label="Units on hand" value={valuation.units} />
         <Stat label="Value at cost" value={m(valuation.costValue)} />
-        <Stat label="Low stock" value={valuation.lowStockCount} tone={valuation.lowStockCount ? "danger" : "success"} sub={`Retail value ${m(valuation.retailValue)}`} />
+        <Stat
+          label="Low stock"
+          value={valuation.lowStockCount}
+          tone={valuation.lowStockCount ? "danger" : "success"}
+          sub={`Retail value ${m(valuation.retailValue)}`}
+        />
       </div>
       <Card className="p-3">
         <form className="flex flex-wrap gap-2" role="search">
@@ -85,7 +94,9 @@ export default async function InventoryPage({ searchParams }: { searchParams: Pr
                 <Td className={`tabular text-right font-medium ${onHand < 0 ? "text-danger" : ""}`}>{onHand}</Td>
                 <Td className="text-right">{canAdjust ? <ReorderInput variantId={v.id} value={reorder} /> : (reorder ?? "—")}</Td>
                 <Td className="tabular text-right">{m(Math.max(0, onHand) * v.cost)}</Td>
-                <Td className="text-right">{canAdjust ? <AdjustButton variantId={v.id} name={v.product.name + (v.name ? ` — ${v.name}` : "")} onHand={onHand} /> : null}</Td>
+                <Td className="text-right">
+                  {canAdjust ? <AdjustButton variantId={v.id} name={v.product.name + (v.name ? ` — ${v.name}` : "")} onHand={onHand} /> : null}
+                </Td>
               </tr>
             ))}
           </tbody>

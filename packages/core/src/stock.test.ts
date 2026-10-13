@@ -1,6 +1,16 @@
 import fc from "fast-check";
 import { describe, expect, it } from "vitest";
-import { adjustmentFor, applyMovements, isLowStock, onHandFromLedger, saleQtyChange, stockKey, stocktakeVariances, STOCK_REASONS, type StockMovementLike } from "./stock";
+import {
+  adjustmentFor,
+  applyMovements,
+  isLowStock,
+  onHandFromLedger,
+  saleQtyChange,
+  stockKey,
+  stocktakeVariances,
+  STOCK_REASONS,
+  type StockMovementLike,
+} from "./stock";
 
 describe("stock ledger", () => {
   it("sums movements per variant and location", () => {
@@ -38,11 +48,13 @@ describe("stock ledger", () => {
   it("computes adjustments and variances", () => {
     expect(adjustmentFor(10, 7)).toBe(-3);
     expect(() => adjustmentFor(1, -1)).toThrow();
-    expect(stocktakeVariances([
-      { variantId: "a", expected: 5, counted: 5 },
-      { variantId: "b", expected: 5, counted: 3 },
-      { variantId: "c", expected: 5, counted: null },
-    ])).toEqual([{ variantId: "b", expected: 5, counted: 3, variance: -2 }]);
+    expect(
+      stocktakeVariances([
+        { variantId: "a", expected: 5, counted: 5 },
+        { variantId: "b", expected: 5, counted: 3 },
+        { variantId: "c", expected: 5, counted: null },
+      ]),
+    ).toEqual([{ variantId: "b", expected: 5, counted: 3, variance: -2 }]);
   });
 
   it("flags low stock", () => {

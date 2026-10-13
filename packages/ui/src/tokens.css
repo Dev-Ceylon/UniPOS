@@ -1,12 +1,15 @@
 /*
- * UniPOS design tokens — "Classic Blue" theme.
+ * UniPOS design tokens — "Classic Blue" theme (Facebook-style blue,
+ * darkened from #1877F2 to #1464D2 so white text and links meet WCAG AA).
  * Tenants may override --primary at runtime (Settings → Theme).
  */
 :root {
-  --primary: #1877f2;
+  --primary: #1464d2;
   --primary-hover: color-mix(in srgb, var(--primary) 88%, black);
   --primary-fg: #ffffff;
-  --primary-soft: color-mix(in srgb, var(--primary) 12%, transparent);
+  --primary-soft: color-mix(in srgb, var(--primary) 10%, white);
+  /* Primary as text/link colour (darker in light mode, lighter in dark mode for contrast). */
+  --primary-ink: color-mix(in srgb, var(--primary) 88%, black);
   --bg: #f0f2f5;
   --surface: #ffffff;
   --surface-2: #f7f8fa;
@@ -26,6 +29,8 @@
 }
 
 :root[data-theme="dark"] {
+  --primary-soft: color-mix(in srgb, var(--primary) 28%, #242526);
+  --primary-ink: color-mix(in srgb, var(--primary) 45%, white);
   --bg: #18191a;
   --surface: #242526;
   --surface-2: #2d2e30;
@@ -44,6 +49,8 @@
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
+    --primary-soft: color-mix(in srgb, var(--primary) 28%, #242526);
+    --primary-ink: color-mix(in srgb, var(--primary) 45%, white);
     --bg: #18191a;
     --surface: #242526;
     --surface-2: #2d2e30;

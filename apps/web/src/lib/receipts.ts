@@ -20,10 +20,19 @@ export async function receiptModel(ctx: AppContext, tx: Tx, saleId: string): Pro
       customer: sale.customer?.deletedAt ? null : sale.customer?.name,
       table: sale.tableName,
       isRefund: sale.isRefund,
-      lines: sale.lines.map((l) => ({ name: l.name, qty: l.qty, unitPrice: l.unitPrice, total: l.total, discount: l.lineDiscount + l.orderDiscount, modifiers: l.modifiers as { name: string; priceDelta: number }[] })),
+      lines: sale.lines.map((l) => ({
+        name: l.name,
+        qty: l.qty,
+        unitPrice: l.unitPrice,
+        total: l.total,
+        discount: l.lineDiscount + l.orderDiscount,
+        modifiers: l.modifiers as { name: string; priceDelta: number }[],
+      })),
       subtotal: sale.subtotal,
       discountTotal: sale.discountTotal,
-      taxes: (sale.taxes as unknown as TaxLine[]).length ? (sale.taxes as unknown as TaxLine[]) : summarize(sale.lines.map((l) => l.taxLines as unknown as TaxLine[])),
+      taxes: (sale.taxes as unknown as TaxLine[]).length
+        ? (sale.taxes as unknown as TaxLine[])
+        : summarize(sale.lines.map((l) => l.taxLines as unknown as TaxLine[])),
       taxTotal: sale.taxTotal,
       total: sale.total,
       payments: sale.payments.map((p) => ({ tender: p.tender, amount: p.amount })),

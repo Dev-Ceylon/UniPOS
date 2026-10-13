@@ -48,11 +48,17 @@ export function CountSheet({ id, open, lines }: { id: string; open: boolean; lin
             </Button>
             <Button
               loading={pending}
-              onClick={() => confirm("Post variances to stock?") && run(() => completeStocktakeAction(id, payload()), { success: "Stocktake completed", onOk: () => router.push("/inventory/stocktakes") })}
+              onClick={() =>
+                confirm("Post variances to stock?") &&
+                run(() => completeStocktakeAction(id, payload()), { success: "Stocktake completed", onOk: () => router.push("/inventory/stocktakes") })
+              }
             >
               Complete
             </Button>
-            <Button variant="ghost" onClick={() => confirm("Cancel this stocktake?") && run(() => cancelStocktakeAction(id), { onOk: () => router.push("/inventory/stocktakes") })}>
+            <Button
+              variant="ghost"
+              onClick={() => confirm("Cancel this stocktake?") && run(() => cancelStocktakeAction(id), { onOk: () => router.push("/inventory/stocktakes") })}
+            >
               Cancel
             </Button>
           </span>
@@ -92,7 +98,9 @@ export function CountSheet({ id, open, lines }: { id: string; open: boolean; lin
                       onChange={(e) => setCounts((x) => ({ ...x, [l.variantId]: e.target.value === "" ? null : Math.max(0, Number(e.target.value)) }))}
                     />
                   </Td>
-                  <Td className="text-right">{v === null ? "—" : v === 0 ? <Badge tone="success">0</Badge> : <Badge tone={v < 0 ? "danger" : "warning"}>{v > 0 ? `+${v}` : v}</Badge>}</Td>
+                  <Td className="text-right">
+                    {v === null ? "—" : v === 0 ? <Badge tone="success">0</Badge> : <Badge tone={v < 0 ? "danger" : "warning"}>{v > 0 ? `+${v}` : v}</Badge>}
+                  </Td>
                 </tr>
               );
             })}

@@ -10,7 +10,15 @@ export default async function AuditPage({ searchParams }: { searchParams: Promis
   const ctx = await requireContext("audit.view");
   const sp = await searchParams;
   const page = Math.max(1, Number(sp.page) || 1);
-  const where = sp.q ? { OR: [{ action: { contains: sp.q } }, { entity: { contains: sp.q, mode: "insensitive" as const } }, { actorName: { contains: sp.q, mode: "insensitive" as const } }] } : {};
+  const where = sp.q
+    ? {
+        OR: [
+          { action: { contains: sp.q } },
+          { entity: { contains: sp.q, mode: "insensitive" as const } },
+          { actorName: { contains: sp.q, mode: "insensitive" as const } },
+        ],
+      }
+    : {};
   const logs = await read(ctx, (tx) => tx.auditLog.findMany({ where, orderBy: { createdAt: "desc" }, take: 100, skip: (page - 1) * 100 }));
   return (
     <div className="flex flex-col gap-4">
@@ -39,7 +47,7 @@ export default async function AuditPage({ searchParams }: { searchParams: Promis
                 </Td>
                 <Td>
                   {l.entity === "Sale" && l.entityId ? (
-                    <Link className="text-primary underline" href={`/sales/${l.entityId}`}>
+                    <Link className="text-primary-ink underline" href={`/sales/${l.entityId}`}>
                       Sale
                     </Link>
                   ) : (
@@ -56,7 +64,7 @@ export default async function AuditPage({ searchParams }: { searchParams: Promis
         {!logs.length ? <EmptyState title="No entries" /> : null}
         {logs.length === 100 ? (
           <div className="p-3 text-right text-sm">
-            <Link className="text-primary underline" href={`/settings/audit?page=${page + 1}${sp.q ? `&q=${encodeURIComponent(sp.q)}` : ""}`}>
+            <Link className="text-primary-ink underline" href={`/settings/audit?page=${page + 1}${sp.q ? `&q=${encodeURIComponent(sp.q)}` : ""}`}>
               Older
             </Link>
           </div>

@@ -21,7 +21,23 @@ export function CustomFieldsEditor({ entity, initial }: { entity: "product" | "c
       <CardBody className="flex flex-col gap-2">
         {defs.map((d, i) => (
           <div key={i} className="grid grid-cols-2 items-center gap-2 sm:grid-cols-[1fr_1fr_8rem_1fr_auto_auto]">
-            <Input aria-label="Label" placeholder="Label" value={d.label} onChange={(e) => set(i, { label: e.target.value, key: d.key || e.target.value.toLowerCase().replace(/[^a-z0-9]+/g, "_").replace(/^_|_$/g, "").slice(0, 40) })} />
+            <Input
+              aria-label="Label"
+              placeholder="Label"
+              value={d.label}
+              onChange={(e) =>
+                set(i, {
+                  label: e.target.value,
+                  key:
+                    d.key ||
+                    e.target.value
+                      .toLowerCase()
+                      .replace(/[^a-z0-9]+/g, "_")
+                      .replace(/^_|_$/g, "")
+                      .slice(0, 40),
+                })
+              }
+            />
             <Input aria-label="Key" placeholder="key" value={d.key} onChange={(e) => set(i, { key: e.target.value })} />
             <Select aria-label="Type" value={d.type} onChange={(e) => set(i, { type: e.target.value as CustomFieldDef["type"] })}>
               <option value="text">Text</option>
@@ -30,7 +46,13 @@ export function CustomFieldsEditor({ entity, initial }: { entity: "product" | "c
               <option value="date">Date</option>
               <option value="select">Choice</option>
             </Select>
-            <Input aria-label="Options" placeholder={d.type === "select" ? "Options, comma separated" : "—"} disabled={d.type !== "select"} value={d.optionsText} onChange={(e) => set(i, { optionsText: e.target.value })} />
+            <Input
+              aria-label="Options"
+              placeholder={d.type === "select" ? "Options, comma separated" : "—"}
+              disabled={d.type !== "select"}
+              value={d.optionsText}
+              onChange={(e) => set(i, { optionsText: e.target.value })}
+            />
             <Checkbox label="Required" checked={d.required} onChange={(e) => set(i, { required: e.target.checked })} />
             <Button size="icon" variant="ghost" aria-label="Remove field" onClick={() => setDefs(defs.filter((_, j) => j !== i))}>
               <Trash2 className="h-4 w-4" />
@@ -47,7 +69,16 @@ export function CustomFieldsEditor({ entity, initial }: { entity: "product" | "c
                 () =>
                   saveCustomFields(
                     entity,
-                    defs.map(({ optionsText, ...d }) => ({ ...d, options: d.type === "select" ? optionsText.split(",").map((s) => s.trim()).filter(Boolean) : undefined })),
+                    defs.map(({ optionsText, ...d }) => ({
+                      ...d,
+                      options:
+                        d.type === "select"
+                          ? optionsText
+                              .split(",")
+                              .map((s) => s.trim())
+                              .filter(Boolean)
+                          : undefined,
+                    })),
                   ),
                 { success: "Fields saved" },
               )

@@ -17,5 +17,7 @@ export async function GET(req: Request) {
     const bytes = await reportPdf(ctx, table, range);
     return new Response(Buffer.from(bytes), { headers: { "content-type": "application/pdf", "content-disposition": `attachment; filename="${name}.pdf"` } });
   }
-  return new Response(`﻿${reportCsv(ctx, table)}`, { headers: { "content-type": "text/csv; charset=utf-8", "content-disposition": `attachment; filename="${name}.csv"` } });
+  return new Response(`\uFEFF${reportCsv(ctx, table)}`, {
+    headers: { "content-type": "text/csv; charset=utf-8", "content-disposition": `attachment; filename="${name}.csv"` },
+  });
 }

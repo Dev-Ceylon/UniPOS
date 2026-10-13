@@ -65,7 +65,10 @@ export function AuthForm({ mode, googleEnabled }: { mode: "sign-in" | "sign-up";
       ) : null}
       <p className="mt-4 text-center text-sm text-muted">
         {mode === "sign-in" ? t("noAccount") : t("haveAccount")}{" "}
-        <Link className="font-medium text-primary underline" href={`${mode === "sign-in" ? "/sign-up" : "/sign-in"}${next !== "/" ? `?next=${encodeURIComponent(next)}` : ""}`}>
+        <Link
+          className="font-medium text-primary-ink underline"
+          href={`${mode === "sign-in" ? "/sign-up" : "/sign-in"}${next !== "/" ? `?next=${encodeURIComponent(next)}` : ""}`}
+        >
           {mode === "sign-in" ? t("signUp") : t("signIn")}
         </Link>
       </p>

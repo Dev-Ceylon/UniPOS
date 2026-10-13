@@ -54,10 +54,12 @@ async function tenant(name: string, slug: string, ownerUserId: string, type: "re
 async function history(tenantId: string, memberId: string, locationId: string, days = 14) {
   const ctx = await loadMemberContext(memberId, tenantId, prisma);
   if (!ctx) throw new Error("no ctx");
-  const products = await withTenant(tenantId, (tx) => tx.variant.findMany({ include: { product: { include: { taxClass: { include: { rules: true } } } } } }), { client: prisma });
+  const products = await withTenant(tenantId, (tx) => tx.variant.findMany({ include: { product: { include: { taxClass: { include: { rules: true } } } } } }), {
+    client: prisma,
+  });
   const customers = await withTenant(tenantId, (tx) => tx.customer.findMany(), { client: prisma });
   let seed = 42;
-  const rnd = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
+  const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
   const ops: SyncOp[] = [];
   for (let d = days; d >= 1; d--) {
     const count = 8 + Math.floor(rnd() * 10);
@@ -67,8 +69,24 @@ async function history(tenantId: string, memberId: string, locationId: string, d
       const n = 1 + Math.floor(rnd() * 4);
       const lines = Array.from({ length: n }, () => {
         const v = products[Math.floor(rnd() * products.length)]!;
-        const rules: TaxRule[] = (v.product.taxClass?.rules ?? []).map((r) => ({ id: r.id, name: r.name, rateBp: r.rateBp, inclusive: r.inclusive, compound: r.compound }));
-        return { id: uuidv7(), variantId: v.id, name: v.product.name, qty: 1 + Math.floor(rnd() * 2), unitPrice: v.price, catalogPrice: v.price, unitCost: v.cost, modifiers: [], taxRules: rules };
+        const rules: TaxRule[] = (v.product.taxClass?.rules ?? []).map((r) => ({
+          id: r.id,
+          name: r.name,
+          rateBp: r.rateBp,
+          inclusive: r.inclusive,
+          compound: r.compound,
+        }));
+        return {
+          id: uuidv7(),
+          variantId: v.id,
+          name: v.product.name,
+          qty: 1 + Math.floor(rnd() * 2),
+          unitPrice: v.price,
+          catalogPrice: v.price,
+          unitCost: v.cost,
+          modifiers: [],
+          taxRules: rules,
+        };
       });
       const totals = computeCart({ lines: lines.map((l) => ({ ...l, discount: null })) });
       const cash = rnd() < 0.6;
@@ -102,7 +120,29 @@ async function main() {
       await withTenant(
         t.id,
         async (tx) => {
-          for (const table of ["SaleLine", "Payment", "Sale", "StockMovement", "StockLevel", "Variant", "Product", "Category", "TaxRule", "TaxClass", "Customer", "Supplier", "DiningTable", "ModifierGroup", "Shift", "AuditLog", "Counter", "SyncOp", "LoyaltyEntry", "Location", "Role"]) {
+          for (const table of [
+            "SaleLine",
+            "Payment",
+            "Sale",
+            "StockMovement",
+            "StockLevel",
+            "Variant",
+            "Product",
+            "Category",
+            "TaxRule",
+            "TaxClass",
+            "Customer",
+            "Supplier",
+            "DiningTable",
+            "ModifierGroup",
+            "Shift",
+            "AuditLog",
+            "Counter",
+            "SyncOp",
+            "LoyaltyEntry",
+            "Location",
+            "Role",
+          ]) {
             await tx.$executeRawUnsafe(`DELETE FROM "${table}"`);
           }
         },
@@ -118,8 +158,18 @@ async function main() {
   const ownerId = await user("owner@demo.unipos.app", "Ashen (Owner)");
   const cashierId = await user("cashier@demo.unipos.app", "Nimal (Cashier)");
   const retail = await tenant("Kade Retail (demo)", "kade-retail-demo", ownerId, "retail");
-  const restaurant = await tenant("Ruchi Restaurant (demo)", "ruchi-restaurant-demo", ownerId, "restaurant");
-  await prisma.member.create({ data: { id: uuidv7(), tenantId: retail.tenantId, userId: cashierId, role: "member", roleId: retail.roles.cashier, displayName: "Nimal", pinHash: await hashPin("2222") } });
+  await tenant("Ruchi Restaurant (demo)", "ruchi-restaurant-demo", ownerId, "restaurant");
+  await prisma.member.create({
+    data: {
+      id: uuidv7(),
+      tenantId: retail.tenantId,
+      userId: cashierId,
+      role: "member",
+      roleId: retail.roles.cashier,
+      displayName: "Nimal",
+      pinHash: await hashPin("2222"),
+    },
+  });
   const n = await history(retail.tenantId, retail.memberId, retail.locationId);
   const ctx = await loadMemberContext(retail.memberId, retail.tenantId, prisma);
   await withTenant(retail.tenantId, (tx) => openShift(tx, ctx!, retail.locationId, 500000), { client: prisma });

@@ -13,7 +13,12 @@ export default async function TransfersPage() {
   const ctx = await requireContext("inventory.transfer", "multilocation");
   const [list, allLocations] = await read(ctx, (tx) =>
     Promise.all([
-      tx.transfer.findMany({ where: { OR: [{ fromLocationId: ctx.locationId }, { toLocationId: ctx.locationId }] }, orderBy: { createdAt: "desc" }, take: 50, include: { _count: { select: { lines: true } } } }),
+      tx.transfer.findMany({
+        where: { OR: [{ fromLocationId: ctx.locationId }, { toLocationId: ctx.locationId }] },
+        orderBy: { createdAt: "desc" },
+        take: 50,
+        include: { _count: { select: { lines: true } } },
+      }),
       tx.location.findMany({ where: { deletedAt: null, active: true } }),
     ]),
   );
@@ -23,7 +28,9 @@ export default async function TransfersPage() {
       <PageHeader
         title="Stock transfers"
         description="Move stock between locations. Stock leaves on send (in transit) and arrives on receive."
-        actions={<NewTransfer currency={ctx.currency} locations={allLocations.filter((l) => l.id !== ctx.locationId).map((l) => ({ id: l.id, name: l.name }))} />}
+        actions={
+          <NewTransfer currency={ctx.currency} locations={allLocations.filter((l) => l.id !== ctx.locationId).map((l) => ({ id: l.id, name: l.name }))} />
+        }
       />
       <Card>
         <Table>
@@ -41,7 +48,7 @@ export default async function TransfersPage() {
             {list.map((t) => (
               <tr key={t.id}>
                 <Td>
-                  <Link className="text-primary underline" href={`/inventory/transfers/${t.id}`}>
+                  <Link className="text-primary-ink underline" href={`/inventory/transfers/${t.id}`}>
                     {t.number}
                   </Link>
                 </Td>
@@ -56,7 +63,9 @@ export default async function TransfersPage() {
             ))}
           </tbody>
         </Table>
-        {!list.length ? <EmptyState title="No transfers yet">{allLocations.length < 2 ? "Add a second location in Settings → Locations first." : null}</EmptyState> : null}
+        {!list.length ? (
+          <EmptyState title="No transfers yet">{allLocations.length < 2 ? "Add a second location in Settings → Locations first." : null}</EmptyState>
+        ) : null}
       </Card>
     </div>
   );

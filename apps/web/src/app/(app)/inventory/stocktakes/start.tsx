@@ -18,7 +18,9 @@ export function StartStocktake({ categories }: { categories: { id: string; name:
           onSubmit={(e) => {
             e.preventDefault();
             const fd = new FormData(e.currentTarget);
-            run(() => startStocktakeAction(String(fd.get("category") || "") || null, String(fd.get("note") ?? "")), { onOk: (id) => router.push(`/inventory/stocktakes/${id}`) });
+            run(() => startStocktakeAction(String(fd.get("category") || "") || null, String(fd.get("note") ?? "")), {
+              onOk: (id) => router.push(`/inventory/stocktakes/${id}`),
+            });
           }}
         >
           <Field label="Scope" htmlFor="category">

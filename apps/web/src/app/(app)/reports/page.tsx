@@ -10,7 +10,15 @@ import { buildReport, loadSales, parseRange, REPORT_TYPES, type ReportType } fro
 
 export const metadata = { title: "Reports" };
 
-const LABELS: Record<ReportType, string> = { sales: "Sales", products: "Products & profit", categories: "Categories", staff: "Staff", tax: "Tax", tenders: "Tenders", inventory: "Inventory" };
+const LABELS: Record<ReportType, string> = {
+  sales: "Sales",
+  products: "Products & profit",
+  categories: "Categories",
+  staff: "Staff",
+  tax: "Tax",
+  tenders: "Tenders",
+  inventory: "Inventory",
+};
 
 export default async function ReportsPage({ searchParams }: { searchParams: Promise<Record<string, string | undefined>> }) {
   const ctx = await requireContext("reports.view", "reports");
@@ -21,7 +29,8 @@ export default async function ReportsPage({ searchParams }: { searchParams: Prom
   const [table, sales] = await Promise.all([buildReport(ctx, type, range), loadSales(ctx, range)]);
   const s = summarizeSales(sales);
   const m = (v: number) => money(v, ctx.currency, ctx.locale);
-  const qs = (extra: Record<string, string>) => new URLSearchParams({ from: range.from, to: range.to, location: range.locationId ?? "all", type, ...extra }).toString();
+  const qs = (extra: Record<string, string>) =>
+    new URLSearchParams({ from: range.from, to: range.to, location: range.locationId ?? "all", type, ...extra }).toString();
   const days = salesByDay(sales, ctx.timezone);
   return (
     <div className="flex flex-col gap-4">
@@ -83,7 +92,13 @@ export default async function ReportsPage({ searchParams }: { searchParams: Prom
             <CardTitle>Sales by hour</CardTitle>
           </CardHeader>
           <CardBody>
-            <BarChart label="Sales by hour" data={salesByHour(sales, ctx.timezone).slice(6, 23).map((h) => ({ label: `${h.hour}:00`, value: h.total }))} format={m} />
+            <BarChart
+              label="Sales by hour"
+              data={salesByHour(sales, ctx.timezone)
+                .slice(6, 23)
+                .map((h) => ({ label: `${h.hour}:00`, value: h.total }))}
+              format={m}
+            />
           </CardBody>
         </Card>
       ) : null}

@@ -33,12 +33,21 @@ export function ProductForm({
   const { run, pending, fieldErrors } = useAction();
   const router = useRouter();
   const set = <K extends keyof ProductFormData>(k: K, v: ProductFormData[K]) => setF((x) => ({ ...x, [k]: v }));
-  const setVariant = (i: number, patch: Partial<ProductFormData["variants"][number]>) => setF((x) => ({ ...x, variants: x.variants.map((v, j) => (j === i ? { ...v, ...patch } : v)) }));
+  const setVariant = (i: number, patch: Partial<ProductFormData["variants"][number]>) =>
+    setF((x) => ({ ...x, variants: x.variants.map((v, j) => (j === i ? { ...v, ...patch } : v)) }));
 
   const submit = () => {
     let variants;
     try {
-      variants = f.variants.map((v) => ({ id: v.id, name: v.name, sku: v.sku, barcode: v.barcode, price: parseMoney(v.price || "0", currency), cost: parseMoney(v.cost || "0", currency), options: {} }));
+      variants = f.variants.map((v) => ({
+        id: v.id,
+        name: v.name,
+        sku: v.sku,
+        barcode: v.barcode,
+        price: parseMoney(v.price || "0", currency),
+        cost: parseMoney(v.cost || "0", currency),
+        options: {},
+      }));
     } catch (e) {
       toast.error((e as Error).message);
       return;
@@ -124,7 +133,12 @@ export function ProductForm({
               <Input id="imageUrl" type="url" value={f.imageUrl} onChange={(e) => set("imageUrl", e.target.value)} placeholder="https://…" />
             </Field>
             <div className="flex flex-wrap gap-6 sm:col-span-2">
-              <Checkbox label="Track stock" checked={f.trackStock && f.type !== "service"} disabled={f.type === "service"} onChange={(e) => set("trackStock", e.target.checked)} />
+              <Checkbox
+                label="Track stock"
+                checked={f.trackStock && f.type !== "service"}
+                disabled={f.type === "service"}
+                onChange={(e) => set("trackStock", e.target.checked)}
+              />
               <Checkbox label="Show in register favourites" checked={f.favourite} onChange={(e) => set("favourite", e.target.checked)} />
             </div>
           </CardBody>
@@ -132,7 +146,16 @@ export function ProductForm({
         <Card>
           <CardHeader>
             <CardTitle>Variants, prices and barcodes</CardTitle>
-            <Button size="sm" variant="outline" onClick={() => set("variants", [...f.variants, { name: "", sku: "", barcode: "", price: f.variants[0]?.price ?? "", cost: f.variants[0]?.cost ?? "", opening: "" }])}>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() =>
+                set("variants", [
+                  ...f.variants,
+                  { name: "", sku: "", barcode: "", price: f.variants[0]?.price ?? "", cost: f.variants[0]?.cost ?? "", opening: "" },
+                ])
+              }
+            >
               <Plus className="h-4 w-4" /> Variant
             </Button>
           </CardHeader>
@@ -140,7 +163,12 @@ export function ProductForm({
             {f.variants.map((v, i) => (
               <div key={i} className="grid grid-cols-2 gap-2 rounded-lg border border-border p-3 sm:grid-cols-6">
                 <Field label="Variant" htmlFor={`v${i}-name`} className="col-span-2 sm:col-span-1">
-                  <Input id={`v${i}-name`} value={v.name} onChange={(e) => setVariant(i, { name: e.target.value })} placeholder={f.variants.length > 1 ? "Size / colour" : "Default"} />
+                  <Input
+                    id={`v${i}-name`}
+                    value={v.name}
+                    onChange={(e) => setVariant(i, { name: e.target.value })}
+                    placeholder={f.variants.length > 1 ? "Size / colour" : "Default"}
+                  />
                 </Field>
                 <Field label="SKU" htmlFor={`v${i}-sku`}>
                   <Input id={`v${i}-sku`} value={v.sku} onChange={(e) => setVariant(i, { sku: e.target.value })} />
@@ -175,7 +203,17 @@ export function ProductForm({
                     </Field>
                   ) : null}
                   {f.variants.length > 1 ? (
-                    <Button size="icon" variant="ghost" aria-label="Remove variant" onClick={() => set("variants", f.variants.filter((_, j) => j !== i))}>
+                    <Button
+                      size="icon"
+                      variant="ghost"
+                      aria-label="Remove variant"
+                      onClick={() =>
+                        set(
+                          "variants",
+                          f.variants.filter((_, j) => j !== i),
+                        )
+                      }
+                    >
                       <Trash2 className="h-4 w-4" />
                     </Button>
                   ) : null}
@@ -216,7 +254,12 @@ export function ProductForm({
                 return d.type === "boolean" ? (
                   <Checkbox key={d.key} label={d.label} checked={!!val} onChange={(e) => setVal(e.target.checked)} />
                 ) : (
-                  <Field key={d.key} label={`${d.label}${d.required ? " *" : ""}`} htmlFor={`cf-${d.key}`} error={fieldErrors[`customFields.${d.key}`] ?? fieldErrors[d.key]}>
+                  <Field
+                    key={d.key}
+                    label={`${d.label}${d.required ? " *" : ""}`}
+                    htmlFor={`cf-${d.key}`}
+                    error={fieldErrors[`customFields.${d.key}`] ?? fieldErrors[d.key]}
+                  >
                     {d.type === "select" ? (
                       <Select id={`cf-${d.key}`} value={String(val ?? "")} onChange={(e) => setVal(e.target.value)}>
                         <option value="">—</option>
@@ -225,7 +268,12 @@ export function ProductForm({
                         ))}
                       </Select>
                     ) : (
-                      <Input id={`cf-${d.key}`} type={d.type === "number" ? "number" : d.type === "date" ? "date" : "text"} value={String(val ?? "")} onChange={(e) => setVal(e.target.value)} />
+                      <Input
+                        id={`cf-${d.key}`}
+                        type={d.type === "number" ? "number" : d.type === "date" ? "date" : "text"}
+                        value={String(val ?? "")}
+                        onChange={(e) => setVal(e.target.value)}
+                      />
                     )}
                   </Field>
                 );
@@ -243,7 +291,8 @@ export function ProductForm({
                 variant="ghost"
                 className="text-danger"
                 onClick={() => {
-                  if (confirm("Delete this product? Sales history is kept.")) run(() => deleteProductAction(f.id!), { success: "Deleted", onOk: () => router.push("/products") });
+                  if (confirm("Delete this product? Sales history is kept."))
+                    run(() => deleteProductAction(f.id!), { success: "Deleted", onOk: () => router.push("/products") });
                 }}
               >
                 Delete product
@@ -255,4 +304,3 @@ export function ProductForm({
     </form>
   );
 }
-

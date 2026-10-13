@@ -51,11 +51,7 @@ function portion(amount: Minor, whole: number, alreadyUnits: number, part: numbe
  * Build negative refund lines. Amounts are pro-rated from the original line so
  * refunding every unit (in one go or many) returns exactly the original total.
  */
-export function buildRefundLines(
-  sold: readonly SoldLine[],
-  previous: readonly RefundedLine[],
-  request: readonly RefundRequestLine[],
-): RefundLineResult[] {
+export function buildRefundLines(sold: readonly SoldLine[], previous: readonly RefundedLine[], request: readonly RefundRequestLine[]): RefundLineResult[] {
   const remaining = refundableQuantities(sold, previous);
   const already = new Map<string, number>();
   for (const r of previous) already.set(r.originalLineId, (already.get(r.originalLineId) ?? 0) + Math.abs(r.qty));
@@ -83,6 +79,9 @@ export function refundTenders(refundTotal: Minor, original: readonly { tender: s
   const abs = Math.abs(refundTotal);
   const paid = original.reduce((a, p) => a + p.amount, 0);
   if (abs > paid) throw new RangeError("Refund exceeds amount paid");
-  const parts = allocate(abs, original.map((p) => p.amount));
+  const parts = allocate(
+    abs,
+    original.map((p) => p.amount),
+  );
   return original.map((p, i) => ({ tender: p.tender, amount: -parts[i]! })).filter((p) => p.amount !== 0);
 }

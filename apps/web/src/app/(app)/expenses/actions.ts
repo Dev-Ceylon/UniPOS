@@ -19,7 +19,17 @@ export async function addExpense(input: unknown) {
       const d = ExpenseSchema.parse(input);
       const amount = parseMoney(d.amount, ctx.currency);
       if (amount <= 0) throw new Error("Amount must be positive");
-      const e = await tx.expense.create({ data: { category: d.category, description: d.description, amount, date: new Date(`${d.date}T12:00:00Z`), reference: d.reference || null, locationId: ctx.locationId, memberId: ctx.member.id } });
+      const e = await tx.expense.create({
+        data: {
+          category: d.category,
+          description: d.description,
+          amount,
+          date: new Date(`${d.date}T12:00:00Z`),
+          reference: d.reference || null,
+          locationId: ctx.locationId,
+          memberId: ctx.member.id,
+        },
+      });
       await writeAudit(tx, { memberId: ctx.member.id, name: ctx.member.name }, "expense.create", "Expense", e.id, { after: { amount, category: d.category } });
       return e.id;
     },
@@ -32,7 +42,9 @@ export async function deleteExpense(id: string) {
     "expenses.manage",
     async (ctx, tx) => {
       const before = await tx.expense.delete({ where: { id } });
-      await writeAudit(tx, { memberId: ctx.member.id, name: ctx.member.name }, "expense.delete", "Expense", id, { before: { amount: before.amount, description: before.description } });
+      await writeAudit(tx, { memberId: ctx.member.id, name: ctx.member.name }, "expense.delete", "Expense", id, {
+        before: { amount: before.amount, description: before.description },
+      });
       return true;
     },
     { module: "expenses" },

@@ -24,9 +24,20 @@ export function RestoreForm() {
           setText(await f.text());
         }}
       />
-      <Input placeholder='Type "RESTORE" to confirm' aria-label="Confirmation" value={confirmText} onChange={(e) => setConfirmText(e.target.value)} className="max-w-xs" />
+      <Input
+        placeholder='Type "RESTORE" to confirm'
+        aria-label="Confirmation"
+        value={confirmText}
+        onChange={(e) => setConfirmText(e.target.value)}
+        className="max-w-xs"
+      />
       <div>
-        <Button variant="danger" disabled={!text || confirmText !== "RESTORE"} loading={pending} onClick={() => run(() => restoreBackupAction(text!), { onOk: setDone, success: "Backup restored" })}>
+        <Button
+          variant="danger"
+          disabled={!text || confirmText !== "RESTORE"}
+          loading={pending}
+          onClick={() => run(() => restoreBackupAction(text!), { onOk: setDone, success: "Backup restored" })}
+        >
           Restore backup
         </Button>
       </div>

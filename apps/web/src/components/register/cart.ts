@@ -105,7 +105,15 @@ export function cartReducer(state: CartState, a: CartAction): CartState {
     case "customer":
       return { ...state, customerId: a.id, customerName: a.name };
     case "table":
-      return { ...emptyCart(), customerId: state.customerId, customerName: state.customerName, tableId: a.id, tableName: a.name, covers: a.covers ?? null, lines: a.lines ?? [] };
+      return {
+        ...emptyCart(),
+        customerId: state.customerId,
+        customerName: state.customerName,
+        tableId: a.id,
+        tableName: a.name,
+        covers: a.covers ?? null,
+        lines: a.lines ?? [],
+      };
     case "markSent":
       return { ...state, lines: state.lines.map((l) => ({ ...l, sentQty: l.qty })) };
     case "load":
@@ -137,7 +145,17 @@ export function useCart(storageKey: string) {
   const totals: CartTotals = useMemo(
     () =>
       computeCart({
-        lines: state.lines.map((l) => ({ id: l.id, variantId: l.variantId, name: l.name, qty: l.qty, unitPrice: l.unitPrice, modifiers: l.modifiers, discount: l.discount, taxRules: l.taxRules, unitCost: l.unitCost })),
+        lines: state.lines.map((l) => ({
+          id: l.id,
+          variantId: l.variantId,
+          name: l.name,
+          qty: l.qty,
+          unitPrice: l.unitPrice,
+          modifiers: l.modifiers,
+          discount: l.discount,
+          taxRules: l.taxRules,
+          unitCost: l.unitCost,
+        })),
         orderDiscount: state.orderDiscount,
       }),
     [state.lines, state.orderDiscount],

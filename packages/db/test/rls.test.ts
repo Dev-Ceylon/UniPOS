@@ -61,9 +61,7 @@ describe("tenant isolation (RLS)", () => {
   });
 
   it("tenant A cannot write into or modify tenant B", async () => {
-    await expect(
-      withTenant(A.tenantId, (tx) => tx.product.create({ data: { name: "Injected", tenantId: B.tenantId } }), { client: db }),
-    ).rejects.toThrow();
+    await expect(withTenant(A.tenantId, (tx) => tx.product.create({ data: { name: "Injected", tenantId: B.tenantId } }), { client: db })).rejects.toThrow();
     const updated = await withTenant(A.tenantId, (tx) => tx.product.updateMany({ where: { id: bProductId }, data: { name: "pwned" } }), { client: db });
     expect(updated.count).toBe(0);
     const deleted = await withTenant(A.tenantId, (tx) => tx.$executeRawUnsafe(`DELETE FROM "Product" WHERE id = '${bProductId}'`), { client: db });
@@ -84,8 +82,6 @@ describe("tenant isolation (RLS)", () => {
   });
 
   it("the stock ledger is append-only", async () => {
-    await expect(
-      withTenant(A.tenantId, (tx) => tx.stockMovement.updateMany({ data: { qtyChange: 999 } }), { client: db }),
-    ).rejects.toThrow(/append-only/);
+    await expect(withTenant(A.tenantId, (tx) => tx.stockMovement.updateMany({ data: { qtyChange: 999 } }), { client: db })).rejects.toThrow(/append-only/);
   });
 });

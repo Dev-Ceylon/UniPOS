@@ -1,7 +1,15 @@
 "use server";
 import { STOCK_REASONS, type StockReason } from "@unipos/core";
 import {
-  adjustStock, cancelTransfer, completeStocktake, createTransfer, receiveTransfer, recordCounts, sendTransfer, setReorderPoint, startStocktake,
+  adjustStock,
+  cancelTransfer,
+  completeStocktake,
+  createTransfer,
+  receiveTransfer,
+  recordCounts,
+  sendTransfer,
+  setReorderPoint,
+  startStocktake,
 } from "@unipos/db";
 import { z } from "zod";
 import { action } from "@/lib/actions";
@@ -9,7 +17,13 @@ import { action } from "@/lib/actions";
 export async function adjustAction(input: { variantId: string; mode: "delta" | "set"; qty: number; reason: string; note?: string }) {
   return action("inventory.adjust", async (ctx, tx) => {
     const d = z
-      .object({ variantId: z.string(), mode: z.enum(["delta", "set"]), qty: z.number().int(), reason: z.enum(STOCK_REASONS), note: z.string().max(200).optional() })
+      .object({
+        variantId: z.string(),
+        mode: z.enum(["delta", "set"]),
+        qty: z.number().int(),
+        reason: z.enum(STOCK_REASONS),
+        note: z.string().max(200).optional(),
+      })
       .parse(input);
     return adjustStock(tx, ctx, { ...d, reason: d.reason as StockReason, locationId: ctx.locationId });
   });

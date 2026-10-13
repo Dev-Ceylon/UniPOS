@@ -64,7 +64,13 @@ export default async function ExpensesPage({ searchParams }: { searchParams: Pro
           <CardHeader>
             <CardTitle>By category</CardTitle>
           </CardHeader>
-          <CardBody>{byCat.size ? <RankBars data={[...byCat].map(([label, value]) => ({ label, value }))} format={m} /> : <p className="text-sm text-muted">Nothing yet.</p>}</CardBody>
+          <CardBody>
+            {byCat.size ? (
+              <RankBars data={[...byCat].map(([label, value]) => ({ label, value }))} format={m} />
+            ) : (
+              <p className="text-sm text-muted">Nothing yet.</p>
+            )}
+          </CardBody>
         </Card>
       </div>
     </div>

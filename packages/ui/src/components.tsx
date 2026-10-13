@@ -58,7 +58,10 @@ export const Input = React.forwardRef<HTMLInputElement, React.InputHTMLAttribute
   return <input ref={ref} className={cn(fieldBase, "h-10", className)} {...props} />;
 });
 
-export const Textarea = React.forwardRef<HTMLTextAreaElement, React.TextareaHTMLAttributes<HTMLTextAreaElement>>(function Textarea({ className, ...props }, ref) {
+export const Textarea = React.forwardRef<HTMLTextAreaElement, React.TextareaHTMLAttributes<HTMLTextAreaElement>>(function Textarea(
+  { className, ...props },
+  ref,
+) {
   return <textarea ref={ref} className={cn(fieldBase, "min-h-20 py-2", className)} {...props} />;
 });
 
@@ -70,7 +73,21 @@ export function Label({ className, ...props }: React.LabelHTMLAttributes<HTMLLab
   return <label className={cn("text-sm font-medium text-fg", className)} {...props} />;
 }
 
-export function Field({ label, htmlFor, hint, error, children, className }: { label: React.ReactNode; htmlFor?: string; hint?: React.ReactNode; error?: React.ReactNode; children: React.ReactNode; className?: string }) {
+export function Field({
+  label,
+  htmlFor,
+  hint,
+  error,
+  children,
+  className,
+}: {
+  label: React.ReactNode;
+  htmlFor?: string;
+  hint?: React.ReactNode;
+  error?: React.ReactNode;
+  children: React.ReactNode;
+  className?: string;
+}) {
   return (
     <div className={cn("flex flex-col gap-1.5", className)}>
       <Label htmlFor={htmlFor}>{label}</Label>
@@ -109,7 +126,7 @@ export function CardBody({ className, ...props }: React.HTMLAttributes<HTMLDivEl
 
 const badgeTones = {
   neutral: "bg-surface-2 text-fg border border-border",
-  primary: "bg-primary-soft text-primary",
+  primary: "bg-primary-soft text-primary-ink",
   success: "bg-success-soft text-success",
   danger: "bg-danger-soft text-danger",
   warning: "bg-warning-soft text-warning",
@@ -126,7 +143,13 @@ export function Table({ className, ...props }: React.TableHTMLAttributes<HTMLTab
   );
 }
 export function Th({ className, ...props }: React.ThHTMLAttributes<HTMLTableCellElement>) {
-  return <th scope="col" className={cn("border-b border-border px-3 py-2 text-left text-xs font-semibold uppercase tracking-wide text-muted", className)} {...props} />;
+  return (
+    <th
+      scope="col"
+      className={cn("border-b border-border px-3 py-2 text-left text-xs font-semibold uppercase tracking-wide text-muted", className)}
+      {...props}
+    />
+  );
 }
 export function Td({ className, ...props }: React.TdHTMLAttributes<HTMLTableCellElement>) {
   return <td className={cn("border-b border-border px-3 py-2 align-middle", className)} {...props} />;
@@ -172,7 +195,15 @@ export function Kbd({ children }: { children: React.ReactNode }) {
   return <kbd className="rounded border border-border bg-surface-2 px-1.5 py-0.5 font-mono text-[11px] text-muted">{children}</kbd>;
 }
 
-export function Alert({ tone = "neutral", title, children }: { tone?: "neutral" | "danger" | "warning" | "success"; title?: React.ReactNode; children?: React.ReactNode }) {
+export function Alert({
+  tone = "neutral",
+  title,
+  children,
+}: {
+  tone?: "neutral" | "danger" | "warning" | "success";
+  title?: React.ReactNode;
+  children?: React.ReactNode;
+}) {
   const tones = {
     neutral: "border-border bg-surface-2",
     danger: "border-danger/40 bg-danger-soft text-danger",

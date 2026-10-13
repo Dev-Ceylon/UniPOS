@@ -8,10 +8,40 @@ import type { TenantContext } from "./context";
  * restore replaces the tenant's business data with the backup's.
  */
 export const BACKUP_TABLES = [
-  "Role", "Location", "Counter", "Category", "TaxClass", "TaxRule", "Product", "Variant", "StockLevel", "StockMovement",
-  "Stocktake", "StocktakeLine", "Customer", "Shift", "CashMovement", "Sale", "SaleLine", "Payment", "SyncOp",
-  "LoyaltyEntry", "GiftCard", "GiftCardEntry", "Supplier", "PurchaseOrder", "PurchaseOrderLine", "Transfer", "TransferLine",
-  "DiningTable", "TableTab", "ModifierGroup", "KitchenTicket", "Quote", "Expense", "AuditLog",
+  "Role",
+  "Location",
+  "Counter",
+  "Category",
+  "TaxClass",
+  "TaxRule",
+  "Product",
+  "Variant",
+  "StockLevel",
+  "StockMovement",
+  "Stocktake",
+  "StocktakeLine",
+  "Customer",
+  "Shift",
+  "CashMovement",
+  "Sale",
+  "SaleLine",
+  "Payment",
+  "SyncOp",
+  "LoyaltyEntry",
+  "GiftCard",
+  "GiftCardEntry",
+  "Supplier",
+  "PurchaseOrder",
+  "PurchaseOrderLine",
+  "Transfer",
+  "TransferLine",
+  "DiningTable",
+  "TableTab",
+  "ModifierGroup",
+  "KitchenTicket",
+  "Quote",
+  "Expense",
+  "AuditLog",
 ] as const;
 
 export const BACKUP_VERSION = 1;
@@ -20,7 +50,17 @@ export interface Backup {
   format: "unipos-backup";
   version: number;
   exportedAt: string;
-  tenant: { id: string; name: string; businessType: string; currency: string; locale: string; timezone: string; enabledModules: string[]; settings: unknown; theme: unknown };
+  tenant: {
+    id: string;
+    name: string;
+    businessType: string;
+    currency: string;
+    locale: string;
+    timezone: string;
+    enabledModules: string[];
+    settings: unknown;
+    theme: unknown;
+  };
   tables: Record<string, Record<string, unknown>[]>;
 }
 
@@ -90,7 +130,16 @@ export async function restoreBackup(tx: Tx, ctx: TenantContext, backup: Backup) 
       rows++;
     }
   }
-  await tx.auditLog.create({ data: { actorId: ctx.member.id, actorName: ctx.member.name, action: "backup.restore", entity: "Tenant", entityId: ctx.tenantId, after: { rows, exportedAt: backup.exportedAt } } });
+  await tx.auditLog.create({
+    data: {
+      actorId: ctx.member.id,
+      actorName: ctx.member.name,
+      action: "backup.restore",
+      entity: "Tenant",
+      entityId: ctx.tenantId,
+      after: { rows, exportedAt: backup.exportedAt },
+    },
+  });
   return rows;
 }
 

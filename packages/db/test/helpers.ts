@@ -39,7 +39,10 @@ export async function createTenant(name = "Shop", opts: { seedDemo?: boolean; lo
   );
   if (opts.loyalty) {
     const t = await db.tenant.findUniqueOrThrow({ where: { id: tenantId } });
-    await db.tenant.update({ where: { id: tenantId }, data: { settings: { ...(t.settings as object), loyalty: { enabled: true, spendPerPoint: 10000, pointValue: 100, minRedeem: 0 } } } });
+    await db.tenant.update({
+      where: { id: tenantId },
+      data: { settings: { ...(t.settings as object), loyalty: { enabled: true, spendPerPoint: 10000, pointValue: 100, minRedeem: 0 } } },
+    });
   }
   const t = await db.tenant.findUniqueOrThrow({ where: { id: tenantId } });
   const ctx: TenantContext = {
@@ -62,13 +65,23 @@ export async function addMember(t: TestTenant, roleKey: keyof typeof DEFAULT_ROL
   return { ...t.ctx, member: { id: memberId, name: `${roleKey} user`, permissions: [...DEFAULT_ROLES[roleKey]!.permissions], allowedLocationIds: [] } };
 }
 
-export async function createProduct(t: TestTenant, name: string, price: number, opts: { stock?: number; cost?: number; trackStock?: boolean; sku?: string } = {}) {
+export async function createProduct(
+  t: TestTenant,
+  name: string,
+  price: number,
+  opts: { stock?: number; cost?: number; trackStock?: boolean; sku?: string } = {},
+) {
   return withTenant(
     t.tenantId,
     async (tx) => {
       const tc = await tx.taxClass.findFirst({ where: { name: "Standard" }, include: { rules: true } });
       const p = await tx.product.create({
-        data: { name, taxClassId: tc?.id, trackStock: opts.trackStock ?? true, variants: { create: [{ price, cost: opts.cost ?? 0, sku: opts.sku ?? `SKU-${uuidv7().slice(-8)}` }] } },
+        data: {
+          name,
+          taxClassId: tc?.id,
+          trackStock: opts.trackStock ?? true,
+          variants: { create: [{ price, cost: opts.cost ?? 0, sku: opts.sku ?? `SKU-${uuidv7().slice(-8)}` }] },
+        },
         include: { variants: true },
       });
       const v = p.variants[0]!;
@@ -86,9 +99,24 @@ export async function createProduct(t: TestTenant, name: string, price: number, 
 export function salePayload(
   t: TestTenant,
   items: { variantId: string; price: number; qty: number; rules: TaxRule[]; name?: string }[],
-  opts: { tender?: "cash" | "card" | "gift_card" | "points"; reference?: string; customerId?: string; shiftId?: string; memberId?: string; extraCash?: number } = {},
+  opts: {
+    tender?: "cash" | "card" | "gift_card" | "points";
+    reference?: string;
+    customerId?: string;
+    shiftId?: string;
+    memberId?: string;
+    extraCash?: number;
+  } = {},
 ): SalePayload {
-  const lines = items.map((i) => ({ id: uuidv7(), variantId: i.variantId, name: i.name ?? "Item", qty: i.qty, unitPrice: i.price, modifiers: [], taxRules: i.rules }));
+  const lines = items.map((i) => ({
+    id: uuidv7(),
+    variantId: i.variantId,
+    name: i.name ?? "Item",
+    qty: i.qty,
+    unitPrice: i.price,
+    modifiers: [],
+    taxRules: i.rules,
+  }));
   const totals = computeCart({ lines: lines.map((l) => ({ ...l, discount: null })) });
   const tender = opts.tender ?? "cash";
   const extra = tender === "cash" ? (opts.extraCash ?? 0) : 0;

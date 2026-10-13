@@ -27,7 +27,12 @@ export async function saveSupplier(id: string | null, input: unknown) {
   );
 }
 
-export async function createPoAction(input: { supplierId: string; expectedAt: string; note: string; lines: { variantId: string; qty: number; unitCost: string }[] }) {
+export async function createPoAction(input: {
+  supplierId: string;
+  expectedAt: string;
+  note: string;
+  lines: { variantId: string; qty: number; unitCost: string }[];
+}) {
   return action(
     "purchasing.manage",
     async (ctx, tx) => {

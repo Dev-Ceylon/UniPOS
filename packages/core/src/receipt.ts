@@ -77,7 +77,13 @@ export function buildReceipt(sale: ReceiptSaleInput, tpl: ReceiptTemplate = DEFA
     timeStyle: "short",
     timeZone: sale.timeZone ?? "UTC",
   }).format(typeof sale.createdAt === "string" ? new Date(sale.createdAt) : sale.createdAt);
-  const split = (s?: string | null) => (s ? s.split(/\r?\n/).map((x) => x.trim()).filter(Boolean) : []);
+  const split = (s?: string | null) =>
+    s
+      ? s
+          .split(/\r?\n/)
+          .map((x) => x.trim())
+          .filter(Boolean)
+      : [];
   const meta = [
     { label: sale.isRefund ? "Refund" : "Receipt", value: sale.number },
     { label: "Date", value: when },
@@ -88,7 +94,8 @@ export function buildReceipt(sale: ReceiptSaleInput, tpl: ReceiptTemplate = DEFA
   const totals: ReceiptModel["totals"] = [{ label: "Subtotal", value: m(sale.subtotal) }];
   if (sale.discountTotal) totals.push({ label: "Discount", value: m(-sale.discountTotal) });
   if (tpl.showTaxBreakdown) {
-    for (const t of sale.taxes) totals.push({ label: `${t.name} ${(t.rateBp / 100).toFixed(2).replace(/\.00$/, "")}%${t.inclusive ? " (incl.)" : ""}`, value: m(t.amount) });
+    for (const t of sale.taxes)
+      totals.push({ label: `${t.name} ${(t.rateBp / 100).toFixed(2).replace(/\.00$/, "")}%${t.inclusive ? " (incl.)" : ""}`, value: m(t.amount) });
   } else if (sale.taxTotal) totals.push({ label: "Tax", value: m(sale.taxTotal) });
   totals.push({ label: "Total", value: m(sale.total), strong: true });
   const payments = sale.payments.map((p) => ({ label: TENDER_LABELS[p.tender] ?? p.tender, value: m(p.amount) }));

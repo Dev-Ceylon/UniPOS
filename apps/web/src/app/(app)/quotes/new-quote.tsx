@@ -39,7 +39,17 @@ export function NewQuote({ currency, hasCustomers }: { currency: string; hasCust
   return (
     <>
       <Button onClick={() => setOpen(true)}>New quotation</Button>
-      <Dialog open={open} onClose={() => setOpen(false)} title="New quotation" size="lg" footer={<Button loading={pending} disabled={!lines.length} onClick={submit}>Create</Button>}>
+      <Dialog
+        open={open}
+        onClose={() => setOpen(false)}
+        title="New quotation"
+        size="lg"
+        footer={
+          <Button loading={pending} disabled={!lines.length} onClick={submit}>
+            Create
+          </Button>
+        }
+      >
         <div className="flex flex-col gap-3">
           {hasCustomers ? (
             <Field label="Customer" htmlFor="q-cust">
@@ -57,7 +67,15 @@ export function NewQuote({ currency, hasCustomers }: { currency: string; hasCust
                     <ul className="absolute z-30 mt-1 w-full rounded border border-border bg-surface shadow">
                       {hits.map((h) => (
                         <li key={h.id}>
-                          <button type="button" className="w-full px-3 py-2 text-left text-sm hover:bg-surface-2" onClick={() => { setCustomer(h); setCq(""); setHits([]); }}>
+                          <button
+                            type="button"
+                            className="w-full px-3 py-2 text-left text-sm hover:bg-surface-2"
+                            onClick={() => {
+                              setCustomer(h);
+                              setCq("");
+                              setHits([]);
+                            }}
+                          >
                             {h.name}
                           </button>
                         </li>
@@ -68,20 +86,49 @@ export function NewQuote({ currency, hasCustomers }: { currency: string; hasCust
               )}
             </Field>
           ) : null}
-          <VariantPicker currency={currency} onPick={(v) => setLines((ls) => [...ls, { variantId: v.id, name: v.name, qty: 1, price: toDecimalString(v.price, currency) }])} />
+          <VariantPicker
+            currency={currency}
+            onPick={(v) => setLines((ls) => [...ls, { variantId: v.id, name: v.name, qty: 1, price: toDecimalString(v.price, currency) }])}
+          />
           <ul className="flex flex-col gap-2">
             {lines.map((l, i) => (
               <li key={i} className="grid grid-cols-[1fr_5rem_7rem_auto] items-center gap-2 text-sm">
                 <span>{l.name}</span>
-                <Input aria-label={`Quantity ${l.name}`} type="number" min={1} value={l.qty} onChange={(e) => setLines((ls) => ls.map((x, j) => (j === i ? { ...x, qty: Math.max(1, Number(e.target.value) || 1) } : x)))} />
-                <Input aria-label={`Price ${l.name}`} inputMode="decimal" value={l.price} onChange={(e) => setLines((ls) => ls.map((x, j) => (j === i ? { ...x, price: e.target.value } : x)))} />
+                <Input
+                  aria-label={`Quantity ${l.name}`}
+                  type="number"
+                  min={1}
+                  value={l.qty}
+                  onChange={(e) => setLines((ls) => ls.map((x, j) => (j === i ? { ...x, qty: Math.max(1, Number(e.target.value) || 1) } : x)))}
+                />
+                <Input
+                  aria-label={`Price ${l.name}`}
+                  inputMode="decimal"
+                  value={l.price}
+                  onChange={(e) => setLines((ls) => ls.map((x, j) => (j === i ? { ...x, price: e.target.value } : x)))}
+                />
                 <Button size="icon" variant="ghost" aria-label="Remove" onClick={() => setLines((ls) => ls.filter((_, j) => j !== i))}>
                   <Trash2 className="h-4 w-4" />
                 </Button>
               </li>
             ))}
           </ul>
-          {lines.length ? <p className="text-right text-sm text-muted">Subtotal {formatMoney(lines.reduce((a, l) => { try { return a + parseMoney(l.price, currency) * l.qty; } catch { return a; } }, 0), currency)} (taxes added on save)</p> : null}
+          {lines.length ? (
+            <p className="text-right text-sm text-muted">
+              Subtotal{" "}
+              {formatMoney(
+                lines.reduce((a, l) => {
+                  try {
+                    return a + parseMoney(l.price, currency) * l.qty;
+                  } catch {
+                    return a;
+                  }
+                }, 0),
+                currency,
+              )}{" "}
+              (taxes added on save)
+            </p>
+          ) : null}
           <Field label="Valid until" htmlFor="q-valid">
             <Input id="q-valid" type="date" value={validUntil} onChange={(e) => setValidUntil(e.target.value)} />
           </Field>

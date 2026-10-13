@@ -46,7 +46,15 @@ export function PoActions({ id, status, lines }: { id: string; status: string; l
               <span>
                 {l.name} <span className="text-muted">({l.remaining} outstanding)</span>
               </span>
-              <Input aria-label={`Receive ${l.name}`} type="number" min={0} max={l.remaining} className="w-20" value={rec[l.id] ?? 0} onChange={(e) => setRec((r) => ({ ...r, [l.id]: Math.min(l.remaining, Math.max(0, Number(e.target.value) || 0)) }))} />
+              <Input
+                aria-label={`Receive ${l.name}`}
+                type="number"
+                min={0}
+                max={l.remaining}
+                className="w-20"
+                value={rec[l.id] ?? 0}
+                onChange={(e) => setRec((r) => ({ ...r, [l.id]: Math.min(l.remaining, Math.max(0, Number(e.target.value) || 0)) }))}
+              />
             </li>
           ))}
         </ul>

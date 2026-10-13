@@ -43,7 +43,13 @@ export async function switchCashier(pin: string): Promise<{ ok: true; name: stri
     if (m.pinLockedUntil && m.pinLockedUntil > now) continue;
     if (await verifyPin(pin, m.pinHash)) {
       await prisma.member.update({ where: { id: m.id }, data: { failedPinAttempts: 0, pinLockedUntil: null } });
-      (await cookies()).set(CASHIER_COOKIE, signCashier(m.id, ctx.tenantId), { path: "/", httpOnly: true, sameSite: "lax", maxAge: 12 * 3600, secure: process.env.NODE_ENV === "production" });
+      (await cookies()).set(CASHIER_COOKIE, signCashier(m.id, ctx.tenantId), {
+        path: "/",
+        httpOnly: true,
+        sameSite: "lax",
+        maxAge: 12 * 3600,
+        secure: process.env.NODE_ENV === "production",
+      });
       await withTenant(ctx.tenantId, (tx) => writeAudit(tx, { memberId: m.id, name: m.displayName || m.user.name }, "cashier.switch", "Member", m.id));
       return { ok: true, name: m.displayName || m.user.name, memberId: m.id };
     }
@@ -54,7 +60,10 @@ export async function switchCashier(pin: string): Promise<{ ok: true; name: stri
     const attempts = target.failedPinAttempts + 1;
     await prisma.member.update({
       where: { id: target.id },
-      data: { failedPinAttempts: attempts >= MAX_PIN_ATTEMPTS ? 0 : attempts, pinLockedUntil: attempts >= MAX_PIN_ATTEMPTS ? new Date(Date.now() + PIN_LOCK_MINUTES * 60_000) : undefined },
+      data: {
+        failedPinAttempts: attempts >= MAX_PIN_ATTEMPTS ? 0 : attempts,
+        pinLockedUntil: attempts >= MAX_PIN_ATTEMPTS ? new Date(Date.now() + PIN_LOCK_MINUTES * 60_000) : undefined,
+      },
     });
     if (attempts >= MAX_PIN_ATTEMPTS) {
       await withTenant(ctx.tenantId, (tx) => writeAudit(tx, { memberId: target.id }, "pin.locked", "Member", target.id));

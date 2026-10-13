@@ -28,7 +28,8 @@ On managed Postgres (Neon, Supabase, RDS) run the same SQL as the database owner
 ```bash
 cp .env.example .env    # set BETTER_AUTH_SECRET and passwords
 docker compose up -d    # postgres + migrate + web on :3000
-docker compose run --rm web node apps/web/scripts/seed.mjs   # optional demo data
+# optional demo data, from a checkout with Node 22 + pnpm:
+DATABASE_URL=postgresql://unipos_app:unipos_app@localhost:5432/unipos pnpm --filter @unipos/web seed
 ```
 
 ## Vercel + Neon/Supabase

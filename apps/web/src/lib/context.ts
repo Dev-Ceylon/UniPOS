@@ -52,7 +52,8 @@ export const getAppContext = cache(async (): Promise<AppContext | null> => {
   const cashierId = verifyCashier(store.get(CASHIER_COOKIE)?.value, tenant.id);
   const actor =
     cashierId && cashierId !== sessionMember.id
-      ? ((await prisma.member.findFirst({ where: { id: cashierId, tenantId: tenant.id, active: true }, include: { user: true, tenant: true } })) ?? sessionMember)
+      ? ((await prisma.member.findFirst({ where: { id: cashierId, tenantId: tenant.id, active: true }, include: { user: true, tenant: true } })) ??
+        sessionMember)
       : sessionMember;
 
   const { permissions, locations } = await withTenant(tenant.id, async (tx) => ({
@@ -84,7 +85,7 @@ export const getAppContext = cache(async (): Promise<AppContext | null> => {
       id: tenant.id,
       name: tenant.name,
       businessType: tenant.businessType,
-      theme: theme.success ? theme.data : { primary: "#1877F2", radius: "md" },
+      theme: theme.success ? theme.data : { primary: "#1464D2", radius: "md" },
       modules: resolveModules(tenant.enabledModules),
     },
     locations: allowed.map((l) => ({ id: l.id, name: l.name, code: l.code, taxRegion: l.taxRegion, receiptHeader: l.receiptHeader, address: l.address })),

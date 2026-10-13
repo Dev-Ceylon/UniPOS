@@ -19,7 +19,12 @@ function LocationCard({ l, canEdit, canArchive }: { l: L | null; canEdit: boolea
         <CardHeader>
           <CardTitle>{l ? l.name : "Add location"}</CardTitle>
           {l && canEdit && canArchive ? (
-            <Button size="sm" variant="ghost" className="text-danger" onClick={() => confirm("Archive this location?") && run(() => archiveLocation(l.id), { success: "Archived" })}>
+            <Button
+              size="sm"
+              variant="ghost"
+              className="text-danger"
+              onClick={() => confirm("Archive this location?") && run(() => archiveLocation(l.id), { success: "Archived" })}
+            >
               Archive
             </Button>
           ) : null}
@@ -30,7 +35,14 @@ function LocationCard({ l, canEdit, canArchive }: { l: L | null; canEdit: boolea
               <Input id={`ln-${l?.id}`} name="name" defaultValue={l?.name} required />
             </Field>
             <Field label="Code" htmlFor={`lc-${l?.id}`} hint="Used in receipt numbers" error={fieldErrors.code}>
-              <Input id={`lc-${l?.id}`} name="code" defaultValue={l?.code} required maxLength={8} onChange={(e) => (e.target.value = e.target.value.toUpperCase())} />
+              <Input
+                id={`lc-${l?.id}`}
+                name="code"
+                defaultValue={l?.code}
+                required
+                maxLength={8}
+                onChange={(e) => (e.target.value = e.target.value.toUpperCase())}
+              />
             </Field>
             <Field label="Address" htmlFor={`la-${l?.id}`} className="sm:col-span-2">
               <Textarea id={`la-${l?.id}`} name="address" defaultValue={l?.address} rows={2} />

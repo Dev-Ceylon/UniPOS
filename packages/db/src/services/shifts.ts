@@ -43,7 +43,13 @@ export async function shiftTotals(tx: Tx, shiftId: string) {
   };
 }
 
-export async function closeShift(tx: Tx, ctx: TenantContext, shiftId: string, counted: { amount?: number; denominations?: Record<string, number> }, note?: string) {
+export async function closeShift(
+  tx: Tx,
+  ctx: TenantContext,
+  shiftId: string,
+  counted: { amount?: number; denominations?: Record<string, number> },
+  note?: string,
+) {
   if (!can(ctx.member, "shifts.manage")) throw new ForbiddenError("shifts.manage");
   const t = await shiftTotals(tx, shiftId);
   if (t.shift.closedAt) throw new ShiftError("Shift already closed");
@@ -55,6 +61,8 @@ export async function closeShift(tx: Tx, ctx: TenantContext, shiftId: string, co
     where: { id: shiftId },
     data: { closedAt: new Date(), countedCash, expectedCash: t.expected, variance, denominations: counted.denominations ?? Prisma.JsonNull, note },
   });
-  await writeAudit(tx, { memberId: ctx.member.id, name: ctx.member.name }, "shift.close", "Shift", shiftId, { after: { countedCash, expected: t.expected, variance } });
+  await writeAudit(tx, { memberId: ctx.member.id, name: ctx.member.name }, "shift.close", "Shift", shiftId, {
+    after: { countedCash, expected: t.expected, variance },
+  });
   return { ...t, shift, variance };
 }

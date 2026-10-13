@@ -26,14 +26,21 @@ export function ImportForm() {
             }}
           />
         </Field>
-        {text ? <p className="text-sm text-muted">{name}: {text.split(/\r?\n/).filter(Boolean).length - 1} rows</p> : null}
+        {text ? (
+          <p className="text-sm text-muted">
+            {name}: {text.split(/\r?\n/).filter(Boolean).length - 1} rows
+          </p>
+        ) : null}
         <div>
           <Button disabled={!text} loading={pending} onClick={() => run(() => importCsvAction(text), { onOk: setResult, success: "Import finished" })}>
             Import
           </Button>
         </div>
         {result ? (
-          <Alert tone={result.errors.length ? "warning" : "success"} title={`${result.created} created, ${result.updated} updated, ${result.errors.length} errors`}>
+          <Alert
+            tone={result.errors.length ? "warning" : "success"}
+            title={`${result.created} created, ${result.updated} updated, ${result.errors.length} errors`}
+          >
             <ul className="mt-1 max-h-48 overflow-y-auto">
               {result.errors.map((e) => (
                 <li key={e.row}>

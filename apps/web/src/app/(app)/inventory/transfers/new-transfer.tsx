@@ -28,7 +28,17 @@ export function NewTransfer({ locations, currency }: { locations: { id: string; 
           <Button
             loading={pending}
             disabled={!lines.length || !to}
-            onClick={() => run(() => createTransferAction(to, lines.map((l) => ({ variantId: l.variantId, qty: l.qty })), note), { onOk: (id) => router.push(`/inventory/transfers/${id}`) })}
+            onClick={() =>
+              run(
+                () =>
+                  createTransferAction(
+                    to,
+                    lines.map((l) => ({ variantId: l.variantId, qty: l.qty })),
+                    note,
+                  ),
+                { onOk: (id) => router.push(`/inventory/transfers/${id}`) },
+              )
+            }
           >
             Create draft
           </Button>
@@ -47,7 +57,11 @@ export function NewTransfer({ locations, currency }: { locations: { id: string; 
           <VariantPicker
             currency={currency}
             onPick={(v) =>
-              setLines((ls) => (ls.some((l) => l.variantId === v.id) ? ls.map((l) => (l.variantId === v.id ? { ...l, qty: l.qty + 1 } : l)) : [...ls, { variantId: v.id, name: v.name, qty: 1, onHand: v.onHand }]))
+              setLines((ls) =>
+                ls.some((l) => l.variantId === v.id)
+                  ? ls.map((l) => (l.variantId === v.id ? { ...l, qty: l.qty + 1 } : l))
+                  : [...ls, { variantId: v.id, name: v.name, qty: 1, onHand: v.onHand }],
+              )
             }
           />
           <ul className="flex flex-col gap-2">
@@ -57,7 +71,16 @@ export function NewTransfer({ locations, currency }: { locations: { id: string; 
                   {l.name} <span className="text-muted">({l.onHand} here)</span>
                 </span>
                 <span className="flex items-center gap-1">
-                  <Input aria-label={`Quantity ${l.name}`} type="number" min={1} className="w-20" value={l.qty} onChange={(e) => setLines((ls) => ls.map((x) => (x.variantId === l.variantId ? { ...x, qty: Math.max(1, Number(e.target.value) || 1) } : x)))} />
+                  <Input
+                    aria-label={`Quantity ${l.name}`}
+                    type="number"
+                    min={1}
+                    className="w-20"
+                    value={l.qty}
+                    onChange={(e) =>
+                      setLines((ls) => ls.map((x) => (x.variantId === l.variantId ? { ...x, qty: Math.max(1, Number(e.target.value) || 1) } : x)))
+                    }
+                  />
                   <Button size="icon" variant="ghost" aria-label="Remove" onClick={() => setLines((ls) => ls.filter((x) => x.variantId !== l.variantId))}>
                     <Trash2 className="h-4 w-4" />
                   </Button>

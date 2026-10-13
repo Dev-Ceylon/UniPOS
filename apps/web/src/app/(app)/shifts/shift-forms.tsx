@@ -40,7 +40,10 @@ export function CashUp({ shiftId, currency, denominations, expected }: { shiftId
           e.preventDefault();
           const fd = new FormData(e.currentTarget);
           const form = e.currentTarget;
-          run(() => cashMove(shiftId, fd.get("type") as "in" | "out", String(fd.get("amount")), String(fd.get("reason"))), { success: "Recorded", onOk: () => form.reset() });
+          run(() => cashMove(shiftId, fd.get("type") as "in" | "out", String(fd.get("amount")), String(fd.get("reason"))), {
+            success: "Recorded",
+            onOk: () => form.reset(),
+          });
         }}
       >
         <Select name="type" aria-label="Cash in or out">

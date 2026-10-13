@@ -27,11 +27,22 @@ export async function createRefund(tx: Tx, ctx: TenantContext, input: RefundInpu
   });
   if (!original || original.isRefund) throw new SaleError("Original sale not found");
   if (original.status !== "completed") throw new SaleError("Only completed sales can be refunded");
-  const sold = original.lines.map((l) => ({ id: l.id, qty: l.qty, total: l.total, net: l.net, discount: l.lineDiscount + l.orderDiscount, taxes: l.taxLines as unknown as TaxLine[] }));
+  const sold = original.lines.map((l) => ({
+    id: l.id,
+    qty: l.qty,
+    total: l.total,
+    net: l.net,
+    discount: l.lineDiscount + l.orderDiscount,
+    taxes: l.taxLines as unknown as TaxLine[],
+  }));
   const previous = original.refunds
     .filter((r) => r.status === "completed")
     .flatMap((r) => r.lines.map((l) => ({ originalLineId: l.originalLineId!, qty: Math.abs(l.qty) })));
-  const refundLines = buildRefundLines(sold, previous, input.lines.filter((l) => l.qty > 0).map((l) => ({ originalLineId: l.lineId, qty: l.qty })));
+  const refundLines = buildRefundLines(
+    sold,
+    previous,
+    input.lines.filter((l) => l.qty > 0).map((l) => ({ originalLineId: l.lineId, qty: l.qty })),
+  );
   if (refundLines.length === 0) throw new SaleError("Nothing to refund");
   const total = refundLines.reduce((a, l) => a + l.total, 0);
   const taxTotal = refundLines.reduce((a, l) => a + l.taxes.reduce((s, t) => s + t.amount, 0), 0);
@@ -39,9 +50,7 @@ export async function createRefund(tx: Tx, ctx: TenantContext, input: RefundInpu
   const grossOf = (r: (typeof refundLines)[number]) => r.total - r.taxes.filter((t) => !t.inclusive).reduce((s, t) => s + t.amount, 0) + r.discount;
 
   const nonRefundable = original.payments.filter((p) => p.tender !== "points");
-  const tenders = input.tender
-    ? [{ tender: input.tender, amount: total }]
-    : refundTenders(total, nonRefundable.length ? nonRefundable : original.payments);
+  const tenders = input.tender ? [{ tender: input.tender, amount: total }] : refundTenders(total, nonRefundable.length ? nonRefundable : original.payments);
 
   const id = uuidv7();
   const number = await nextNumber(tx, "refund", "RF");
@@ -97,7 +106,15 @@ export async function createRefund(tx: Tx, ctx: TenantContext, input: RefundInpu
   if (input.restock) {
     await recordMovements(
       tx,
-      refund.lines.map((l) => ({ variantId: l.variantId, locationId: original.locationId, qtyChange: -l.qty, reason: "return" as const, refType: "sale", refId: id, memberId: ctx.member.id })),
+      refund.lines.map((l) => ({
+        variantId: l.variantId,
+        locationId: original.locationId,
+        qtyChange: -l.qty,
+        reason: "return" as const,
+        refType: "sale",
+        refId: id,
+        memberId: ctx.member.id,
+      })),
     );
   }
   // gift card refunds go back on the card
@@ -129,7 +146,15 @@ export async function voidSale(tx: Tx, ctx: TenantContext, saleId: string, reaso
   const moves = await tx.stockMovement.findMany({ where: { refType: "sale", refId: saleId } });
   await recordMovements(
     tx,
-    moves.map((m) => ({ variantId: m.variantId, locationId: m.locationId, qtyChange: -m.qtyChange, reason: "void" as const, refType: "void", refId: saleId, memberId: ctx.member.id })),
+    moves.map((m) => ({
+      variantId: m.variantId,
+      locationId: m.locationId,
+      qtyChange: -m.qtyChange,
+      reason: "void" as const,
+      refType: "void",
+      refId: saleId,
+      memberId: ctx.member.id,
+    })),
   );
   const gc = await tx.giftCardEntry.findMany({ where: { saleId } });
   for (const e of gc) {
@@ -138,7 +163,13 @@ export async function voidSale(tx: Tx, ctx: TenantContext, saleId: string, reaso
   }
   const loyalty = await tx.loyaltyEntry.findMany({ where: { saleId } });
   for (const e of loyalty) await tx.loyaltyEntry.create({ data: { customerId: e.customerId, points: -e.points, reason: "void", saleId } });
-  const updated = await tx.sale.update({ where: { id: saleId }, data: { status: "voided", voidedAt: new Date(), voidedById: ctx.member.id, voidReason: reason } });
-  await writeAudit(tx, { memberId: ctx.member.id, name: ctx.member.name }, "sale.void", "Sale", saleId, { before: { status: "completed" }, after: { status: "voided", reason } });
+  const updated = await tx.sale.update({
+    where: { id: saleId },
+    data: { status: "voided", voidedAt: new Date(), voidedById: ctx.member.id, voidReason: reason },
+  });
+  await writeAudit(tx, { memberId: ctx.member.id, name: ctx.member.name }, "sale.void", "Sale", saleId, {
+    before: { status: "completed" },
+    after: { status: "voided", reason },
+  });
   return updated;
 }

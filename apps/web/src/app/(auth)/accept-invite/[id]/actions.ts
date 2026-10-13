@@ -20,8 +20,13 @@ export async function acceptInvitation(invitationId: string, pin: string): Promi
   const session = await auth.api.getSession({ headers: h });
   const member = await prisma.member.findFirst({ where: { tenantId: invite.tenantId, userId: session!.user.id } });
   if (!member) return { ok: false, error: "Membership was not created" };
-  await prisma.member.update({ where: { id: member.id }, data: { roleId: invite.roleId, pinHash: await hashPin(parsed.data), displayName: session!.user.name } });
+  await prisma.member.update({
+    where: { id: member.id },
+    data: { roleId: invite.roleId, pinHash: await hashPin(parsed.data), displayName: session!.user.name },
+  });
   await auth.api.setActiveOrganization({ body: { organizationId: invite.tenantId }, headers: h });
-  await withTenant(invite.tenantId, (tx) => writeAudit(tx, { memberId: member.id, name: session!.user.name }, "member.join", "Member", member.id, { after: { roleId: invite.roleId } }));
+  await withTenant(invite.tenantId, (tx) =>
+    writeAudit(tx, { memberId: member.id, name: session!.user.name }, "member.join", "Member", member.id, { after: { roleId: invite.roleId } }),
+  );
   return { ok: true };
 }

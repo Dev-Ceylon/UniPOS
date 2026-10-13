@@ -28,8 +28,21 @@ export async function adjustStock(
   const current = await onHand(tx, input.variantId, input.locationId);
   const delta = input.mode === "set" ? adjustmentFor(current, input.qty) : input.qty;
   if (delta === 0) return current;
-  const res = await recordMovements(tx, [{ variantId: input.variantId, locationId: input.locationId, qtyChange: delta, reason: input.reason, note: input.note, refType: "adjustment", memberId: ctx.member.id }]);
-  await writeAudit(tx, actor(ctx), "stock.adjust", "Variant", input.variantId, { before: { onHand: current }, after: { onHand: current + delta, reason: input.reason, note: input.note } });
+  const res = await recordMovements(tx, [
+    {
+      variantId: input.variantId,
+      locationId: input.locationId,
+      qtyChange: delta,
+      reason: input.reason,
+      note: input.note,
+      refType: "adjustment",
+      memberId: ctx.member.id,
+    },
+  ]);
+  await writeAudit(tx, actor(ctx), "stock.adjust", "Variant", input.variantId, {
+    before: { onHand: current },
+    after: { onHand: current + delta, reason: input.reason, note: input.note },
+  });
   return res.get(`${input.variantId}:${input.locationId}`) ?? current + delta;
 }
 
@@ -83,7 +96,15 @@ export async function completeStocktake(tx: Tx, ctx: TenantContext, stocktakeId:
   const variances = stocktakeVariances(st.lines);
   await recordMovements(
     tx,
-    variances.map((v) => ({ variantId: v.variantId, locationId: st.locationId, qtyChange: v.variance, reason: "stocktake" as const, refType: "stocktake", refId: st.id, memberId: ctx.member.id })),
+    variances.map((v) => ({
+      variantId: v.variantId,
+      locationId: st.locationId,
+      qtyChange: v.variance,
+      reason: "stocktake" as const,
+      refType: "stocktake",
+      refId: st.id,
+      memberId: ctx.member.id,
+    })),
   );
   await tx.stocktake.update({ where: { id: st.id }, data: { status: "completed", completedAt: new Date() } });
   await writeAudit(tx, actor(ctx), "stocktake.complete", "Stocktake", st.id, { after: { variances } });
@@ -92,7 +113,11 @@ export async function completeStocktake(tx: Tx, ctx: TenantContext, stocktakeId:
 
 // ── Transfers (multi-location, in-transit state) ──
 
-export async function createTransfer(tx: Tx, ctx: TenantContext, input: { fromLocationId: string; toLocationId: string; lines: { variantId: string; qty: number }[]; note?: string }) {
+export async function createTransfer(
+  tx: Tx,
+  ctx: TenantContext,
+  input: { fromLocationId: string; toLocationId: string; lines: { variantId: string; qty: number }[]; note?: string },
+) {
   need(ctx, "inventory.transfer");
   if (input.fromLocationId === input.toLocationId) throw new InventoryError("Choose two different locations");
   const lines = input.lines.filter((l) => l.qty > 0);
@@ -116,7 +141,18 @@ export async function sendTransfer(tx: Tx, ctx: TenantContext, transferId: strin
   need(ctx, "inventory.transfer");
   const t = await tx.transfer.findUnique({ where: { id: transferId }, include: { lines: true } });
   if (!t || t.status !== "draft") throw new InventoryError("Only draft transfers can be sent");
-  await recordMovements(tx, t.lines.map((l) => ({ variantId: l.variantId, locationId: t.fromLocationId, qtyChange: -l.qty, reason: "transfer_out" as const, refType: "transfer", refId: t.id, memberId: ctx.member.id })));
+  await recordMovements(
+    tx,
+    t.lines.map((l) => ({
+      variantId: l.variantId,
+      locationId: t.fromLocationId,
+      qtyChange: -l.qty,
+      reason: "transfer_out" as const,
+      refType: "transfer",
+      refId: t.id,
+      memberId: ctx.member.id,
+    })),
+  );
   await tx.transfer.update({ where: { id: t.id }, data: { status: "in_transit", sentAt: new Date() } });
   await writeAudit(tx, actor(ctx), "transfer.send", "Transfer", t.id);
 }
@@ -131,10 +167,33 @@ export async function receiveTransfer(tx: Tx, ctx: TenantContext, transferId: st
     if (!Number.isInteger(q) || q < 0 || q > l.qty) throw new InventoryError("Received quantity out of range");
     return { line: l, q };
   });
-  await recordMovements(tx, moves.map(({ line, q }) => ({ variantId: line.variantId, locationId: t.toLocationId, qtyChange: q, reason: "transfer_in" as const, refType: "transfer", refId: t.id, memberId: ctx.member.id })));
+  await recordMovements(
+    tx,
+    moves.map(({ line, q }) => ({
+      variantId: line.variantId,
+      locationId: t.toLocationId,
+      qtyChange: q,
+      reason: "transfer_in" as const,
+      refType: "transfer",
+      refId: t.id,
+      memberId: ctx.member.id,
+    })),
+  );
   // anything not received is written back to the source as lost in transit? No: return to source.
   const shortfall = moves.filter(({ line, q }) => q < line.qty);
-  await recordMovements(tx, shortfall.map(({ line, q }) => ({ variantId: line.variantId, locationId: t.fromLocationId, qtyChange: line.qty - q, reason: "transfer_in" as const, refType: "transfer", refId: t.id, note: "Returned: not received", memberId: ctx.member.id })));
+  await recordMovements(
+    tx,
+    shortfall.map(({ line, q }) => ({
+      variantId: line.variantId,
+      locationId: t.fromLocationId,
+      qtyChange: line.qty - q,
+      reason: "transfer_in" as const,
+      refType: "transfer",
+      refId: t.id,
+      note: "Returned: not received",
+      memberId: ctx.member.id,
+    })),
+  );
   for (const { line, q } of moves) await tx.transferLine.update({ where: { id: line.id }, data: { qtyReceived: q } });
   await tx.transfer.update({ where: { id: t.id }, data: { status: "received", receivedAt: new Date() } });
   await writeAudit(tx, actor(ctx), "transfer.receive", "Transfer", t.id);
@@ -145,14 +204,30 @@ export async function cancelTransfer(tx: Tx, ctx: TenantContext, transferId: str
   const t = await tx.transfer.findUnique({ where: { id: transferId }, include: { lines: true } });
   if (!t || (t.status !== "draft" && t.status !== "in_transit")) throw new InventoryError("Transfer cannot be cancelled");
   if (t.status === "in_transit") {
-    await recordMovements(tx, t.lines.map((l) => ({ variantId: l.variantId, locationId: t.fromLocationId, qtyChange: l.qty, reason: "transfer_in" as const, refType: "transfer", refId: t.id, note: "Cancelled", memberId: ctx.member.id })));
+    await recordMovements(
+      tx,
+      t.lines.map((l) => ({
+        variantId: l.variantId,
+        locationId: t.fromLocationId,
+        qtyChange: l.qty,
+        reason: "transfer_in" as const,
+        refType: "transfer",
+        refId: t.id,
+        note: "Cancelled",
+        memberId: ctx.member.id,
+      })),
+    );
   }
   await tx.transfer.update({ where: { id: t.id }, data: { status: "cancelled" } });
 }
 
 // ── Purchase orders ──
 
-export async function createPurchaseOrder(tx: Tx, ctx: TenantContext, input: { supplierId: string; locationId: string; expectedAt?: Date | null; note?: string; lines: { variantId: string; qty: number; unitCost: number }[] }) {
+export async function createPurchaseOrder(
+  tx: Tx,
+  ctx: TenantContext,
+  input: { supplierId: string; locationId: string; expectedAt?: Date | null; note?: string; lines: { variantId: string; qty: number; unitCost: number }[] },
+) {
   need(ctx, "purchasing.manage");
   const lines = input.lines.filter((l) => l.qty > 0);
   if (!lines.length) throw new InventoryError("Add at least one item");
@@ -189,7 +264,15 @@ export async function receivePurchaseOrder(tx: Tx, ctx: TenantContext, poId: str
     const q = received[l.id] ?? 0;
     if (!Number.isInteger(q) || q < 0 || q > l.qtyOrdered - l.qtyReceived) throw new InventoryError(`Received quantity out of range for ${l.name}`);
     if (q === 0) continue;
-    moves.push({ variantId: l.variantId, locationId: po.locationId, qtyChange: q, reason: "receive" as const, refType: "purchase_order", refId: po.id, memberId: ctx.member.id });
+    moves.push({
+      variantId: l.variantId,
+      locationId: po.locationId,
+      qtyChange: q,
+      reason: "receive" as const,
+      refType: "purchase_order",
+      refId: po.id,
+      memberId: ctx.member.id,
+    });
     await tx.purchaseOrderLine.update({ where: { id: l.id }, data: { qtyReceived: { increment: q } } });
     await tx.variant.update({ where: { id: l.variantId }, data: { cost: l.unitCost } });
   }

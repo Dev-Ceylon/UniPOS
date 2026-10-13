@@ -10,10 +10,19 @@ export function CategoriesEditor({ categories }: { categories: Cat[] }) {
   const { run, pending } = useAction();
   const save = (id: string | null, form: HTMLFormElement) => {
     const fd = new FormData(form);
-    run(() => saveCategory(id, { name: String(fd.get("name")), parentId: String(fd.get("parentId") || "") || null, sortOrder: Number(fd.get("sortOrder") || 0), color: String(fd.get("color") || "") || null }), {
-      success: "Saved",
-      onOk: () => !id && form.reset(),
-    });
+    run(
+      () =>
+        saveCategory(id, {
+          name: String(fd.get("name")),
+          parentId: String(fd.get("parentId") || "") || null,
+          sortOrder: Number(fd.get("sortOrder") || 0),
+          color: String(fd.get("color") || "") || null,
+        }),
+      {
+        success: "Saved",
+        onOk: () => !id && form.reset(),
+      },
+    );
   };
   return (
     <Card>
@@ -43,11 +52,13 @@ export function CategoriesEditor({ categories }: { categories: Cat[] }) {
                   <Input name="name" defaultValue={c.name} aria-label="Category name" required />
                   <Select name="parentId" defaultValue={c.parentId ?? ""} aria-label="Parent category">
                     <option value="">—</option>
-                    {categories.filter((x) => x.id !== c.id).map((x) => (
-                      <option key={x.id} value={x.id}>
-                        {x.name}
-                      </option>
-                    ))}
+                    {categories
+                      .filter((x) => x.id !== c.id)
+                      .map((x) => (
+                        <option key={x.id} value={x.id}>
+                          {x.name}
+                        </option>
+                      ))}
                   </Select>
                   <Input name="sortOrder" type="number" defaultValue={c.sortOrder} aria-label="Sort order" />
                   <span className="text-sm text-muted">{c.count}</span>
@@ -55,7 +66,12 @@ export function CategoriesEditor({ categories }: { categories: Cat[] }) {
                     <Button type="submit" size="sm" variant="outline" loading={pending}>
                       Save
                     </Button>
-                    <Button size="sm" variant="ghost" aria-label={`Delete ${c.name}`} onClick={() => confirm(`Delete ${c.name}? Products become uncategorized.`) && run(() => deleteCategory(c.id), { success: "Deleted" })}>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      aria-label={`Delete ${c.name}`}
+                      onClick={() => confirm(`Delete ${c.name}? Products become uncategorized.`) && run(() => deleteCategory(c.id), { success: "Deleted" })}
+                    >
                       <Trash2 className="h-4 w-4" />
                     </Button>
                   </span>

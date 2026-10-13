@@ -41,7 +41,14 @@ export async function issueGiftCard(tx: Tx, ctx: TenantContext, input: { value: 
   if (!Number.isInteger(input.value) || input.value <= 0) throw new Error("Value must be positive");
   const code = (input.code?.trim().toUpperCase() || generateEan13(await nextCounter(tx, "giftcard"), "29")).slice(0, 32);
   const card = await tx.giftCard.create({
-    data: { code, initialValue: input.value, balance: input.value, customerId: input.customerId ?? null, expiresAt: input.expiresAt ?? null, entries: { create: [{ amount: input.value, reason: "issue" }] } },
+    data: {
+      code,
+      initialValue: input.value,
+      balance: input.value,
+      customerId: input.customerId ?? null,
+      expiresAt: input.expiresAt ?? null,
+      entries: { create: [{ amount: input.value, reason: "issue" }] },
+    },
   });
   await writeAudit(tx, { memberId: ctx.member.id, name: ctx.member.name }, "giftcard.issue", "GiftCard", card.id, { after: { code, value: input.value } });
   return card;

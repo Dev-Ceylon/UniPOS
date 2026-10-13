@@ -16,7 +16,7 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = {
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#1877F2" },
+    { media: "(prefers-color-scheme: light)", color: "#1464D2" },
     { media: "(prefers-color-scheme: dark)", color: "#18191A" },
   ],
   width: "device-width",
@@ -30,9 +30,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const store = await cookies();
   const theme = store.get("unipos_theme")?.value;
   const ctx = await getAppContext().catch(() => null);
-  const style = ctx
-    ? ({ "--primary": ctx.tenant.theme.primary, "--radius": RADIUS[ctx.tenant.theme.radius] ?? "0.5rem" } as React.CSSProperties)
-    : undefined;
+  const style = ctx ? ({ "--primary": ctx.tenant.theme.primary, "--radius": RADIUS[ctx.tenant.theme.radius] ?? "0.5rem" } as React.CSSProperties) : undefined;
   return (
     <html lang={locale} data-theme={theme === "dark" || theme === "light" ? theme : undefined} style={style} suppressHydrationWarning>
       <body className="min-h-dvh antialiased">

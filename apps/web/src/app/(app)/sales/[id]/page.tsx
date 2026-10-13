@@ -19,7 +19,8 @@ export default async function SaleDetail({ params }: { params: Promise<{ id: str
   if (!sale) notFound();
   const m = (v: number) => money(v, ctx.currency, ctx.locale);
   const refunded = new Map<string, number>();
-  for (const r of sale.refunds.filter((x) => x.status === "completed")) for (const l of r.lines) if (l.originalLineId) refunded.set(l.originalLineId, (refunded.get(l.originalLineId) ?? 0) - l.qty);
+  for (const r of sale.refunds.filter((x) => x.status === "completed"))
+    for (const l of r.lines) if (l.originalLineId) refunded.set(l.originalLineId, (refunded.get(l.originalLineId) ?? 0) - l.qty);
   const location = ctx.locations.find((l) => l.id === sale.locationId);
   return (
     <div className="flex flex-col gap-4">
@@ -53,7 +54,7 @@ export default async function SaleDetail({ params }: { params: Promise<{ id: str
       {sale.originalSale ? (
         <Alert>
           Refund of{" "}
-          <Link className="text-primary underline" href={`/sales/${sale.originalSale.id}`}>
+          <Link className="text-primary-ink underline" href={`/sales/${sale.originalSale.id}`}>
             {sale.originalSale.number}
           </Link>
           {sale.note ? ` — ${sale.note}` : ""}
@@ -80,8 +81,12 @@ export default async function SaleDetail({ params }: { params: Promise<{ id: str
                 <tr key={l.id}>
                   <Td>
                     {l.name}
-                    {(l.modifiers as { name: string }[]).length ? <p className="text-xs text-muted">{(l.modifiers as { name: string }[]).map((x) => x.name).join(", ")}</p> : null}
-                    {l.catalogPrice !== null && l.catalogPrice !== l.unitPrice ? <p className="text-xs text-warning">Price changed from {m(l.catalogPrice)}</p> : null}
+                    {(l.modifiers as { name: string }[]).length ? (
+                      <p className="text-xs text-muted">{(l.modifiers as { name: string }[]).map((x) => x.name).join(", ")}</p>
+                    ) : null}
+                    {l.catalogPrice !== null && l.catalogPrice !== l.unitPrice ? (
+                      <p className="text-xs text-warning">Price changed from {m(l.catalogPrice)}</p>
+                    ) : null}
                     {refunded.get(l.id) ? <p className="text-xs text-warning">{refunded.get(l.id)} refunded</p> : null}
                   </Td>
                   <Td className="tabular text-right">{l.qty}</Td>
@@ -127,7 +132,7 @@ export default async function SaleDetail({ params }: { params: Promise<{ id: str
             </CardHeader>
             <CardBody className="text-sm">
               {sale.customer ? (
-                <Link className="text-primary underline" href={`/customers/${sale.customer.id}`}>
+                <Link className="text-primary-ink underline" href={`/customers/${sale.customer.id}`}>
                   {sale.customer.name}
                 </Link>
               ) : (
@@ -142,7 +147,7 @@ export default async function SaleDetail({ params }: { params: Promise<{ id: str
               </CardHeader>
               <CardBody className="flex flex-col gap-1 text-sm">
                 {sale.refunds.map((r) => (
-                  <Link key={r.id} href={`/sales/${r.id}`} className="flex justify-between text-primary underline">
+                  <Link key={r.id} href={`/sales/${r.id}`} className="flex justify-between text-primary-ink underline">
                     <span>{r.number}</span>
                     <span className="tabular">{m(r.total)}</span>
                   </Link>

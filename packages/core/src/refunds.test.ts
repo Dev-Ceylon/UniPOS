@@ -31,7 +31,12 @@ describe("refunds", () => {
   });
 
   it("splits refund across tenders", () => {
-    expect(refundTenders(-1500, [{ tender: "card", amount: 1000 }, { tender: "cash", amount: 500 }])).toEqual([
+    expect(
+      refundTenders(-1500, [
+        { tender: "card", amount: 1000 },
+        { tender: "cash", amount: 500 },
+      ]),
+    ).toEqual([
       { tender: "card", amount: -1000 },
       { tender: "cash", amount: -500 },
     ]);

@@ -16,7 +16,8 @@ export function LocalSales({ tenantId, currency }: { tenantId: string; currency:
         <Alert key={s.clientId} tone={s.status === "rejected" ? "danger" : "warning"}>
           <div className="flex flex-wrap items-center justify-between gap-2">
             <span>
-              <strong>{s.number}</strong> · {formatMoney(s.payload.expected.total, currency)} · {s.status === "rejected" ? `Rejected: ${s.error}` : "Waiting to sync on this device"}
+              <strong>{s.number}</strong> · {formatMoney(s.payload.expected.total, currency)} ·{" "}
+              {s.status === "rejected" ? `Rejected: ${s.error}` : "Waiting to sync on this device"}
             </span>
             {s.status === "rejected" ? (
               <Button size="sm" variant="outline" onClick={() => engine?.retryRejected(s.clientId)}>

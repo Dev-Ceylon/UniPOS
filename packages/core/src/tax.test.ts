@@ -82,11 +82,18 @@ describe("tax engine", () => {
 
   it("inclusive prices round-trip: net + inclusive taxes == price", () => {
     fc.assert(
-      fc.property(fc.integer({ min: -1e8, max: 1e8 }), fc.array(ruleArb.map((r) => ({ ...r, inclusive: true })), { maxLength: 4 }), (amount, rules) => {
-        const r = calculateLineTax(amount, rules);
-        expect(r.net + r.inclusiveTax).toBe(amount);
-        expect(r.total).toBe(amount);
-      }),
+      fc.property(
+        fc.integer({ min: -1e8, max: 1e8 }),
+        fc.array(
+          ruleArb.map((r) => ({ ...r, inclusive: true })),
+          { maxLength: 4 },
+        ),
+        (amount, rules) => {
+          const r = calculateLineTax(amount, rules);
+          expect(r.net + r.inclusiveTax).toBe(amount);
+          expect(r.total).toBe(amount);
+        },
+      ),
     );
   });
 

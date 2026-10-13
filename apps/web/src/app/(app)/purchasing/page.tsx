@@ -44,7 +44,7 @@ export default async function PurchasingPage() {
               {orders.map((o) => (
                 <tr key={o.id}>
                   <Td>
-                    <Link className="text-primary underline" href={`/purchasing/orders/${o.id}`}>
+                    <Link className="text-primary-ink underline" href={`/purchasing/orders/${o.id}`}>
                       {o.number}
                     </Link>
                   </Td>
@@ -73,7 +73,17 @@ export default async function PurchasingPage() {
                   <span className="font-medium">{s.name}</span>
                   <span className="block text-xs text-muted">{[s.contact, s.phone, s.email].filter(Boolean).join(" · ")}</span>
                 </span>
-                <SupplierButton supplier={{ id: s.id, name: s.name, contact: s.contact ?? "", phone: s.phone ?? "", email: s.email ?? "", address: s.address ?? "", notes: s.notes ?? "" }} />
+                <SupplierButton
+                  supplier={{
+                    id: s.id,
+                    name: s.name,
+                    contact: s.contact ?? "",
+                    phone: s.phone ?? "",
+                    email: s.email ?? "",
+                    address: s.address ?? "",
+                    notes: s.notes ?? "",
+                  }}
+                />
               </li>
             ))}
             {!suppliers.length ? <li className="px-4 py-6 text-sm text-muted">Add your first supplier.</li> : null}

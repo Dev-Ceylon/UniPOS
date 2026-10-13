@@ -11,7 +11,16 @@ export default async function ModifiersPage() {
   return (
     <div className="max-w-3xl">
       <PageHeader title="Modifier groups" description="Options such as spice level or extras. Attach groups to products on the product page." />
-      <ModifierEditor currency={ctx.currency} groups={groups.map((g) => ({ id: g.id, name: g.name, minSelect: g.minSelect, maxSelect: g.maxSelect, modifiers: g.modifiers as { name: string; priceDelta: number }[] }))} />
+      <ModifierEditor
+        currency={ctx.currency}
+        groups={groups.map((g) => ({
+          id: g.id,
+          name: g.name,
+          minSelect: g.minSelect,
+          maxSelect: g.maxSelect,
+          modifiers: g.modifiers as { name: string; priceDelta: number }[],
+        }))}
+      />
     </div>
   );
 }

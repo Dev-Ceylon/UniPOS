@@ -1,4 +1,14 @@
-import { can, ForbiddenError, parseCsvObjects, parseCustomFields, parseMoney, ProductInputSchema, toCsv, toDecimalString, type ProductInput } from "@unipos/core";
+import {
+  can,
+  ForbiddenError,
+  parseCsvObjects,
+  parseCustomFields,
+  parseMoney,
+  ProductInputSchema,
+  toCsv,
+  toDecimalString,
+  type ProductInput,
+} from "@unipos/core";
 import { Prisma, type Tx } from "../client";
 import { writeAudit } from "./audit";
 import type { TenantContext } from "./context";
@@ -31,7 +41,14 @@ export async function saveProduct(tx: Tx, ctx: TenantContext, raw: unknown, prod
         data: {
           ...data,
           variants: {
-            create: input.variants.map((v) => ({ name: v.name, sku: v.sku ?? null, barcode: v.barcode ?? null, options: json(v.options), price: v.price, cost: v.cost })),
+            create: input.variants.map((v) => ({
+              name: v.name,
+              sku: v.sku ?? null,
+              barcode: v.barcode ?? null,
+              options: json(v.options),
+              price: v.price,
+              cost: v.cost,
+            })),
           },
         },
         include: { variants: true },
@@ -73,7 +90,21 @@ export async function deleteProduct(tx: Tx, ctx: TenantContext, productId: strin
   await writeAudit(tx, { memberId: ctx.member.id, name: ctx.member.name }, "product.delete", "Product", productId);
 }
 
-export const PRODUCT_CSV_COLUMNS = ["name", "variant", "sku", "barcode", "category", "price", "cost", "tax_class", "track_stock", "stock", "reorder_point", "unit", "favourite"] as const;
+export const PRODUCT_CSV_COLUMNS = [
+  "name",
+  "variant",
+  "sku",
+  "barcode",
+  "category",
+  "price",
+  "cost",
+  "tax_class",
+  "track_stock",
+  "stock",
+  "reorder_point",
+  "unit",
+  "favourite",
+] as const;
 
 export async function exportProductsCsv(tx: Tx, ctx: TenantContext, locationId?: string) {
   const variants = await tx.variant.findMany({
@@ -118,7 +149,10 @@ export async function importProductsCsv(tx: Tx, ctx: TenantContext, text: string
   const categories = new Map((await tx.category.findMany({ where: { deletedAt: null } })).map((c) => [c.name.toLowerCase(), c.id]));
   const taxClasses = new Map((await tx.taxClass.findMany({ where: { deletedAt: null } })).map((c) => [c.name.toLowerCase(), c.id]));
   const existingBySku = new Map(
-    (await tx.variant.findMany({ where: { deletedAt: null, sku: { not: null } }, select: { id: true, sku: true, productId: true } })).map((v) => [v.sku!.toLowerCase(), v]),
+    (await tx.variant.findMany({ where: { deletedAt: null, sku: { not: null } }, select: { id: true, sku: true, productId: true } })).map((v) => [
+      v.sku!.toLowerCase(),
+      v,
+    ]),
   );
   const productByName = new Map<string, string>();
   const yes = (v?: string) => /^(y|yes|true|1)$/i.test(v ?? "");
@@ -143,13 +177,17 @@ export async function importProductsCsv(tx: Tx, ctx: TenantContext, text: string
       if (r.tax_class && !taxClassId) throw new Error(`unknown tax class "${r.tax_class}"`);
       const stock = r.stock ? Number(r.stock) : null;
       const reorder = r.reorder_point ? Number(r.reorder_point) : null;
-      if ((stock !== null && !Number.isInteger(stock)) || (reorder !== null && !Number.isInteger(reorder))) throw new Error("stock and reorder_point must be whole numbers");
+      if ((stock !== null && !Number.isInteger(stock)) || (reorder !== null && !Number.isInteger(reorder)))
+        throw new Error("stock and reorder_point must be whole numbers");
       const sku = r.sku || null;
       const existing = sku ? existingBySku.get(sku.toLowerCase()) : undefined;
       const trackStock = r.track_stock ? yes(r.track_stock) : ctx.settings.trackStockByDefault;
       if (existing) {
         await tx.variant.update({ where: { id: existing.id }, data: { price, cost, barcode: r.barcode || undefined, name: r.variant ?? "" } });
-        await tx.product.update({ where: { id: existing.productId }, data: { name: r.name, categoryId, taxClassId, trackStock, unit: r.unit || "each", favourite: yes(r.favourite) } });
+        await tx.product.update({
+          where: { id: existing.productId },
+          data: { name: r.name, categoryId, taxClassId, trackStock, unit: r.unit || "each", favourite: yes(r.favourite) },
+        });
         levelUpdates.push({ variantId: existing.id, stock, reorder });
         result.updated++;
         continue;
@@ -172,12 +210,21 @@ export async function importProductsCsv(tx: Tx, ctx: TenantContext, text: string
     }
   }
   // Set stock (as a "set" adjustment through the ledger) and reorder points.
-  const levels = new Map((await tx.stockLevel.findMany({ where: { locationId, variantId: { in: levelUpdates.map((l) => l.variantId) } } })).map((l) => [l.variantId, l]));
+  const levels = new Map(
+    (await tx.stockLevel.findMany({ where: { locationId, variantId: { in: levelUpdates.map((l) => l.variantId) } } })).map((l) => [l.variantId, l]),
+  );
   await recordMovements(
     tx,
     levelUpdates
       .filter((u) => u.stock !== null)
-      .map((u) => ({ variantId: u.variantId, locationId, qtyChange: u.stock! - (levels.get(u.variantId)?.onHand ?? 0), reason: "adjust" as const, note: "CSV import", memberId: ctx.member.id })),
+      .map((u) => ({
+        variantId: u.variantId,
+        locationId,
+        qtyChange: u.stock! - (levels.get(u.variantId)?.onHand ?? 0),
+        reason: "adjust" as const,
+        note: "CSV import",
+        memberId: ctx.member.id,
+      })),
   );
   for (const u of levelUpdates.filter((x) => x.reorder !== null)) {
     await tx.stockLevel.upsert({
@@ -186,6 +233,8 @@ export async function importProductsCsv(tx: Tx, ctx: TenantContext, text: string
       update: { reorderPoint: u.reorder },
     });
   }
-  await writeAudit(tx, { memberId: ctx.member.id, name: ctx.member.name }, "product.import", "Product", null, { after: { created: result.created, updated: result.updated, errors: result.errors.length } });
+  await writeAudit(tx, { memberId: ctx.member.id, name: ctx.member.name }, "product.import", "Product", null, {
+    after: { created: result.created, updated: result.updated, errors: result.errors.length },
+  });
   return result;
 }

@@ -5,10 +5,30 @@ import { useState } from "react";
 import { useAction } from "@/components/use-action";
 import { cancelInvite, deleteRole, inviteMember, saveRole, updateMember } from "../actions";
 
-type Member = { id: string; name: string; email: string; owner: boolean; roleId: string; active: boolean; hasPin: boolean; locked: boolean; allowedLocationIds: string[] };
+type Member = {
+  id: string;
+  name: string;
+  email: string;
+  owner: boolean;
+  roleId: string;
+  active: boolean;
+  hasPin: boolean;
+  locked: boolean;
+  allowedLocationIds: string[];
+};
 type Role = { id: string; name: string; key: string };
 
-export function StaffList({ members, invites, roles, locations }: { members: Member[]; invites: { id: string; email: string; roleId: string }[]; roles: Role[]; locations: { id: string; name: string }[] }) {
+export function StaffList({
+  members,
+  invites,
+  roles,
+  locations,
+}: {
+  members: Member[];
+  invites: { id: string; email: string; roleId: string }[];
+  roles: Role[];
+  locations: { id: string; name: string }[];
+}) {
   const [edit, setEdit] = useState<Member | null>(null);
   const { run, pending } = useAction();
   const roleName = new Map(roles.map((r) => [r.id, r.name]));
@@ -116,11 +136,13 @@ export function StaffList({ members, invites, roles, locations }: { members: Mem
             </Field>
             <Field label="Role" htmlFor="m-role">
               <Select id="m-role" name="roleId" defaultValue={edit.roleId} disabled={edit.owner}>
-                {roles.filter((r) => edit.owner || r.key !== "owner").map((r) => (
-                  <option key={r.id} value={r.id}>
-                    {r.name}
-                  </option>
-                ))}
+                {roles
+                  .filter((r) => edit.owner || r.key !== "owner")
+                  .map((r) => (
+                    <option key={r.id} value={r.id}>
+                      {r.name}
+                    </option>
+                  ))}
               </Select>
               {edit.owner ? <input type="hidden" name="roleId" value={edit.roleId} /> : null}
             </Field>
@@ -165,15 +187,30 @@ export function RolesEditor({ roles }: { roles: { id: string; key: string; name:
           <li key={r.id} className="flex items-center justify-between px-4 py-2 text-sm">
             <span>
               <span className="font-medium">{r.name}</span> {r.system ? <Badge>built-in</Badge> : null}
-              <span className="block text-xs text-muted">{r.permissions.includes("*") ? "All permissions" : `${ALL_PERMISSIONS.filter((p) => can({ permissions: r.permissions }, p)).length} permissions`}</span>
+              <span className="block text-xs text-muted">
+                {r.permissions.includes("*")
+                  ? "All permissions"
+                  : `${ALL_PERMISSIONS.filter((p) => can({ permissions: r.permissions }, p)).length} permissions`}
+              </span>
             </span>
             {r.key !== "owner" ? (
               <span className="flex gap-1">
-                <Button size="sm" variant="ghost" onClick={() => setEdit({ id: r.id, name: r.name, permissions: ALL_PERMISSIONS.filter((p) => can({ permissions: r.permissions }, p)), system: r.system })}>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  onClick={() =>
+                    setEdit({ id: r.id, name: r.name, permissions: ALL_PERMISSIONS.filter((p) => can({ permissions: r.permissions }, p)), system: r.system })
+                  }
+                >
                   Edit
                 </Button>
                 {!r.system ? (
-                  <Button size="sm" variant="ghost" className="text-danger" onClick={() => confirm(`Delete role ${r.name}?`) && run(() => deleteRole(r.id), { success: "Deleted" })}>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    className="text-danger"
+                    onClick={() => confirm(`Delete role ${r.name}?`) && run(() => deleteRole(r.id), { success: "Deleted" })}
+                  >
                     Delete
                   </Button>
                 ) : null}

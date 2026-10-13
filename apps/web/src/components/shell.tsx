@@ -39,7 +39,11 @@ export function Shell(p: ShellProps) {
     <nav aria-label="Main" className="flex flex-col gap-0.5 p-2">
       {p.nav.map((item) => {
         const Icon = NAV_ICONS[item.icon];
-        const active = pathname === item.href || (item.href !== "/" && pathname.startsWith(`${item.href}/`) && !p.nav.some((n) => n.href !== item.href && n.href.startsWith(item.href) && pathname.startsWith(n.href)));
+        const active =
+          pathname === item.href ||
+          (item.href !== "/" &&
+            pathname.startsWith(`${item.href}/`) &&
+            !p.nav.some((n) => n.href !== item.href && n.href.startsWith(item.href) && pathname.startsWith(n.href)));
         return (
           <Link
             key={item.href}
@@ -48,7 +52,7 @@ export function Shell(p: ShellProps) {
             aria-current={active ? "page" : undefined}
             className={cn(
               "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
-              active ? "bg-primary-soft text-primary" : "text-fg hover:bg-surface-2",
+              active ? "bg-primary-soft text-primary-ink" : "text-fg hover:bg-surface-2",
             )}
           >
             {Icon ? <Icon className="h-4 w-4 shrink-0" aria-hidden /> : null}
@@ -69,7 +73,7 @@ export function Shell(p: ShellProps) {
           {p.memberships.length > 1 ? (
             <Select
               aria-label="Business"
-              className="h-9 text-sm font-semibold text-primary"
+              className="h-9 text-sm font-semibold text-primary-ink"
               value={p.tenantId}
               onChange={(e) =>
                 start(async () => {
@@ -85,7 +89,7 @@ export function Shell(p: ShellProps) {
               ))}
             </Select>
           ) : (
-            <Link href="/" className="truncate text-lg font-bold text-primary">
+            <Link href="/" className="truncate text-lg font-bold text-primary-ink">
               {p.tenantName}
             </Link>
           )}
@@ -145,7 +149,9 @@ export function Shell(p: ShellProps) {
               aria-label={t("theme")}
               onClick={() =>
                 start(async () => {
-                  const dark = document.documentElement.dataset.theme === "dark" || (!document.documentElement.dataset.theme && matchMedia("(prefers-color-scheme: dark)").matches);
+                  const dark =
+                    document.documentElement.dataset.theme === "dark" ||
+                    (!document.documentElement.dataset.theme && matchMedia("(prefers-color-scheme: dark)").matches);
                   document.documentElement.dataset.theme = dark ? "light" : "dark";
                   await setThemePref(dark ? "light" : "dark");
                 })

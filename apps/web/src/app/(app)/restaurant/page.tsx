@@ -8,7 +8,9 @@ export const metadata = { title: "Tables" };
 
 export default async function RestaurantPage() {
   const ctx = await requireContext("restaurant.manage", "restaurant");
-  const tables = await read(ctx, (tx) => tx.diningTable.findMany({ where: { locationId: ctx.locationId, deletedAt: null }, include: { tab: true }, orderBy: { name: "asc" } }));
+  const tables = await read(ctx, (tx) =>
+    tx.diningTable.findMany({ where: { locationId: ctx.locationId, deletedAt: null }, include: { tab: true }, orderBy: { name: "asc" } }),
+  );
   return (
     <div className="flex flex-col gap-4">
       <PageHeader
@@ -22,7 +24,17 @@ export default async function RestaurantPage() {
         }
       />
       <FloorPlan
-        tables={tables.map((t) => ({ id: t.id, name: t.name, seats: t.seats, area: t.area, shape: t.shape, x: t.x, y: t.y, occupied: !!t.tab && (t.tab.lines as unknown[]).length > 0, covers: t.tab?.covers ?? 0 }))}
+        tables={tables.map((t) => ({
+          id: t.id,
+          name: t.name,
+          seats: t.seats,
+          area: t.area,
+          shape: t.shape,
+          x: t.x,
+          y: t.y,
+          occupied: !!t.tab && (t.tab.lines as unknown[]).length > 0,
+          covers: t.tab?.covers ?? 0,
+        }))}
       />
     </div>
   );

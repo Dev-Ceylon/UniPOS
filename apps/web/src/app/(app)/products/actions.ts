@@ -10,7 +10,13 @@ export async function saveProductAction(id: string | null, input: unknown, openi
     // Opening stock for new variants goes through the ledger.
     if (!id) {
       const moves = p.variants
-        .map((v, i) => ({ variantId: v.id, locationId: ctx.locationId, qtyChange: Math.trunc(openingStock[i] ?? 0), reason: "opening" as const, memberId: ctx.member.id }))
+        .map((v, i) => ({
+          variantId: v.id,
+          locationId: ctx.locationId,
+          qtyChange: Math.trunc(openingStock[i] ?? 0),
+          reason: "opening" as const,
+          memberId: ctx.member.id,
+        }))
         .filter((mv) => mv.qtyChange > 0);
       if (moves.length && p.trackStock) await recordMovements(tx, moves);
     }
@@ -68,7 +74,21 @@ export async function saveTaxClass(id: string | null, input: unknown) {
         else await tx.taxRule.create({ data: { ...data, taxClassId: id } });
       }
     } else {
-      const tc = await tx.taxClass.create({ data: { name: d.name, rules: { create: d.rules.map((r) => ({ name: r.name, rateBp: r.rateBp, inclusive: r.inclusive, compound: r.compound, region: r.region ?? null, priority: r.priority })) } } });
+      const tc = await tx.taxClass.create({
+        data: {
+          name: d.name,
+          rules: {
+            create: d.rules.map((r) => ({
+              name: r.name,
+              rateBp: r.rateBp,
+              inclusive: r.inclusive,
+              compound: r.compound,
+              region: r.region ?? null,
+              priority: r.priority,
+            })),
+          },
+        },
+      });
       classId = tc.id;
     }
     await writeAudit(tx, { memberId: ctx.member.id, name: ctx.member.name }, "tax.save", "TaxClass", classId, { after: d });
@@ -100,7 +120,10 @@ const ModifierGroupSchema = z.object({
   name: z.string().trim().min(1).max(60),
   minSelect: z.number().int().min(0).max(10),
   maxSelect: z.number().int().min(1).max(20),
-  modifiers: z.array(z.object({ name: z.string().trim().min(1).max(60), priceDelta: z.number().int() })).min(1).max(30),
+  modifiers: z
+    .array(z.object({ name: z.string().trim().min(1).max(60), priceDelta: z.number().int() }))
+    .min(1)
+    .max(30),
 });
 
 export async function saveModifierGroup(id: string | null, input: unknown) {

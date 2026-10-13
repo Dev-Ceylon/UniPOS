@@ -4,7 +4,15 @@ import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { bumpTicket } from "../restaurant/actions";
 
-type Ticket = { id: string; number: number; tableName: string | null; course: number; status: string; createdAt: string; items: { name: string; qty: number; modifiers: string[]; note: string | null }[] };
+type Ticket = {
+  id: string;
+  number: number;
+  tableName: string | null;
+  course: number;
+  status: string;
+  createdAt: string;
+  items: { name: string; qty: number; modifiers: string[]; note: string | null }[];
+};
 
 const NEXT: Record<string, "in_progress" | "ready" | "bumped"> = { new: "in_progress", in_progress: "ready", ready: "bumped" };
 const LABEL: Record<string, string> = { new: "Start", in_progress: "Ready", ready: "Bump" };
@@ -62,8 +70,16 @@ export function KitchenDisplay() {
         {open.map((t) => {
           const late = now - new Date(t.createdAt).getTime() > 15 * 60_000;
           return (
-            <Card key={t.id} className={cn("flex flex-col", late && t.status !== "ready" && "border-danger ring-2 ring-danger/40", t.status === "ready" && "border-success")}>
-              <div className={cn("flex items-center justify-between rounded-t-lg px-3 py-2 text-sm font-semibold", t.status === "new" ? "bg-warning-soft" : t.status === "ready" ? "bg-success-soft" : "bg-primary-soft")}>
+            <Card
+              key={t.id}
+              className={cn("flex flex-col", late && t.status !== "ready" && "border-danger ring-2 ring-danger/40", t.status === "ready" && "border-success")}
+            >
+              <div
+                className={cn(
+                  "flex items-center justify-between rounded-t-lg px-3 py-2 text-sm font-semibold",
+                  t.status === "new" ? "bg-warning-soft" : t.status === "ready" ? "bg-success-soft" : "bg-primary-soft",
+                )}
+              >
                 <span>
                   #{t.number} · {t.tableName ?? "Takeaway"} · Course {t.course}
                 </span>

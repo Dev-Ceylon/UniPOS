@@ -20,7 +20,13 @@ export function AdjustButton({ variantId, name, onHand }: { variantId: string; n
             const fd = new FormData(e.currentTarget);
             run(
               () =>
-                adjustAction({ variantId, mode: fd.get("mode") as "delta" | "set", qty: Number(fd.get("qty")), reason: String(fd.get("reason")), note: String(fd.get("note") || "") || undefined }),
+                adjustAction({
+                  variantId,
+                  mode: fd.get("mode") as "delta" | "set",
+                  qty: Number(fd.get("qty")),
+                  reason: String(fd.get("reason")),
+                  note: String(fd.get("note") || "") || undefined,
+                }),
               { success: "Stock adjusted", onOk: () => setOpen(false) },
             );
           }}

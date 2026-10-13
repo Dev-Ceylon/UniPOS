@@ -55,8 +55,16 @@ export function counted(sales: readonly ReportSale[]): ReportSale[] {
 
 export function summarizeSales(sales: readonly ReportSale[]): SalesSummary {
   const done = counted(sales);
-  let gross = 0, discounts = 0, net = 0, tax = 0, total = 0, refunds = 0, cost = 0, items = 0;
-  let saleCount = 0, refundCount = 0;
+  let gross = 0,
+    discounts = 0,
+    net = 0,
+    tax = 0,
+    total = 0,
+    refunds = 0,
+    cost = 0,
+    items = 0;
+  let saleCount = 0,
+    refundCount = 0;
   for (const s of done) {
     if (s.isRefund) {
       refundCount++;
@@ -140,7 +148,16 @@ export function salesByProduct(sales: readonly ReportSale[]) {
   const map = new Map<string, { variantId: string; name: string; category: string; qty: number; net: Minor; total: Minor; cost: Minor; profit: Minor }>();
   for (const s of counted(sales)) {
     for (const l of s.lines) {
-      const row = map.get(l.variantId) ?? { variantId: l.variantId, name: l.productName, category: l.categoryName ?? "", qty: 0, net: 0, total: 0, cost: 0, profit: 0 };
+      const row = map.get(l.variantId) ?? {
+        variantId: l.variantId,
+        name: l.productName,
+        category: l.categoryName ?? "",
+        qty: 0,
+        net: 0,
+        total: 0,
+        cost: 0,
+        profit: 0,
+      };
       row.qty += l.qty;
       row.net += l.net;
       row.total += l.total;
@@ -191,7 +208,10 @@ export interface InventoryRow {
 }
 
 export function inventoryValuation(rows: readonly InventoryRow[]) {
-  let units = 0, costValue = 0, retailValue = 0, low = 0;
+  let units = 0,
+    costValue = 0,
+    retailValue = 0,
+    low = 0;
   for (const r of rows) {
     const q = Math.max(0, r.onHand);
     units += q;

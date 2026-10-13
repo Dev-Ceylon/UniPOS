@@ -64,9 +64,7 @@ export function allocate(total: Minor, weights: readonly number[]): Minor[] {
   const raw = weights.map((w) => (absTotal * Math.abs(w)) / sumW);
   const floors = raw.map((r) => Math.floor(r + 1e-9));
   let remainder = absTotal - floors.reduce((a, b) => a + b, 0);
-  const order = raw
-    .map((r, i) => ({ i, frac: r - Math.floor(r + 1e-9) }))
-    .sort((a, b) => b.frac - a.frac || a.i - b.i);
+  const order = raw.map((r, i) => ({ i, frac: r - Math.floor(r + 1e-9) })).sort((a, b) => b.frac - a.frac || a.i - b.i);
   for (let k = 0; remainder > 0 && order.length > 0; k = (k + 1) % order.length) {
     floors[order[k]!.i]! += 1;
     remainder -= 1;

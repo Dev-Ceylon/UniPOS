@@ -1,7 +1,18 @@
 "use server";
 import {
-  BUSINESS_TYPES, CustomFieldDefSchema, dependents, isValidGrant, LocationInputSchema, MODULES, PinSchema, ReceiptTemplateSchema, resolveModules, TenantSettingsSchema, ThemeSchema,
-  type BusinessType, type ModuleId,
+  BUSINESS_TYPES,
+  CustomFieldDefSchema,
+  dependents,
+  isValidGrant,
+  LocationInputSchema,
+  MODULES,
+  PinSchema,
+  ReceiptTemplateSchema,
+  resolveModules,
+  TenantSettingsSchema,
+  ThemeSchema,
+  type BusinessType,
+  type ModuleId,
 } from "@unipos/core";
 import { getPrisma, presetSettings, writeAudit, type Tx } from "@unipos/db";
 import { headers } from "next/headers";
@@ -37,7 +48,12 @@ const GeneralSchema = z.object({
   allowNegativeStock: z.boolean(),
   trackStockByDefault: z.boolean(),
   askCovers: z.boolean(),
-  loyalty: z.object({ enabled: z.boolean(), spendPerPoint: z.number().int().positive(), pointValue: z.number().int().positive(), minRedeem: z.number().int().min(0) }),
+  loyalty: z.object({
+    enabled: z.boolean(),
+    spendPerPoint: z.number().int().positive(),
+    pointValue: z.number().int().positive(),
+    minRedeem: z.number().int().min(0),
+  }),
   privacyNotice: z.string().max(4000),
   dataRetentionMonths: z.number().int().min(0).max(240),
 });
@@ -50,7 +66,16 @@ export async function saveGeneral(input: z.infer<typeof GeneralSchema>) {
     } catch {
       throw new UserError("Unknown time zone");
     }
-    const settings = { ...(await currentSettings(ctx)), discountThresholdBp: d.discountThresholdBp, allowNegativeStock: d.allowNegativeStock, trackStockByDefault: d.trackStockByDefault, askCovers: d.askCovers, loyalty: d.loyalty, privacyNotice: d.privacyNotice, dataRetentionMonths: d.dataRetentionMonths };
+    const settings = {
+      ...(await currentSettings(ctx)),
+      discountThresholdBp: d.discountThresholdBp,
+      allowNegativeStock: d.allowNegativeStock,
+      trackStockByDefault: d.trackStockByDefault,
+      askCovers: d.askCovers,
+      loyalty: d.loyalty,
+      privacyNotice: d.privacyNotice,
+      dataRetentionMonths: d.dataRetentionMonths,
+    };
     await updateTenant(ctx, tx, { name: d.name, currency: d.currency, locale: d.locale, timezone: d.timezone, settings }, "settings.general");
     return true;
   });
@@ -63,7 +88,10 @@ export async function applyPreset(type: string) {
     const { modules, settings } = presetSettings(type as BusinessType, await currentSettings(ctx));
     await updateTenant(ctx, tx, { businessType: type, enabledModules: modules, settings }, "settings.preset");
     if ((type === "restaurant" || type === "cafe") && (await tx.diningTable.count({ where: { locationId: ctx.locationId } })) === 0) {
-      for (let i = 1; i <= 6; i++) await tx.diningTable.create({ data: { locationId: ctx.locationId, name: `T${i}`, x: ((i - 1) % 3) * 140 + 20, y: Math.floor((i - 1) / 3) * 140 + 20 } });
+      for (let i = 1; i <= 6; i++)
+        await tx.diningTable.create({
+          data: { locationId: ctx.locationId, name: `T${i}`, x: ((i - 1) % 3) * 140 + 20, y: Math.floor((i - 1) / 3) * 140 + 20 },
+        });
     }
     return modules;
   });
@@ -187,7 +215,10 @@ export async function updateMember(memberId: string, input: z.infer<typeof Membe
         ...(d.pin ? { pinHash: await hashPin(d.pin), failedPinAttempts: 0, pinLockedUntil: null } : {}),
       },
     });
-    await writeAudit(tx, actor(ctx), "member.update", "Member", m.id, { before: { roleId: m.roleId, active: m.active }, after: { roleId: d.roleId, active: d.active, pinChanged: !!d.pin } });
+    await writeAudit(tx, actor(ctx), "member.update", "Member", m.id, {
+      before: { roleId: m.roleId, active: m.active },
+      after: { roleId: d.roleId, active: d.active, pinChanged: !!d.pin },
+    });
     return true;
   });
 }
@@ -204,7 +235,10 @@ export async function saveRole(id: string | null, input: unknown) {
       if (r?.key === "owner") throw new UserError("The Owner role always has every permission");
       await tx.role.update({ where: { id }, data: d });
     } else {
-      const key = `${d.name.toLowerCase().replace(/[^a-z0-9]+/g, "_").slice(0, 30)}_${Date.now().toString(36)}`;
+      const key = `${d.name
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "_")
+        .slice(0, 30)}_${Date.now().toString(36)}`;
       id = (await tx.role.create({ data: { ...d, key } })).id;
     }
     await writeAudit(tx, actor(ctx), "role.save", "Role", id, { after: d });

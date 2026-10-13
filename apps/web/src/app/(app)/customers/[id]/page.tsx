@@ -37,7 +37,16 @@ export default async function CustomerPage({ params }: { params: Promise<{ id: s
           <>
             {can(ctx.member, "customers.edit") ? (
               <CustomerForm
-                customer={{ id: c.id, name: c.name, phone: c.phone ?? "", email: c.email ?? "", group: c.group ?? "", notes: c.notes ?? "", marketingConsent: c.marketingConsent, customFields: (c.customFields as Record<string, unknown>) ?? {} }}
+                customer={{
+                  id: c.id,
+                  name: c.name,
+                  phone: c.phone ?? "",
+                  email: c.email ?? "",
+                  group: c.group ?? "",
+                  notes: c.notes ?? "",
+                  marketingConsent: c.marketingConsent,
+                  customFields: (c.customFields as Record<string, unknown>) ?? {},
+                }}
                 customFields={ctx.settings.customFields.customer}
               />
             ) : null}
@@ -48,7 +57,11 @@ export default async function CustomerPage({ params }: { params: Promise<{ id: s
       <div className="grid gap-4 sm:grid-cols-3">
         <Stat label="Lifetime spend" value={m(data.agg._sum.total ?? 0)} />
         <Stat label="Visits" value={data.agg._count} />
-        {loyalty ? <Stat label="Loyalty points" value={data.points} sub={`Worth ${m(data.points * ctx.settings.loyalty.pointValue)}`} /> : <Stat label="Customer since" value={dateTime(c.createdAt, ctx.timezone, ctx.locale)} />}
+        {loyalty ? (
+          <Stat label="Loyalty points" value={data.points} sub={`Worth ${m(data.points * ctx.settings.loyalty.pointValue)}`} />
+        ) : (
+          <Stat label="Customer since" value={dateTime(c.createdAt, ctx.timezone, ctx.locale)} />
+        )}
       </div>
       <div className="grid gap-4 lg:grid-cols-3">
         <Card className="lg:col-span-2">
@@ -67,7 +80,7 @@ export default async function CustomerPage({ params }: { params: Promise<{ id: s
               {data.sales.map((s) => (
                 <tr key={s.id}>
                   <Td>
-                    <Link className="text-primary underline" href={`/sales/${s.id}`}>
+                    <Link className="text-primary-ink underline" href={`/sales/${s.id}`}>
                       {s.number}
                     </Link>{" "}
                     {s.isRefund ? <Badge tone="warning">Refund</Badge> : null}

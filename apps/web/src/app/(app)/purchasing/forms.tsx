@@ -73,7 +73,11 @@ export function NewPo({ suppliers, currency }: { suppliers: { id: string; name: 
         title="New purchase order"
         size="lg"
         footer={
-          <Button loading={pending} disabled={!lines.length} onClick={() => run(() => createPoAction({ supplierId, expectedAt, note, lines }), { onOk: (id) => router.push(`/purchasing/orders/${id}`) })}>
+          <Button
+            loading={pending}
+            disabled={!lines.length}
+            onClick={() => run(() => createPoAction({ supplierId, expectedAt, note, lines }), { onOk: (id) => router.push(`/purchasing/orders/${id}`) })}
+          >
             Create draft
           </Button>
         }
@@ -95,14 +99,29 @@ export function NewPo({ suppliers, currency }: { suppliers: { id: string; name: 
           </div>
           <VariantPicker
             currency={currency}
-            onPick={(v) => setLines((ls) => (ls.some((l) => l.variantId === v.id) ? ls : [...ls, { variantId: v.id, name: v.name, qty: 1, unitCost: toDecimalString(v.cost, currency) }]))}
+            onPick={(v) =>
+              setLines((ls) =>
+                ls.some((l) => l.variantId === v.id) ? ls : [...ls, { variantId: v.id, name: v.name, qty: 1, unitCost: toDecimalString(v.cost, currency) }],
+              )
+            }
           />
           <ul className="flex flex-col gap-2">
             {lines.map((l) => (
               <li key={l.variantId} className="grid grid-cols-[1fr_5rem_7rem_auto] items-center gap-2 text-sm">
                 <span>{l.name}</span>
-                <Input aria-label={`Quantity ${l.name}`} type="number" min={1} value={l.qty} onChange={(e) => setLines((ls) => ls.map((x) => (x.variantId === l.variantId ? { ...x, qty: Math.max(1, Number(e.target.value) || 1) } : x)))} />
-                <Input aria-label={`Unit cost ${l.name}`} inputMode="decimal" value={l.unitCost} onChange={(e) => setLines((ls) => ls.map((x) => (x.variantId === l.variantId ? { ...x, unitCost: e.target.value } : x)))} />
+                <Input
+                  aria-label={`Quantity ${l.name}`}
+                  type="number"
+                  min={1}
+                  value={l.qty}
+                  onChange={(e) => setLines((ls) => ls.map((x) => (x.variantId === l.variantId ? { ...x, qty: Math.max(1, Number(e.target.value) || 1) } : x)))}
+                />
+                <Input
+                  aria-label={`Unit cost ${l.name}`}
+                  inputMode="decimal"
+                  value={l.unitCost}
+                  onChange={(e) => setLines((ls) => ls.map((x) => (x.variantId === l.variantId ? { ...x, unitCost: e.target.value } : x)))}
+                />
                 <Button size="icon" variant="ghost" aria-label="Remove" onClick={() => setLines((ls) => ls.filter((x) => x.variantId !== l.variantId))}>
                   <Trash2 className="h-4 w-4" />
                 </Button>

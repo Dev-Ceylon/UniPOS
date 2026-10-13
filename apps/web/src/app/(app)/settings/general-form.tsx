@@ -41,7 +41,12 @@ export function GeneralForm({ initial, readOnly, loyaltyModule }: { initial: Ini
             allowNegativeStock: f.allowNegativeStock,
             trackStockByDefault: f.trackStockByDefault,
             askCovers: f.askCovers,
-            loyalty: { enabled: f.loyaltyEnabled, spendPerPoint: parseMoney(f.spendPerPoint, f.currency), pointValue: parseMoney(f.pointValue, f.currency), minRedeem: Number(f.minRedeem) || 0 },
+            loyalty: {
+              enabled: f.loyaltyEnabled,
+              spendPerPoint: parseMoney(f.spendPerPoint, f.currency),
+              pointValue: parseMoney(f.pointValue, f.currency),
+              minRedeem: Number(f.minRedeem) || 0,
+            },
             privacyNotice: f.privacyNotice,
             dataRetentionMonths: Number(f.dataRetentionMonths) || 0,
           };
@@ -80,12 +85,24 @@ export function GeneralForm({ initial, readOnly, loyaltyModule }: { initial: Ini
             <CardTitle>Register & stock</CardTitle>
           </CardHeader>
           <CardBody className="grid gap-4 sm:grid-cols-2">
-            <Field label="Discount limit without manager (%)" htmlFor="g-disc" hint="Larger discounts need the “Apply discounts above the threshold” permission.">
+            <Field
+              label="Discount limit without manager (%)"
+              htmlFor="g-disc"
+              hint="Larger discounts need the “Apply discounts above the threshold” permission."
+            >
               <Input id="g-disc" inputMode="decimal" value={f.discountThreshold} onChange={(e) => set("discountThreshold", e.target.value)} />
             </Field>
             <div className="flex flex-col gap-2 pt-6">
-              <Checkbox label="Allow selling below zero stock (flagged for review)" checked={f.allowNegativeStock} onChange={(e) => set("allowNegativeStock", e.target.checked)} />
-              <Checkbox label="Track stock for new products by default" checked={f.trackStockByDefault} onChange={(e) => set("trackStockByDefault", e.target.checked)} />
+              <Checkbox
+                label="Allow selling below zero stock (flagged for review)"
+                checked={f.allowNegativeStock}
+                onChange={(e) => set("allowNegativeStock", e.target.checked)}
+              />
+              <Checkbox
+                label="Track stock for new products by default"
+                checked={f.trackStockByDefault}
+                onChange={(e) => set("trackStockByDefault", e.target.checked)}
+              />
               <Checkbox label="Ask number of guests when opening a table" checked={f.askCovers} onChange={(e) => set("askCovers", e.target.checked)} />
             </div>
           </CardBody>
@@ -96,7 +113,12 @@ export function GeneralForm({ initial, readOnly, loyaltyModule }: { initial: Ini
               <CardTitle>Loyalty</CardTitle>
             </CardHeader>
             <CardBody className="grid gap-4 sm:grid-cols-3">
-              <Checkbox className="sm:col-span-3" label="Customers earn points on purchases" checked={f.loyaltyEnabled} onChange={(e) => set("loyaltyEnabled", e.target.checked)} />
+              <Checkbox
+                className="sm:col-span-3"
+                label="Customers earn points on purchases"
+                checked={f.loyaltyEnabled}
+                onChange={(e) => set("loyaltyEnabled", e.target.checked)}
+              />
               <Field label={`Spend per point (${f.currency})`} htmlFor="g-spp">
                 <Input id="g-spp" inputMode="decimal" value={f.spendPerPoint} onChange={(e) => set("spendPerPoint", e.target.value)} />
               </Field>
@@ -116,10 +138,22 @@ export function GeneralForm({ initial, readOnly, loyaltyModule }: { initial: Ini
           <CardBody className="grid gap-4">
             <Alert>Customer names, phones and purchase history are personal data (Sri Lanka PDPA). Confirm obligations with a legal adviser.</Alert>
             <Field label="Privacy notice shown to customers" htmlFor="g-privacy">
-              <Textarea id="g-privacy" value={f.privacyNotice} onChange={(e) => set("privacyNotice", e.target.value)} rows={4} placeholder="We keep your name and phone number to give you loyalty points…" />
+              <Textarea
+                id="g-privacy"
+                value={f.privacyNotice}
+                onChange={(e) => set("privacyNotice", e.target.value)}
+                rows={4}
+                placeholder="We keep your name and phone number to give you loyalty points…"
+              />
             </Field>
             <Field label="Retention (months, 0 = keep)" htmlFor="g-ret" hint="Customers inactive longer than this are listed for review.">
-              <Input id="g-ret" inputMode="numeric" value={f.dataRetentionMonths} onChange={(e) => set("dataRetentionMonths", e.target.value)} className="w-32" />
+              <Input
+                id="g-ret"
+                inputMode="numeric"
+                value={f.dataRetentionMonths}
+                onChange={(e) => set("dataRetentionMonths", e.target.value)}
+                className="w-32"
+              />
             </Field>
           </CardBody>
         </Card>
@@ -153,7 +187,13 @@ export function PresetSwitcher({ current }: { current: string }) {
             ))}
           </Select>
         </Field>
-        <Button variant="outline" disabled={type === current} loading={pending} onClick={() => run(() => applyPreset(type), { success: `Switched to ${PRESETS[type as keyof typeof PRESETS].label}` })} data-testid="apply-preset">
+        <Button
+          variant="outline"
+          disabled={type === current}
+          loading={pending}
+          onClick={() => run(() => applyPreset(type), { success: `Switched to ${PRESETS[type as keyof typeof PRESETS].label}` })}
+          data-testid="apply-preset"
+        >
           Apply preset
         </Button>
       </CardBody>
