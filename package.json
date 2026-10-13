@@ -1,0 +1,24 @@
+{
+  "name": "unipos",
+  "private": true,
+  "version": "0.1.0",
+  "description": "UniPOS — modular, offline-first point of sale",
+  "license": "MIT",
+  "packageManager": "pnpm@10.28.0",
+  "engines": { "node": ">=22" },
+  "scripts": {
+    "dev": "pnpm --filter @unipos/web dev",
+    "build": "pnpm --filter @unipos/db generate && pnpm --filter @unipos/web build",
+    "typecheck": "pnpm -r typecheck",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "test": "pnpm -r test",
+    "test:coverage": "pnpm --filter @unipos/core test:coverage",
+    "test:integration": "pnpm --filter @unipos/db test:integration",
+    "test:e2e": "pnpm --filter @unipos/web test:e2e",
+    "db:migrate": "pnpm --filter @unipos/db migrate:deploy",
+    "db:seed": "pnpm --filter @unipos/db seed",
+    "prepare": "husky || true"
+  }
+}

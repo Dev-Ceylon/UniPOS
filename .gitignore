@@ -1,0 +1,14 @@
+node_modules
+.next
+dist
+coverage
+*.tsbuildinfo
+.env
+.env.local
+playwright-report
+test-results
+packages/db/src/generated
+apps/web/public/sw.js
+apps/web/public/sw.js.map
+apps/web/public/swe-worker-*.js
+.turbo
