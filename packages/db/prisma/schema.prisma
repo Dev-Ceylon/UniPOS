@@ -1,0 +1,748 @@
+// UniPOS data model. Conventions (see docs/adr):
+// - Every business table carries tenantId (defaulted from the RLS session setting) and is protected by RLS.
+// - Money is Int minor units. Quantities are Int.
+// - Sales use client-generated UUIDv7 ids so offline sales are final before sync.
+
+generator client {
+  provider     = "prisma-client"
+  output       = "../src/generated/prisma"
+  moduleFormat = "esm"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ───────────────────────────── Auth (Better Auth) ─────────────────────────────
+
+model User {
+  id            String    @id
+  name          String
+  email         String    @unique
+  emailVerified Boolean   @default(false)
+  image         String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  sessions      Session[]
+  accounts      Account[]
+  members       Member[]
+
+  @@map("user")
+}
+
+model Session {
+  id                   String   @id
+  expiresAt            DateTime
+  token                String   @unique
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+  ipAddress            String?
+  userAgent            String?
+  userId               String
+  activeOrganizationId String?
+  user                 User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("session")
+}
+
+model Account {
+  id                    String    @id
+  accountId             String
+  providerId            String
+  userId                String
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("account")
+}
+
+model Verification {
+  id         String   @id
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([identifier])
+  @@map("verification")
+}
+
+// ───────────────────────────── Tenancy ─────────────────────────────
+
+/// A business. Better Auth's "organization".
+model Tenant {
+  id             String       @id
+  name           String
+  slug           String       @unique
+  logo           String?
+  metadata       String?
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @default(now()) @updatedAt
+  businessType   String       @default("retail")
+  currency       String       @default("LKR")
+  locale         String       @default("en")
+  timezone       String       @default("Asia/Colombo")
+  enabledModules String[]     @default([])
+  theme          Json         @default("{}")
+  settings       Json         @default("{}")
+  deletedAt      DateTime?
+  members        Member[]
+  invitations    Invitation[]
+
+  @@map("tenant")
+}
+
+/// Staff membership. Better Auth's "member" plus POS fields.
+model Member {
+  id                 String    @id
+  tenantId           String
+  userId             String
+  /// Better Auth role (owner | member). Permissions come from roleId.
+  role               String    @default("member")
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @default(now()) @updatedAt
+  roleId             String?
+  displayName        String?
+  pinHash            String?
+  failedPinAttempts  Int       @default(0)
+  pinLockedUntil     DateTime?
+  allowedLocationIds String[]  @default([])
+  active             Boolean   @default(true)
+  tenant             Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  user               User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, userId])
+  @@index([userId])
+  @@map("member")
+}
+
+model Invitation {
+  id        String   @id
+  tenantId  String
+  email     String
+  role      String?
+  roleId    String?
+  status    String   @default("pending")
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  inviterId String
+  tenant    Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@index([email])
+  @@map("invitation")
+}
+
+model Role {
+  id          String   @id @default(uuid(7))
+  tenantId    String   @default(dbgenerated("unipos_current_tenant()"))
+  key         String
+  name        String
+  permissions String[]
+  system      Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([tenantId, key])
+}
+
+model Location {
+  id            String    @id @default(uuid(7))
+  tenantId      String    @default(dbgenerated("unipos_current_tenant()"))
+  name          String
+  code          String
+  address       String?
+  phone         String?
+  receiptHeader String?
+  taxRegion     String?
+  active        Boolean   @default(true)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  deletedAt     DateTime?
+
+  @@unique([tenantId, code])
+  @@index([tenantId])
+}
+
+model AuditLog {
+  id        String   @id @default(uuid(7))
+  tenantId  String   @default(dbgenerated("unipos_current_tenant()"))
+  actorId   String?
+  actorName String?
+  action    String
+  entity    String
+  entityId  String?
+  before    Json?
+  after     Json?
+  createdAt DateTime @default(now())
+
+  @@index([tenantId, createdAt])
+  @@index([tenantId, entity, entityId])
+}
+
+/// Per-tenant counters for human-readable numbers (PO-0001, TR-0001, …).
+model Counter {
+  tenantId String @default(dbgenerated("unipos_current_tenant()"))
+  key      String
+  value    Int    @default(0)
+
+  @@id([tenantId, key])
+}
+
+// ───────────────────────────── Catalog ─────────────────────────────
+
+model Category {
+  id        String     @id @default(uuid(7))
+  tenantId  String     @default(dbgenerated("unipos_current_tenant()"))
+  name      String
+  parentId  String?
+  sortOrder Int        @default(0)
+  color     String?
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  deletedAt DateTime?
+  parent    Category?  @relation("CategoryTree", fields: [parentId], references: [id])
+  children  Category[] @relation("CategoryTree")
+  products  Product[]
+
+  @@index([tenantId])
+}
+
+model TaxClass {
+  id        String    @id @default(uuid(7))
+  tenantId  String    @default(dbgenerated("unipos_current_tenant()"))
+  name      String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+  rules     TaxRule[]
+  products  Product[]
+
+  @@index([tenantId])
+}
+
+model TaxRule {
+  id         String   @id @default(uuid(7))
+  tenantId   String   @default(dbgenerated("unipos_current_tenant()"))
+  taxClassId String
+  name       String
+  /// basis points: 18% = 1800
+  rateBp     Int
+  inclusive  Boolean  @default(false)
+  compound   Boolean  @default(false)
+  region     String?
+  priority   Int      @default(0)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  taxClass   TaxClass @relation(fields: [taxClassId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+}
+
+model Product {
+  id               String    @id @default(uuid(7))
+  tenantId         String    @default(dbgenerated("unipos_current_tenant()"))
+  name             String
+  description      String?
+  categoryId       String?
+  taxClassId       String?
+  type             String    @default("standard")
+  unit             String    @default("each")
+  trackStock       Boolean   @default(true)
+  favourite        Boolean   @default(false)
+  imageUrl         String?
+  modifierGroupIds String[]  @default([])
+  customFields     Json      @default("{}")
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+  deletedAt        DateTime?
+  category         Category? @relation(fields: [categoryId], references: [id])
+  taxClass         TaxClass? @relation(fields: [taxClassId], references: [id])
+  variants         Variant[]
+
+  @@index([tenantId, deletedAt])
+  @@index([tenantId, name])
+}
+
+model Variant {
+  id          String       @id @default(uuid(7))
+  tenantId    String       @default(dbgenerated("unipos_current_tenant()"))
+  productId   String
+  name        String       @default("")
+  sku         String?
+  barcode     String?
+  options     Json         @default("{}")
+  price       Int
+  cost        Int          @default(0)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  deletedAt   DateTime?
+  product     Product      @relation(fields: [productId], references: [id], onDelete: Cascade)
+  stockLevels StockLevel[]
+
+  @@unique([tenantId, sku])
+  @@unique([tenantId, barcode])
+  @@index([productId])
+}
+
+// ───────────────────────────── Stock ─────────────────────────────
+
+model StockLevel {
+  id           String   @id @default(uuid(7))
+  tenantId     String   @default(dbgenerated("unipos_current_tenant()"))
+  variantId    String
+  locationId   String
+  onHand       Int      @default(0)
+  reorderPoint Int?
+  updatedAt    DateTime @updatedAt
+  variant      Variant  @relation(fields: [variantId], references: [id], onDelete: Cascade)
+
+  @@unique([variantId, locationId])
+  @@index([tenantId, locationId])
+}
+
+/// Append-only. Never update or delete rows.
+model StockMovement {
+  id         String   @id @default(uuid(7))
+  tenantId   String   @default(dbgenerated("unipos_current_tenant()"))
+  variantId  String
+  locationId String
+  qtyChange  Int
+  reason     String
+  refType    String?
+  refId      String?
+  note       String?
+  memberId   String?
+  createdAt  DateTime @default(now())
+
+  @@index([tenantId, variantId, locationId])
+  @@index([tenantId, createdAt])
+  @@index([refType, refId])
+}
+
+model Stocktake {
+  id          String          @id @default(uuid(7))
+  tenantId    String          @default(dbgenerated("unipos_current_tenant()"))
+  locationId  String
+  status      String          @default("open")
+  note        String?
+  createdById String?
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+  completedAt DateTime?
+  lines       StocktakeLine[]
+
+  @@index([tenantId])
+}
+
+model StocktakeLine {
+  id          String    @id @default(uuid(7))
+  tenantId    String    @default(dbgenerated("unipos_current_tenant()"))
+  stocktakeId String
+  variantId   String
+  expected    Int
+  counted     Int?
+  stocktake   Stocktake @relation(fields: [stocktakeId], references: [id], onDelete: Cascade)
+
+  @@unique([stocktakeId, variantId])
+}
+
+// ───────────────────────────── Sales ─────────────────────────────
+
+model Shift {
+  id            String         @id @default(uuid(7))
+  tenantId      String         @default(dbgenerated("unipos_current_tenant()"))
+  locationId    String
+  memberId      String
+  openingFloat  Int
+  openedAt      DateTime       @default(now())
+  closedAt      DateTime?
+  countedCash   Int?
+  expectedCash  Int?
+  variance      Int?
+  denominations Json?
+  note          String?
+  cashMovements CashMovement[]
+  sales         Sale[]
+
+  @@index([tenantId, locationId, closedAt])
+}
+
+model CashMovement {
+  id        String   @id
+  tenantId  String   @default(dbgenerated("unipos_current_tenant()"))
+  shiftId   String
+  type      String
+  amount    Int
+  reason    String
+  memberId  String?
+  createdAt DateTime @default(now())
+  shift     Shift    @relation(fields: [shiftId], references: [id])
+
+  @@index([tenantId, shiftId])
+}
+
+/// A sale or a return (negative lines, isRefund, originalSaleId).
+/// id is the client-generated UUIDv7 ("clientId") so offline sales are idempotent.
+model Sale {
+  id             String     @id
+  tenantId       String     @default(dbgenerated("unipos_current_tenant()"))
+  number         String
+  locationId     String
+  shiftId        String?
+  memberId       String
+  memberName     String     @default("")
+  customerId     String?
+  tableId        String?
+  tableName      String?
+  covers         Int?
+  quoteId        String?
+  status         String     @default("completed")
+  isRefund       Boolean    @default(false)
+  originalSaleId String?
+  subtotal       Int
+  discountTotal  Int
+  taxTotal       Int
+  total          Int
+  change         Int        @default(0)
+  taxes          Json       @default("[]")
+  orderDiscount  Json?
+  note           String?
+  flags          String[]   @default([])
+  deviceId       String?
+  createdAt      DateTime
+  syncedAt       DateTime   @default(now())
+  voidedAt       DateTime?
+  voidedById     String?
+  voidReason     String?
+  lines          SaleLine[]
+  payments       Payment[]
+  shift          Shift?     @relation(fields: [shiftId], references: [id])
+  customer       Customer?  @relation(fields: [customerId], references: [id])
+  originalSale   Sale?      @relation("Refunds", fields: [originalSaleId], references: [id])
+  refunds        Sale[]     @relation("Refunds")
+
+  @@index([tenantId, createdAt])
+  @@index([tenantId, locationId, createdAt])
+  @@index([tenantId, customerId])
+  @@index([tenantId, number])
+}
+
+model SaleLine {
+  id             String  @id
+  tenantId       String  @default(dbgenerated("unipos_current_tenant()"))
+  saleId         String
+  variantId      String
+  productId      String?
+  name           String
+  sku            String?
+  categoryName   String?
+  qty            Int
+  unitPrice      Int
+  catalogPrice   Int?
+  unitCost       Int     @default(0)
+  modifiers      Json    @default("[]")
+  discount       Json?
+  lineDiscount   Int     @default(0)
+  orderDiscount  Int     @default(0)
+  gross          Int
+  net            Int
+  taxTotal       Int
+  total          Int
+  taxLines       Json    @default("[]")
+  originalLineId String?
+  note           String?
+  sale           Sale    @relation(fields: [saleId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId, variantId])
+  @@index([saleId])
+  @@index([originalLineId])
+}
+
+model Payment {
+  id        String   @id
+  tenantId  String   @default(dbgenerated("unipos_current_tenant()"))
+  saleId    String
+  tender    String
+  amount    Int
+  reference String?
+  createdAt DateTime @default(now())
+  sale      Sale     @relation(fields: [saleId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId, tender])
+  @@index([saleId])
+}
+
+/// Every sync operation ever applied, for idempotent replays.
+model SyncOp {
+  id        String   @id
+  tenantId  String   @default(dbgenerated("unipos_current_tenant()"))
+  deviceId  String
+  type      String
+  status    String
+  result    Json     @default("{}")
+  createdAt DateTime @default(now())
+
+  @@index([tenantId, createdAt])
+}
+
+// ───────────────────────────── Customers & loyalty ─────────────────────────────
+
+model Customer {
+  id               String         @id @default(uuid(7))
+  tenantId         String         @default(dbgenerated("unipos_current_tenant()"))
+  name             String
+  phone            String?
+  email            String?
+  group            String?
+  notes            String?
+  marketingConsent Boolean        @default(false)
+  customFields     Json           @default("{}")
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+  deletedAt        DateTime?
+  sales            Sale[]
+  loyalty          LoyaltyEntry[]
+
+  @@index([tenantId, name])
+  @@index([tenantId, phone])
+}
+
+model LoyaltyEntry {
+  id         String   @id @default(uuid(7))
+  tenantId   String   @default(dbgenerated("unipos_current_tenant()"))
+  customerId String
+  points     Int
+  reason     String
+  saleId     String?
+  createdAt  DateTime @default(now())
+  customer   Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId, customerId])
+}
+
+model GiftCard {
+  id           String          @id @default(uuid(7))
+  tenantId     String          @default(dbgenerated("unipos_current_tenant()"))
+  code         String
+  initialValue Int
+  balance      Int
+  customerId   String?
+  active       Boolean         @default(true)
+  expiresAt    DateTime?
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+  entries      GiftCardEntry[]
+
+  @@unique([tenantId, code])
+}
+
+model GiftCardEntry {
+  id         String   @id @default(uuid(7))
+  tenantId   String   @default(dbgenerated("unipos_current_tenant()"))
+  giftCardId String
+  amount     Int
+  reason     String
+  saleId     String?
+  createdAt  DateTime @default(now())
+  giftCard   GiftCard @relation(fields: [giftCardId], references: [id], onDelete: Cascade)
+
+  @@index([giftCardId])
+}
+
+// ───────────────────────────── Purchasing & multi-location ─────────────────────────────
+
+model Supplier {
+  id        String          @id @default(uuid(7))
+  tenantId  String          @default(dbgenerated("unipos_current_tenant()"))
+  name      String
+  contact   String?
+  phone     String?
+  email     String?
+  address   String?
+  notes     String?
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
+  deletedAt DateTime?
+  orders    PurchaseOrder[]
+
+  @@index([tenantId])
+}
+
+model PurchaseOrder {
+  id         String              @id @default(uuid(7))
+  tenantId   String              @default(dbgenerated("unipos_current_tenant()"))
+  number     String
+  supplierId String
+  locationId String
+  status     String              @default("draft")
+  expectedAt DateTime?
+  note       String?
+  total      Int                 @default(0)
+  createdAt  DateTime            @default(now())
+  updatedAt  DateTime            @updatedAt
+  supplier   Supplier            @relation(fields: [supplierId], references: [id])
+  lines      PurchaseOrderLine[]
+
+  @@index([tenantId])
+}
+
+model PurchaseOrderLine {
+  id          String        @id @default(uuid(7))
+  tenantId    String        @default(dbgenerated("unipos_current_tenant()"))
+  orderId     String
+  variantId   String
+  name        String
+  qtyOrdered  Int
+  qtyReceived Int           @default(0)
+  unitCost    Int
+  order       PurchaseOrder @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@index([orderId])
+}
+
+model Transfer {
+  id             String         @id @default(uuid(7))
+  tenantId       String         @default(dbgenerated("unipos_current_tenant()"))
+  number         String
+  fromLocationId String
+  toLocationId   String
+  status         String         @default("draft")
+  note           String?
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  sentAt         DateTime?
+  receivedAt     DateTime?
+  lines          TransferLine[]
+
+  @@index([tenantId])
+}
+
+model TransferLine {
+  id          String   @id @default(uuid(7))
+  tenantId    String   @default(dbgenerated("unipos_current_tenant()"))
+  transferId  String
+  variantId   String
+  name        String
+  qty         Int
+  qtyReceived Int      @default(0)
+  transfer    Transfer @relation(fields: [transferId], references: [id], onDelete: Cascade)
+
+  @@index([transferId])
+}
+
+// ───────────────────────────── Restaurant ─────────────────────────────
+
+model DiningTable {
+  id         String    @id @default(uuid(7))
+  tenantId   String    @default(dbgenerated("unipos_current_tenant()"))
+  locationId String
+  name       String
+  seats      Int       @default(4)
+  area       String    @default("Main")
+  x          Int       @default(0)
+  y          Int       @default(0)
+  shape      String    @default("square")
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  deletedAt  DateTime?
+  tab        TableTab?
+
+  @@index([tenantId, locationId])
+}
+
+/// An open bill on a table, shared across devices until it is paid.
+model TableTab {
+  id         String      @id @default(uuid(7))
+  tenantId   String      @default(dbgenerated("unipos_current_tenant()"))
+  tableId    String      @unique
+  covers     Int         @default(0)
+  lines      Json        @default("[]")
+  customerId String?
+  memberId   String?
+  openedAt   DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+  table      DiningTable @relation(fields: [tableId], references: [id], onDelete: Cascade)
+}
+
+model ModifierGroup {
+  id        String    @id @default(uuid(7))
+  tenantId  String    @default(dbgenerated("unipos_current_tenant()"))
+  name      String
+  minSelect Int       @default(0)
+  maxSelect Int       @default(1)
+  /// [{ name, priceDelta }]
+  modifiers Json      @default("[]")
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  @@index([tenantId])
+}
+
+model KitchenTicket {
+  id         String    @id @default(uuid(7))
+  tenantId   String    @default(dbgenerated("unipos_current_tenant()"))
+  locationId String
+  number     Int
+  tableName  String?
+  tabId      String?
+  course     Int       @default(1)
+  /// [{ name, qty, modifiers[], note }]
+  items      Json
+  status     String    @default("new")
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  bumpedAt   DateTime?
+
+  @@index([tenantId, locationId, status])
+}
+
+// ───────────────────────────── Quotes & expenses ─────────────────────────────
+
+model Quote {
+  id         String    @id @default(uuid(7))
+  tenantId   String    @default(dbgenerated("unipos_current_tenant()"))
+  number     String
+  customerId String?
+  locationId String
+  status     String    @default("draft")
+  validUntil DateTime?
+  /// cart lines in the sync line format
+  lines      Json
+  total      Int
+  taxTotal   Int
+  note       String?
+  saleId     String?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  @@index([tenantId])
+}
+
+model Expense {
+  id          String   @id @default(uuid(7))
+  tenantId    String   @default(dbgenerated("unipos_current_tenant()"))
+  locationId  String?
+  category    String
+  description String
+  amount      Int
+  date        DateTime
+  reference   String?
+  memberId    String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([tenantId, date])
+}
