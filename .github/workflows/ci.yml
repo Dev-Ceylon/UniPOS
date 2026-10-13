@@ -29,6 +29,7 @@ jobs:
       - run: pnpm lint
       - run: pnpm format:check
       - run: pnpm --filter @unipos/core test:coverage
+      - run: pnpm --filter @unipos/web test
       - uses: actions/upload-artifact@v4
         if: always()
         with:
