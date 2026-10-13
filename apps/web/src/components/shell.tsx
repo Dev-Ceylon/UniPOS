@@ -7,13 +7,15 @@ import { usePathname, useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useState, useTransition } from "react";
 import { authClient } from "@/lib/auth-client";
-import { endCashierSession, setLocalePref, setLocation, setThemePref } from "@/lib/shell-actions";
+import { endCashierSession, setLocalePref, setLocation, setThemePref, switchTenant } from "@/lib/shell-actions";
 import { NAV_ICONS } from "./icons";
 import { PinDialog } from "./pin-dialog";
 import { SyncIndicator } from "./sync-indicator";
 
 export interface ShellProps {
   tenantName: string;
+  tenantId: string;
+  memberships: { tenantId: string; name: string }[];
   memberName: string;
   cashierSwitched: boolean;
   nav: NavItemMeta[];
@@ -64,9 +66,29 @@ export function Shell(p: ShellProps) {
       </a>
       <aside className={cn("no-print hidden w-60 shrink-0 flex-col border-r border-border bg-surface", isRegister ? "xl:flex" : "lg:flex")}>
         <div className="flex h-14 items-center border-b border-border px-4">
-          <Link href="/" className="truncate text-lg font-bold text-primary">
-            {p.tenantName}
-          </Link>
+          {p.memberships.length > 1 ? (
+            <Select
+              aria-label="Business"
+              className="h-9 text-sm font-semibold text-primary"
+              value={p.tenantId}
+              onChange={(e) =>
+                start(async () => {
+                  await switchTenant(e.target.value);
+                  window.location.assign("/");
+                })
+              }
+            >
+              {p.memberships.map((m) => (
+                <option key={m.tenantId} value={m.tenantId}>
+                  {m.name}
+                </option>
+              ))}
+            </Select>
+          ) : (
+            <Link href="/" className="truncate text-lg font-bold text-primary">
+              {p.tenantName}
+            </Link>
+          )}
         </div>
         <div className="flex-1 overflow-y-auto">{navList}</div>
       </aside>

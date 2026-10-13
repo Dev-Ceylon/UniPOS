@@ -15,6 +15,8 @@ export default async function AppLayout({ children }: { children: React.ReactNod
     <OfflineProvider tenantId={ctx.tenantId}>
       <Shell
         tenantName={ctx.tenant.name}
+        tenantId={ctx.tenantId}
+        memberships={ctx.memberships}
         memberName={ctx.member.name}
         cashierSwitched={ctx.cashierSwitched}
         nav={nav}

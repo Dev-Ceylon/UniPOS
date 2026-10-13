@@ -5,7 +5,8 @@ import { read } from "@/lib/actions";
 import { requireContext } from "@/lib/context";
 import { dateTime } from "@/lib/format";
 import { formOptions } from "../load";
-import { ProductForm, toFormData } from "../product-form";
+import { toFormData } from "../product-data";
+import { ProductForm } from "../product-form";
 
 export default async function EditProduct({ params }: { params: Promise<{ id: string }> }) {
   const ctx = await requireContext("products.view");

@@ -1,7 +1,8 @@
 "use server";
 import { PinSchema } from "@unipos/core";
 import { getPrisma, withTenant, writeAudit } from "@unipos/db";
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
+import { auth } from "./auth";
 import { CASHIER_COOKIE, getAppContext, LOCATION_COOKIE } from "./context";
 import { MAX_PIN_ATTEMPTS, PIN_LOCK_MINUTES, signCashier, verifyPin } from "./pin";
 import { rateLimit } from "./rate-limit";
@@ -65,4 +66,15 @@ export async function switchCashier(pin: string): Promise<{ ok: true; name: stri
 
 export async function endCashierSession() {
   (await cookies()).delete(CASHIER_COOKIE);
+}
+
+/** Switch the active business (Better Auth organization). */
+export async function switchTenant(tenantId: string) {
+  const ctx = await getAppContext();
+  if (!ctx || !ctx.memberships.some((m) => m.tenantId === tenantId)) return { ok: false as const };
+  await auth.api.setActiveOrganization({ body: { organizationId: tenantId }, headers: await headers() });
+  const store = await cookies();
+  store.delete(CASHIER_COOKIE);
+  store.delete(LOCATION_COOKIE);
+  return { ok: true as const };
 }

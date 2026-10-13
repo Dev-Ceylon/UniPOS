@@ -26,6 +26,8 @@ export interface AppContext extends TenantContext {
   settings: TenantSettings;
   locations: { id: string; name: string; code: string; taxRegion: string | null; receiptHeader: string | null; address: string | null }[];
   locationId: string;
+  /** Businesses this user belongs to (for the business switcher). */
+  memberships: { tenantId: string; name: string }[];
 }
 
 export const getSession = cache(async () => auth.api.getSession({ headers: await headers() }));
@@ -87,6 +89,7 @@ export const getAppContext = cache(async (): Promise<AppContext | null> => {
     },
     locations: allowed.map((l) => ({ id: l.id, name: l.name, code: l.code, taxRegion: l.taxRegion, receiptHeader: l.receiptHeader, address: l.address })),
     locationId: location?.id ?? "",
+    memberships: memberships.map((m) => ({ tenantId: m.tenantId, name: m.tenant.name })),
   };
 });
 

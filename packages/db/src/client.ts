@@ -42,8 +42,46 @@ export async function withTenant<T>(
   return client.$transaction(
     async (tx) => {
       await tx.$executeRaw`SELECT set_config('app.tenant_id', ${tenantId}, true)`;
-      return fn(tx);
+      return fn(serialized(tx));
     },
     { timeout: opts.timeout ?? 20_000, maxWait: 10_000, isolationLevel: opts.isolationLevel },
   );
+}
+
+/**
+ * An interactive transaction runs on one connection, which can only execute
+ * one query at a time. Wrap the transaction client so concurrent calls (e.g.
+ * Promise.all in a page) are queued instead of overlapping on the connection.
+ */
+function serialized(tx: Tx): Tx {
+  let queue: Promise<unknown> = Promise.resolve();
+  const enqueue = <R>(run: () => PromiseLike<R>): Promise<R> => {
+    const next = queue.then(run, run);
+    queue = next.catch(() => undefined);
+    return next;
+  };
+  const wrapFn = (target: object, fn: (...a: unknown[]) => unknown) =>
+    (...args: unknown[]) => enqueue(() => fn.apply(target, args) as PromiseLike<unknown>);
+  const delegates = new Map<PropertyKey, unknown>();
+  return new Proxy(tx, {
+    get(target, prop, receiver) {
+      const value = Reflect.get(target, prop, receiver);
+      if (typeof prop === "string" && prop.startsWith("$") && typeof value === "function") return wrapFn(target, value as never);
+      if (value && typeof value === "object" && typeof prop === "string" && !prop.startsWith("_")) {
+        if (!delegates.has(prop)) {
+          delegates.set(
+            prop,
+            new Proxy(value, {
+              get(dt, dp, dr) {
+                const v = Reflect.get(dt, dp, dr);
+                return typeof v === "function" ? wrapFn(dt, v as never) : v;
+              },
+            }),
+          );
+        }
+        return delegates.get(prop);
+      }
+      return value;
+    },
+  });
 }
