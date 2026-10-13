@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>UniPOS — offline-first point of sale</title>
+<meta name="description" content="UniPOS is an open-source, modular, offline-first point of sale for retail shops, restaurants and cafés.">
+<link rel="icon" href="icon.png">
+<style>
+:root{--primary:#1464d2;--ink:#11519f;--soft:#e8f0fb;--bg:#f0f2f5;--surface:#fff;--fg:#1c1e21;--muted:#5d6066;--border:#ced0d4;--radius:12px;color-scheme:light}
+@media (prefers-color-scheme:dark){:root{--ink:#8ab4f4;--soft:#1f3354;--bg:#18191a;--surface:#242526;--fg:#e4e6eb;--muted:#b0b3b8;--border:#3e4042;color-scheme:dark}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.6 ui-sans-serif,system-ui,-apple-system,"Segoe UI","Noto Sans Sinhala","Noto Sans Tamil",sans-serif}
+a{color:var(--ink)}
+.wrap{max-width:1120px;margin:0 auto;padding:0 16px}
+header{background:var(--surface);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:5}
+header .wrap{display:flex;align-items:center;gap:16px;height:60px}
+.logo{display:flex;align-items:center;gap:8px;font-weight:700;font-size:20px;color:var(--ink);text-decoration:none}
+.logo img{width:28px;height:28px;border-radius:6px}
+nav{margin-left:auto;display:flex;gap:16px;flex-wrap:wrap}
+nav a{text-decoration:none;color:var(--fg);font-size:15px}
+nav a:hover{color:var(--ink)}
+.hero{padding:56px 0 32px;text-align:center}
+.hero h1{font-size:clamp(30px,5vw,48px);line-height:1.15;margin:0 0 12px;letter-spacing:-.02em}
+.hero p{font-size:clamp(17px,2.2vw,20px);color:var(--muted);max-width:720px;margin:0 auto 24px}
+.btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.btn{display:inline-block;padding:12px 20px;border-radius:10px;font-weight:600;text-decoration:none;border:1px solid var(--border);background:var(--surface);color:var(--fg)}
+.btn.primary{background:var(--primary);border-color:var(--primary);color:#fff}
+.shot{margin:32px auto 0;border-radius:var(--radius);border:1px solid var(--border);box-shadow:0 12px 40px rgba(0,0,0,.12);max-width:100%;height:auto;display:block}
+section{padding:48px 0}
+h2{font-size:28px;margin:0 0 8px;letter-spacing:-.01em}
+.lead{color:var(--muted);margin:0 0 24px}
+.grid{display:grid;gap:16px;grid-template-columns:repeat(auto-fill,minmax(250px,1fr))}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px}
+.card h3{margin:0 0 6px;font-size:17px}
+.card p{margin:0;color:var(--muted);font-size:15px}
+.gallery{display:grid;gap:16px;grid-template-columns:repeat(auto-fill,minmax(320px,1fr))}
+.gallery figure{margin:0;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+.gallery img{width:100%;height:auto;display:block}
+.gallery figcaption{padding:10px 14px;font-size:14px;color:var(--muted)}
+.note{background:var(--soft);border-radius:var(--radius);padding:16px 20px}
+pre{background:#0f1720;color:#e6edf3;border-radius:var(--radius);padding:16px;overflow-x:auto;font-size:14px;line-height:1.5}
+table{width:100%;border-collapse:collapse;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;font-size:15px}
+th,td{text-align:left;padding:10px 14px;border-bottom:1px solid var(--border);vertical-align:top}
+th{font-size:13px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
+.tablewrap{overflow-x:auto}
+footer{border-top:1px solid var(--border);padding:24px 0;color:var(--muted);font-size:14px}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+  <a class="logo" href="#"><img src="icon.png" alt="">UniPOS</a>
+  <nav aria-label="Sections"><a href="#features">Features</a><a href="#screens">Screens</a><a href="#tech">How it works</a><a href="#start">Get started</a><a href="https://github.com/Dev-Ceylon/UniPOS">GitHub</a></nav>
+</div></header>
+<main>
+<div class="wrap hero">
+  <h1>Point of sale for every shop.<br>Online or offline.</h1>
+  <p>UniPOS is an open-source, modular POS for retail shops, groceries, restaurants and cafés — built for Sri Lanka first (LKR, VAT, සිංහල, தமிழ்) and usable anywhere.</p>
+  <div class="btns">
+    <a class="btn primary" href="#start">Run it yourself</a>
+    <a class="btn" href="https://github.com/Dev-Ceylon/UniPOS">View source</a>
+  </div>
+  <img class="shot" src="screenshots/register.png" width="1366" height="820" alt="UniPOS register with a cart of three items and totals with VAT">
+</div>
+
+<section id="features"><div class="wrap">
+  <h2>Everything a small shop needs</h2>
+  <p class="lead">A small core plus modules you switch on per business type.</p>
+  <div class="grid">
+    <div class="card"><h3>Fast register</h3><p>Scan with a USB scanner or camera, discounts, split tenders, hold and resume, keyboard shortcuts, 80 mm receipts.</p></div>
+    <div class="card"><h3>Keeps selling offline</h3><p>Installable app. Sales are saved on the device and sync once — never lost, never duplicated.</p></div>
+    <div class="card"><h3>Stock you can trust</h3><p>Every movement is recorded. Adjustments, stocktakes, low-stock alerts, transfers between locations, purchase orders.</p></div>
+    <div class="card"><h3>Returns and cash-up</h3><p>Partial refunds linked to the original sale, voids with permission, shifts with opening float and variance.</p></div>
+    <div class="card"><h3>Customers and loyalty</h3><p>Purchase history, points, gift cards, and personal-data export and erase.</p></div>
+    <div class="card"><h3>Reports</h3><p>Sales, profit, tax, staff, tenders and stock value — export to CSV or PDF.</p></div>
+    <div class="card"><h3>Restaurant mode</h3><p>Floor plan, table bills shared across devices, modifiers, courses and a kitchen display.</p></div>
+    <div class="card"><h3>Staff and permissions</h3><p>Editable roles, fast PIN switching at the till, and an audit log of refunds, voids and price changes.</p></div>
+  </div>
+</div></section>
+
+<section id="screens"><div class="wrap">
+  <h2>Screens</h2>
+  <p class="lead">Captured from the running app with demo data.</p>
+  <div class="gallery">
+    <figure><img src="screenshots/dashboard.png" width="1366" height="820" loading="lazy" alt="Dashboard with sales KPIs, recent sales and low stock"><figcaption>Dashboard</figcaption></figure>
+    <figure><img src="screenshots/payment.png" width="1366" height="820" loading="lazy" alt="Payment dialog with tenders and change due"><figcaption>Split-tender payment</figcaption></figure>
+    <figure><img src="screenshots/kitchen-display.png" width="1366" height="820" loading="lazy" alt="Kitchen display with an open ticket"><figcaption>Kitchen display</figcaption></figure>
+    <figure><img src="screenshots/floor-plan.png" width="1366" height="820" loading="lazy" alt="Restaurant floor plan editor"><figcaption>Floor plan</figcaption></figure>
+    <figure><img src="screenshots/reports.png" width="1366" height="820" loading="lazy" alt="Products and profit report"><figcaption>Reports</figcaption></figure>
+    <figure><img src="screenshots/inventory.png" width="1366" height="820" loading="lazy" alt="Inventory with stock levels and reorder points"><figcaption>Inventory</figcaption></figure>
+    <figure><img src="screenshots/receipt-editor.png" width="1366" height="820" loading="lazy" alt="Receipt template editor with live preview"><figcaption>Receipt editor</figcaption></figure>
+    <figure><img src="screenshots/register-dark.png" width="1366" height="820" loading="lazy" alt="Register in dark mode with restaurant tables"><figcaption>Dark mode, restaurant layout</figcaption></figure>
+  </div>
+</div></section>
+
+<section id="tech"><div class="wrap">
+  <h2>How it works</h2>
+  <p class="lead">Next.js 16 · Better Auth · Prisma + PostgreSQL · Serwist + Dexie · Tailwind CSS · Vitest + Playwright</p>
+  <div class="grid">
+    <div class="card"><h3>Exact money</h3><p>All amounts are integer cents. A pure tax engine handles inclusive, exclusive and compound taxes the same way on the device and the server.</p></div>
+    <div class="card"><h3>Safe multi-tenancy</h3><p>One database, every row tagged with its shop, and Postgres row-level security as a second guard.</p></div>
+    <div class="card"><h3>Offline sync</h3><p>Each sale gets its final ID on the device. An outbox pushes to an idempotent endpoint, so retries can't double-charge or double-count stock.</p></div>
+    <div class="card"><h3>Tested</h3><p>Property-based tests on money, tax and stock; an 8-hour, 500-sale offline sync test; and 10 end-to-end flows with accessibility checks.</p></div>
+  </div>
+</div></section>
+
+<section id="start"><div class="wrap">
+  <h2>Get started</h2>
+  <p class="note">UniPOS needs a Node.js server and PostgreSQL, so this page only describes it — the app itself runs on Docker, Vercel, Railway or Render.</p>
+  <h3>Self-host with Docker</h3>
+<pre><code>git clone https://github.com/Dev-Ceylon/UniPOS.git && cd UniPOS
+cp .env.example .env        # set BETTER_AUTH_SECRET
+docker compose up -d        # open http://localhost:3000</code></pre>
+  <h3>Develop locally</h3>
+<pre><code>pnpm install
+pnpm db:migrate
+pnpm --filter @unipos/web seed   # demo shops
+pnpm dev</code></pre>
+  <div class="tablewrap"><table>
+    <thead><tr><th>Guide</th><th>For</th></tr></thead>
+    <tbody>
+      <tr><td><a href="https://github.com/Dev-Ceylon/UniPOS/blob/main/docs/user-guide.md">User guide</a></td><td>Cashiers and owners</td></tr>
+      <tr><td><a href="https://github.com/Dev-Ceylon/UniPOS/blob/main/docs/admin-guide.md">Admin &amp; customization</a></td><td>Setting up products, taxes, staff, modules</td></tr>
+      <tr><td><a href="https://github.com/Dev-Ceylon/UniPOS/blob/main/docs/hardware.md">Hardware</a></td><td>Scanners, receipt printers, tablets</td></tr>
+      <tr><td><a href="https://github.com/Dev-Ceylon/UniPOS/blob/main/docs/deployment.md">Deployment</a></td><td>Docker, Vercel + Neon/Supabase, Railway/Render</td></tr>
+      <tr><td><a href="https://github.com/Dev-Ceylon/UniPOS/tree/main/docs/adr">Architecture decisions</a></td><td>Contributors</td></tr>
+    </tbody>
+  </table></div>
+</div></section>
+</main>
+<footer><div class="wrap">MIT licensed. “Classic Blue” is UniPOS’s own theme; UniPOS is not affiliated with Meta/Facebook.</div></footer>
+</body>
+</html>
