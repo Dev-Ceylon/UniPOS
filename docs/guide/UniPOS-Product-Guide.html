@@ -1,0 +1,284 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><title>UniPOS — Product Guide</title><style>@page { size: A4; margin: 18mm 16mm 20mm; }
+@page :first { margin: 0; }
+* { box-sizing: border-box; }
+html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+body { margin: 0; font: 10.5pt/1.55 "Inter", "Noto Sans", "Noto Sans Sinhala", "Noto Sans Tamil", Arial, sans-serif; color: #1c1e21; }
+a { color: #11519f; text-decoration: none; }
+h2 { font-size: 21pt; line-height: 1.2; margin: 0 0 12pt; color: #0f2f5c; letter-spacing: -0.01em; }
+h2 .num { display: inline-block; min-width: 1.5em; color: #1464d2; }
+h3 { font-size: 13pt; margin: 18pt 0 6pt; color: #0f2f5c; break-after: avoid; }
+h4 { margin: 0 0 4pt; font-size: 11pt; }
+p { margin: 0 0 8pt; }
+.lead { font-size: 12pt; color: #333; }
+.muted { color: #5d6066; font-size: 9pt; }
+.mono { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 9.5pt; background: #f0f2f5; padding: 0 3pt; border-radius: 3pt; }
+.chapter { break-before: page; }
+figure { margin: 8pt 0 14pt; break-inside: avoid; }
+figure img { width: 100%; max-width: 150mm; margin: 0 auto; border: 0.75pt solid #ced0d4; border-radius: 6pt; display: block; box-shadow: 0 2pt 8pt rgba(0,0,0,0.08); }
+figcaption { font-size: 9pt; color: #5d6066; margin-top: 4pt; text-align: center; font-style: italic; }
+ol.steps { list-style: none; counter-reset: s; padding: 0; margin: 6pt 0 10pt; }
+ol.steps > li { counter-increment: s; position: relative; padding: 2pt 0 6pt 30pt; break-inside: avoid; }
+ol.steps > li::before { content: counter(s); position: absolute; left: 0; top: 1pt; width: 19pt; height: 19pt; border-radius: 50%; background: #1464d2; color: #fff; font-weight: 700; font-size: 9.5pt; display: flex; align-items: center; justify-content: center; }
+table { width: 100%; border-collapse: collapse; margin: 6pt 0 12pt; font-size: 9.5pt; break-inside: auto; }
+th { background: #1464d2; color: #fff; text-align: left; padding: 5pt 7pt; font-weight: 600; }
+td { padding: 5pt 7pt; border-bottom: 0.5pt solid #ced0d4; vertical-align: top; }
+tr { break-inside: avoid; }
+tbody tr:nth-child(even) td { background: #f5f7fa; }
+table.compact td, table.compact th { padding: 3pt 7pt; }
+.cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8pt; margin: 6pt 0 12pt; }
+.card { border: 0.75pt solid #ced0d4; border-top: 3pt solid #1464d2; border-radius: 6pt; padding: 8pt 10pt; break-inside: avoid; }
+.card p { margin: 0; font-size: 9.5pt; color: #444; }
+.callout { border-left: 3pt solid #1464d2; background: #e8f0fb; padding: 7pt 10pt; border-radius: 4pt; margin: 8pt 0 12pt; font-size: 9.8pt; break-inside: avoid; }
+.callout.note { border-color: #8a5a00; background: #fff4d6; }
+.diagram { border: 0.75pt solid #ced0d4; border-radius: 6pt; padding: 8pt; margin: 6pt 0 12pt; break-inside: avoid; }
+.diagram svg { width: 100%; height: auto; }
+.cover { height: 297mm; width: 210mm; padding: 22mm 18mm; background: linear-gradient(160deg, #0f3b7a 0%, #1464d2 55%, #2f80ed 100%); color: #fff; display: flex; flex-direction: column; break-after: page; }
+.cover-top { display: flex; align-items: center; gap: 10pt; font-size: 22pt; font-weight: 700; }
+.cover-top img { width: 40pt; height: 40pt; border-radius: 9pt; }
+.cover h1 { font-size: 46pt; margin: 34mm 0 6pt; letter-spacing: -0.02em; }
+.cover .sub { font-size: 15pt; opacity: 0.92; margin: 0 0 14mm; }
+.cover-shot { width: 100%; border-radius: 8pt; box-shadow: 0 10pt 30pt rgba(0,0,0,0.35); }
+.cover-foot { margin-top: auto; display: flex; justify-content: space-between; font-size: 10pt; opacity: 0.9; }
+.toc { break-after: page; }
+.toc ol { list-style: none; padding: 0; margin: 0; columns: 1; }
+.toc li { border-bottom: 0.5pt dotted #ced0d4; }
+.toc a { display: block; padding: 6pt 0; color: #1c1e21; font-size: 11.5pt; }
+.toc .n { display: inline-block; width: 2.2em; color: #1464d2; font-weight: 700; }
+</style></head><body>
+<div class="cover">
+ <div class="cover-top"><img src="../../apps/web/public/icon-512.png" alt=""><span>UniPOS</span></div>
+ <h1>Product Guide</h1>
+ <p class="sub">Features, how it works, and a step-by-step walkthrough</p>
+ <img class="cover-shot" src="img/08-register-cart.png" alt="">
+ <div class="cover-foot"><span>Modular, offline-first point of sale</span><span>Version 1.0 · October 2026</span></div>
+</div>
+<div class="toc"><h2>Contents</h2><ol><li><a href="#intro"><span class="n">1</span>Introducing UniPOS</a></li><li><a href="#features"><span class="n">2</span>Feature overview</a></li><li><a href="#how"><span class="n">3</span>How UniPOS works</a></li><li><a href="#start"><span class="n">4</span>Getting started</a></li><li><a href="#register"><span class="n">5</span>Selling at the register</a></li><li><a href="#sales"><span class="n">6</span>Sales history, receipts and returns</a></li><li><a href="#shifts"><span class="n">7</span>Shifts and cash-up</a></li><li><a href="#catalogue"><span class="n">8</span>Products, taxes and labels</a></li><li><a href="#inventory"><span class="n">9</span>Inventory, stocktakes and transfers</a></li><li><a href="#purchasing"><span class="n">10</span>Suppliers and purchase orders</a></li><li><a href="#customers"><span class="n">11</span>Customers, loyalty and gift cards</a></li><li><a href="#reports"><span class="n">12</span>Dashboard and reports</a></li><li><a href="#quotes"><span class="n">13</span>Quotations and expenses</a></li><li><a href="#restaurant"><span class="n">14</span>Restaurant and café mode</a></li><li><a href="#settings"><span class="n">15</span>Settings and administration</a></li><li><a href="#security"><span class="n">16</span>Security and data protection</a></li><li><a href="#deploy"><span class="n">17</span>Installation and hardware</a></li><li><a href="#appendix"><span class="n">18</span>Appendix</a></li></ol></div>
+<section id="intro" class="chapter"><h2><span class="num">1</span>Introducing UniPOS</h2>
+<p class="lead">UniPOS is a modular, offline-first point of sale for small businesses — retail shops, groceries, restaurants, cafés and service businesses. It runs in any modern browser on a PC, tablet or phone, keeps selling when the internet drops, and gives owners live numbers from anywhere.</p>
+<p>It was designed for Sri Lankan businesses first — Sri Lankan rupees, VAT that is already included in shelf prices, and English, Sinhala (සිංහල) and Tamil (தமிழ்) — and it works the same way in any country and currency.</p>
+<h3>Who it is for</h3>
+<table class=""><thead><tr><th>Person</th><th>What UniPOS gives them</th></tr></thead><tbody><tr><td><b>Cashier</b></td><td>A fast, scanner-first register with big buttons, keyboard shortcuts and a 4–6 digit PIN to start a shift. It keeps working offline.</td></tr><tr><td><b>Owner / manager</b></td><td>Today's sales and profit, low-stock alerts, staff and role control, refunds and voids under permission, and reports exportable to CSV and PDF.</td></tr><tr><td><b>Inventory clerk</b></td><td>Stock levels per location, adjustments with reasons, stocktakes with a scanner, transfers between branches and purchase orders.</td></tr><tr><td><b>Kitchen staff</b></td><td>A kitchen display that shows orders by table and course, with one big button to start, finish and bump each ticket.</td></tr></tbody></table>
+<h3>Highlights</h3>
+<div class="cards">
+ <div class="card"><h4>Sell in seconds</h4><p>Scan, tap, pay. A three-item cash sale takes under 15 seconds.</p></div>
+ <div class="card"><h4>Never lose a sale</h4><p>Sales are saved on the device first and sync automatically — exactly once.</p></div>
+ <div class="card"><h4>Exact money</h4><p>Totals, VAT and refunds are calculated to the cent, the same way on every device.</p></div>
+ <div class="card"><h4>One app, many businesses</h4><p>Switch between retail and restaurant modes, or turn single features on and off.</p></div>
+ <div class="card"><h4>Safe by design</h4><p>Each business only ever sees its own data. Sensitive actions need permission and are logged.</p></div>
+ <div class="card"><h4>Yours to run</h4><p>Open source (MIT). Self-host with Docker or deploy to a cloud host.</p></div>
+</div>
+<figure><img src="img/08-register-cart.png" alt="The register: product grid on the left, the current sale and totals on the right."><figcaption>The register: product grid on the left, the current sale and totals on the right.</figcaption></figure>
+</section><section id="features" class="chapter"><h2><span class="num">2</span>Feature overview</h2>
+<p>UniPOS is built from a small <b>core</b> plus <b>modules</b>. A business type preset switches on the right modules; you can fine-tune them at any time in <i>Settings → Modules</i>.</p>
+<table class=""><thead><tr><th>Area</th><th>Features</th></tr></thead><tbody><tr><td><b>Register</b><br><span class='muted'>always on</span></td><td>Search by name, SKU or barcode; USB and camera barcode scanning; favourites and category tabs; quantity, line and order discounts; price override (with permission); split tenders — cash, card, wallet, gift card, loyalty points; change due; hold and resume; customer on the sale; keyboard shortcuts; 80 mm / 58 mm receipts to print, PDF or email.</td></tr><tr><td><b>Offline selling</b></td><td>Installable app (PWA). Catalogue, prices, taxes and customers are cached on the device. Sales queue in an outbox and sync automatically with retries; nothing is lost or duplicated. Negative stock sold offline is flagged after sync.</td></tr><tr><td><b>Sales & returns</b></td><td>Sales history with filters; receipt reprint and PDF; partial refunds linked to the original sale (never more than was sold), restock option, refund to original tenders; void with reason; review of flagged sales.</td></tr><tr><td><b>Shifts</b></td><td>Opening float, cash in/out with reasons, takings by tender, cash-up by denomination with expected cash and variance, shift history.</td></tr><tr><td><b>Catalogue</b></td><td>Products with variants (size, colour…), SKUs and barcodes (generate in-store EAN-13), categories, units, kits and services, tax classes, favourites, images, custom fields, CSV import/export, barcode label printing.</td></tr><tr><td><b>Taxes</b></td><td>Tax classes with inclusive or exclusive rules, compound (tax-on-tax) rules, rule order, and rules limited to a location's tax region.</td></tr><tr><td><b>Inventory</b></td><td>Append-only stock ledger, on-hand per location, reorder points and low-stock alerts, adjustments with reasons (damage, correction, receipt), stocktakes with scanning and variance posting, stock valuation.</td></tr><tr><td><b>Multi-location</b></td><td>Several stores or warehouses, location switcher, staff restricted to locations, stock transfers with an in-transit state and partial receiving.</td></tr><tr><td><b>Purchasing</b></td><td>Suppliers, purchase orders, partial and full receiving into stock, automatic cost update.</td></tr><tr><td><b>Customers</b></td><td>Profiles, groups, notes, marketing consent, custom fields, purchase history, lifetime spend, quick-create at the register, personal-data export and erase.</td></tr><tr><td><b>Loyalty & gift cards</b></td><td>Points per amount spent, point value and minimum to redeem, manual adjustments; gift cards with scannable codes, balances and expiry, usable as a tender.</td></tr><tr><td><b>Reports</b></td><td>Dashboard KPIs vs yesterday, sales by hour/day, products and profit, categories, staff, tax collected, tenders, inventory valuation; date and location filters; CSV and PDF export.</td></tr><tr><td><b>Restaurant</b></td><td>Floor-plan editor, table bills shared across devices, guest count, modifier groups (spice level, extras), kitchen notes and courses, send to kitchen, kitchen display with start/ready/bump and recall.</td></tr><tr><td><b>Quotations & expenses</b></td><td>Quotes that keep their prices and convert to a sale in one click; expense records by category and month.</td></tr><tr><td><b>Staff & security</b></td><td>Email invites, editable roles with fine-grained permissions, cashier PIN switching with lockout, audit log of sensitive actions, full backup and restore.</td></tr><tr><td><b>Personalisation</b></td><td>Business-type presets, module toggles, receipt template editor with live preview, custom fields, brand colour, light/dark mode, English/Sinhala/Tamil.</td></tr></tbody></table>
+</section><section id="how" class="chapter"><h2><span class="num">3</span>How UniPOS works</h2>
+<p>UniPOS is one web application. Every device — a counter PC, a tablet, the kitchen screen or the owner's phone — opens it in a browser. The register keeps a copy of everything it needs on the device so it can sell without the internet.</p>
+<div class="diagram">
+<svg viewBox="0 0 760 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Architecture: devices, offline layer, UniPOS server and database">
+ <defs><marker id="a" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#5d6066"/></marker></defs>
+ <style>.b{fill:#fff;stroke:#ced0d4;stroke-width:1.5} .p{fill:#e8f0fb;stroke:#1464d2;stroke-width:1.5} .t{font:600 14px Inter,Arial,sans-serif;fill:#1c1e21} .s{font:12px Inter,Arial,sans-serif;fill:#5d6066} .l{stroke:#5d6066;stroke-width:1.5;fill:none;marker-end:url(#a)}</style>
+ <rect class="b" x="10" y="20" width="170" height="56" rx="10"/><text class="t" x="24" y="44">Register (tablet/PC)</text><text class="s" x="24" y="63">scanner · printer</text>
+ <rect class="b" x="10" y="96" width="170" height="56" rx="10"/><text class="t" x="24" y="120">Back office</text><text class="s" x="24" y="139">owner · manager · clerk</text>
+ <rect class="b" x="10" y="172" width="170" height="56" rx="10"/><text class="t" x="24" y="196">Kitchen display</text><text class="s" x="24" y="215">restaurant module</text>
+ <rect class="p" x="230" y="12" width="190" height="80" rx="10"/><text class="t" x="244" y="36">Offline layer</text><text class="s" x="244" y="56">catalogue cache (IndexedDB)</text><text class="s" x="244" y="73">sales outbox + auto-sync</text>
+ <rect class="p" x="470" y="70" width="140" height="150" rx="10"/><text class="t" x="484" y="96">UniPOS server</text><text class="s" x="484" y="118">sign-in &amp; PINs</text><text class="s" x="484" y="136">permission checks</text><text class="s" x="484" y="154">tax &amp; totals check</text><text class="s" x="484" y="172">sync endpoint</text><text class="s" x="484" y="190">reports &amp; exports</text>
+ <rect class="b" x="650" y="100" width="100" height="90" rx="10"/><text class="t" x="664" y="126">Database</text><text class="s" x="664" y="146">PostgreSQL</text><text class="s" x="664" y="164">row-level</text><text class="s" x="664" y="180">security</text>
+ <path class="l" d="M180 48 H228"/>
+ <path class="l" d="M420 52 C450 52 450 110 468 110"/>
+ <path class="l" d="M180 124 H468"/>
+ <path class="l" d="M180 200 C320 200 400 190 468 190"/>
+ <path class="l" d="M610 145 H648"/>
+ <text class="s" x="300" y="250">Each sale is saved on the device first, then pushed to the server.</text>
+ <text class="s" x="300" y="268">If the network is down the outbox simply waits and retries.</text>
+</svg>
+</div>
+<h3>The life of a sale</h3>
+<ol class="steps"><li>The cashier scans items. Prices and taxes come from the catalogue cached on the device, so search is instant (under 100 ms for 10,000 products).</li><li>On payment, the register gives the sale its final ID and receipt number, saves it on the device, and prints or shows the receipt immediately — no waiting for the network.</li><li>The sale goes into an <b>outbox</b>. When online, it is sent to the server within seconds; when offline, it waits and retries automatically.</li><li>The server checks the cashier and permissions, recalculates the totals and tax to confirm them, records the payments, and takes the items out of stock in the stock ledger.</li><li>If the same sale arrives twice (for example after a dropped connection), the server recognises it and ignores the copy. Unusual sales — selling below zero stock, unauthorised price changes or big discounts — are flagged for review rather than lost.</li></ol>
+<h3>Principles that keep the numbers right</h3>
+<table class=""><thead><tr><th>Principle</th><th>What it means for you</th></tr></thead><tbody><tr><td>Money in whole cents</td><td>Amounts are never rounded wrongly; split discounts and refunds always add up exactly.</td></tr><tr><td>One tax engine everywhere</td><td>VAT-inclusive and exclusive prices, compound and regional taxes give the same result on every device and in every report.</td></tr><tr><td>Append-only stock ledger</td><td>Every stock change is a dated entry with a reason — sale, return, adjustment, receipt, transfer, stocktake. On-hand is always the sum of the history.</td></tr><tr><td>Separated businesses</td><td>Every record belongs to one business, and the database itself blocks one business from reading another's data.</td></tr><tr><td>Permissions and audit log</td><td>Refunds, voids, price overrides, large discounts, settings and staff changes need the right permission and are written to the audit log.</td></tr></tbody></table>
+</section><section id="start" class="chapter"><h2><span class="num">4</span>Getting started</h2>
+<p>Setting up a new business takes a few minutes. You need the address of your UniPOS installation (for example <span class="mono">https://pos.yourshop.lk</span>) — see <a href="#deploy">Installation and hardware</a> if you are installing it yourself.</p>
+<h3>Step 1 — Create your account</h3>
+<ol class="steps"><li>Open UniPOS in your browser and choose <b>Create account</b>.</li><li>Enter your name, email and a password (at least 8 characters), then press <b>Create account</b>.</li></ol>
+<figure><img src="img/01-sign-up.png" alt="Creating an account."><figcaption>Creating an account.</figcaption></figure>
+<h3>Step 2 — Set up your business</h3>
+<ol class="steps"><li>Enter the <b>business name</b> and choose the <b>business type</b> (Retail shop, Grocery, Restaurant, Café or Services). This switches on the right features.</li><li>Choose the <b>currency</b>, <b>time zone</b> and <b>language</b>, and name your first location.</li><li>Enter your sales tax — for Sri Lankan VAT: name <i>VAT</i>, rate <i>18</i>, and tick <b>Prices include tax</b>.</li><li>Choose your 4–6 digit <b>PIN</b>. You will use it to start selling at the register.</li><li>Tick <b>Add demo products</b> if you want sample products to try things out, then press <b>Create business</b>.</li></ol>
+<figure><img src="img/02-onboarding.png" alt="The one-page business setup."><figcaption>The one-page business setup.</figcaption></figure>
+<h3>Step 3 — Your dashboard</h3>
+<p>UniPOS opens the dashboard. The left menu shows only the features enabled for your business type and allowed for your role. Use the top bar to switch location, switch cashier, change theme or language, see sync status, and sign out.</p>
+<figure><img src="img/03-first-dashboard.png" alt="A new business, ready to sell."><figcaption>A new business, ready to sell.</figcaption></figure>
+<h3>Signing in later</h3>
+<p>Sign in with your email and password. A shop device can stay signed in all day; cashiers then switch in with their PIN (see <a href="#register">Selling at the register</a>).</p>
+<figure><img src="img/04-sign-in.png" alt="Sign-in page."><figcaption>Sign-in page.</figcaption></figure>
+<div class="callout tip"><strong>Tip.</strong> Install UniPOS as an app: in Chrome or Edge choose <i>Install UniPOS</i> from the address bar (on Android: <i>Add to Home screen</i>). It then opens full-screen and starts even without internet.</div>
+</section><section id="register" class="chapter"><h2><span class="num">5</span>Selling at the register</h2>
+<p>The register is designed for speed: the search box is always ready for a scanner, and everything can be done with a mouse, touch or the keyboard.</p>
+<figure><img src="img/06-register-empty.png" alt="The register. Favourites first; category tabs along the top; stock left on each tile."><figcaption>The register. Favourites first; category tabs along the top; stock left on each tile.</figcaption></figure>
+<h3>Step 1 — Add products</h3>
+<ol class="steps"><li><b>Scan</b> a barcode with a USB scanner — it types into the search box and adds the item automatically.</li><li>Or <b>type</b> part of a name or SKU and tap the product. Press <b>Enter</b> to add when there is only one match.</li><li>Or tap a <b>favourite</b> or pick a <b>category</b> tab. The camera button scans barcodes with the device camera (Chrome/Edge).</li></ol>
+<figure><img src="img/07-register-search.png" alt="Typing “tea” filters the grid instantly."><figcaption>Typing “tea” filters the grid instantly.</figcaption></figure>
+<h3>Step 2 — Adjust the sale</h3>
+<ol class="steps"><li>Use <b>−</b> / <b>+</b> or type a quantity. Tap a line to select it; the selected line shows extra buttons.</li><li><b>%</b> gives a line discount, the <b>tag</b> changes the price (managers), and the <b>bin</b> removes the line.</li><li><b>Discount</b> under the totals applies a discount to the whole order. Discounts above your limit (20% by default) need a manager.</li></ol>
+<figure><img src="img/09-line-discount.png" alt="A 10% line discount. Totals and VAT update instantly."><figcaption>A 10% line discount. Totals and VAT update instantly.</figcaption></figure>
+<h3>Step 3 — Add a customer (optional)</h3>
+<p>Tap <b>Walk-in</b> under <i>Current sale</i> to search customers by name, phone or email, or create a new one. Customers earn loyalty points and appear on the receipt.</p>
+<figure><img src="img/10-customer.png" alt="Finding or creating a customer."><figcaption>Finding or creating a customer.</figcaption></figure>
+<h3>Step 4 — Take payment</h3>
+<ol class="steps"><li>Press <b>Pay</b> (or <b>F4</b>). The amount due is filled in.</li><li>Choose a tender. For <b>cash</b>, tap a quick-cash button (exact amount or the next note). For <b>card</b>, take the payment on your card terminal and type the last four digits as the reference.</li><li>To <b>split</b> a payment, add several tenders — for example LKR 1,000 by card and the rest in cash. Change is given only from cash.</li><li>Gift cards and loyalty points can also be used as tenders.</li><li>Press <b>Complete sale</b>.</li></ol>
+<figure><img src="img/11-payment-split.png" alt="A split payment: card and cash, with change due in green."><figcaption>A split payment: card and cash, with change due in green.</figcaption></figure>
+<h3>Step 5 — Receipt and next sale</h3>
+<p>The change due is shown in large text with the receipt. Choose <b>Print receipt</b> (80 mm or 58 mm), <b>Email receipt</b>, or press <b>Enter</b> for the next sale.</p>
+<figure><img src="img/12-sale-complete.png" alt="Sale complete with the receipt preview."><figcaption>Sale complete with the receipt preview.</figcaption></figure>
+<h3>Keyboard shortcuts</h3>
+<table class="compact"><thead><tr><th>Key</th><th>Action</th></tr></thead><tbody><tr><td>F2 or /</td><td>Search / scan</td></tr><tr><td>Enter</td><td>Add scanned code or single match</td></tr><tr><td>F4 or Ctrl+Enter</td><td>Pay</td></tr><tr><td>F6</td><td>Customer</td></tr><tr><td>F7</td><td>Order discount</td></tr><tr><td>F8</td><td>Hold sale</td></tr><tr><td>F9</td><td>Resume a held sale</td></tr><tr><td>+ / −</td><td>Change quantity of the selected line</td></tr><tr><td>Delete</td><td>Remove the selected line</td></tr><tr><td>Esc</td><td>Clear search / close</td></tr></tbody></table>
+<figure><img src="img/13-shortcuts.png" alt="Press ? on the register to see the shortcuts."><figcaption>Press ? on the register to see the shortcuts.</figcaption></figure>
+<h3>Hold and resume</h3>
+<p>Press <b>F8</b> (or the pause button) to park a sale while a customer fetches something, then serve the next customer. Press <b>F9</b> (or the play button) to bring it back.</p>
+<h3>Switching cashier with a PIN</h3>
+<p>Tap the name in the top bar and enter your PIN. Sales are then recorded under your name until someone else switches in. After five wrong PINs, that PIN is locked for 15 minutes and the attempt is logged.</p>
+<figure><img src="img/14-pin-switch.png" alt="PIN pad for fast cashier switching."><figcaption>PIN pad for fast cashier switching.</figcaption></figure>
+<h3>When the internet is down</h3>
+<p>A yellow bar says <i>Offline</i>. Keep selling: sales are saved on the device and the counter in the top bar shows how many are waiting. They sync automatically when the connection returns — tap the counter to sync immediately. Creating customers, checking gift-card balances and switching cashier need a connection.</p>
+<figure><img src="img/15-offline.png" alt="Selling offline: the sale completes and one sale is waiting to sync."><figcaption>Selling offline: the sale completes and one sale is waiting to sync.</figcaption></figure>
+</section><section id="sales" class="chapter"><h2><span class="num">6</span>Sales history, receipts and returns</h2>
+<h3>Finding a sale</h3>
+<p>Open <b>Sales</b>. Filter by date range, show only refunds, voided or flagged sales, or search by receipt number or customer. Sales that are still waiting to sync on this device are shown at the top.</p>
+<figure><img src="img/16-sales-list.png" alt="Sales history with filters."><figcaption>Sales history with filters.</figcaption></figure>
+<h3>Sale details</h3>
+<p>The sale page shows items, discounts, taxes, payments, the customer, any refunds, and review flags. From here you can print, download a PDF, email, refund or void.</p>
+<figure><img src="img/17-sale-detail.png" alt="A sale with its items, taxes and payments."><figcaption>A sale with its items, taxes and payments.</figcaption></figure>
+<h3>Refunding items</h3>
+<ol class="steps"><li>On the sale page press <b>Refund</b>.</li><li>Enter the quantity to refund for each item. UniPOS shows how many are still refundable and never allows refunding more than was sold.</li><li>Choose where the money goes (original payment methods, cash, card…) and enter a reason.</li><li>Keep <b>Return items to stock</b> ticked if they can be sold again, then press <b>Refund</b>.</li></ol>
+<figure><img src="img/18-refund.png" alt="A partial refund linked to the original sale."><figcaption>A partial refund linked to the original sale.</figcaption></figure>
+<p>The refund is a separate receipt (numbered <span class="mono">RF-…</span>) linked to the original sale, so reports stay correct without special cases. <b>Void</b> cancels a whole sale rung up by mistake and reverses stock; it needs the <i>Void</i> permission and a reason.</p>
+<h3>Reprinting a receipt</h3>
+<p>Press <b>Print receipt</b> on any sale for the 80 mm layout, or <b>PDF</b> to download it.</p>
+<figure><img src="img/19-receipt-print.png" alt="Receipt reprint in the 80 mm layout."><figcaption>Receipt reprint in the 80 mm layout.</figcaption></figure>
+</section><section id="shifts" class="chapter"><h2><span class="num">7</span>Shifts and cash-up</h2>
+<ol class="steps"><li>At the start of the day open <b>Shifts</b> (or press <b>Open shift</b> on the register) and enter the opening float.</li><li>During the day record <b>cash in</b> and <b>cash out</b> (for example, buying milk for the shop) with a reason.</li><li>At closing, count the drawer by denomination. UniPOS shows the counted total and the <b>variance</b> against the expected cash as you type.</li><li>Press <b>Close shift</b>. The result is saved in the shift history and the audit log.</li></ol>
+<figure><img src="img/20-shifts.png" alt="Shift summary: opening float, cash sales, refunds, cash in/out, expected cash and the denomination count."><figcaption>Shift summary: opening float, cash sales, refunds, cash in/out, expected cash and the denomination count.</figcaption></figure>
+<p><b>Expected cash</b> = opening float + cash sales − cash refunds + cash in − cash out. The <i>Takings by tender</i> list shows card, wallet and gift-card totals to reconcile against your terminal.</p>
+</section><section id="catalogue" class="chapter"><h2><span class="num">8</span>Products, taxes and labels</h2>
+<h3>The product list</h3>
+<p>Open <b>Products</b> to search by name, SKU or barcode and filter by category. Each variant shows its price and stock at the current location.</p>
+<figure><img src="img/21-products.png" alt="Product list with stock levels."><figcaption>Product list with stock levels.</figcaption></figure>
+<h3>Adding a product</h3>
+<ol class="steps"><li>Press <b>New product</b> and enter the name, category, tax class and type (standard, kit or service).</li><li>Fill in the variant row: SKU, barcode, price and cost. Press the <b>wand</b> to generate an in-store barcode if the product has none.</li><li>Add more variants (sizes, colours) with <b>+ Variant</b>. Enter opening stock if you track stock.</li><li>Tick <b>Show in register favourites</b> for fast sellers, then press <b>Save product</b>.</li></ol>
+<figure><img src="img/22-product-new.png" alt="A new product with a generated barcode, price, cost and opening stock."><figcaption>A new product with a generated barcode, price, cost and opening stock.</figcaption></figure>
+<h3>Taxes</h3>
+<p><b>Products → Taxes</b> manages tax classes. Each class has one or more rules with a rate, <i>Inclusive</i> (already in the price) or exclusive (added at checkout), <i>Compound</i> (tax on tax), an order and an optional region matched against the location's tax region.</p>
+<figure><img src="img/23-taxes.png" alt="Tax classes and rules."><figcaption>Tax classes and rules.</figcaption></figure>
+<h3>Importing and exporting</h3>
+<p><b>Import</b> accepts a CSV file (download the template on the page). Rows are matched by SKU and updated, or created; rows with the same name become variants of one product; stock is set through the stock ledger. <b>Export CSV</b> downloads the whole catalogue for spreadsheets.</p>
+<figure><img src="img/24-import.png" alt="CSV import with the column list and template."><figcaption>CSV import with the column list and template.</figcaption></figure>
+<h3>Printing barcode labels</h3>
+<p><b>Labels</b> prints labels with name, price and barcode on A4 label sheets (3 × 8) or a label printer. Filter by name and choose the number of copies.</p>
+<figure><img src="img/25-labels.png" alt="Barcode labels ready to print."><figcaption>Barcode labels ready to print.</figcaption></figure>
+</section><section id="inventory" class="chapter"><h2><span class="num">9</span>Inventory, stocktakes and transfers</h2>
+<h3>Stock levels</h3>
+<p><b>Inventory</b> shows on-hand quantities at the current location, reorder points, value at cost and badges for low or negative stock. Totals at the top show the number of items, units, stock value and low-stock count.</p>
+<figure><img src="img/26-inventory.png" alt="Inventory with low-stock and negative-stock badges."><figcaption>Inventory with low-stock and negative-stock badges.</figcaption></figure>
+<h3>Adjusting stock</h3>
+<ol class="steps"><li>Press <b>Adjust</b> on a row.</li><li>Choose <i>Add or remove</i> (e.g. −2) or <i>Set counted quantity</i>.</li><li>Pick a reason — correction, damaged/expired, received without PO, customer return — add a note and save.</li></ol>
+<figure><img src="img/27-adjust.png" alt="Writing off two damaged items."><figcaption>Writing off two damaged items.</figcaption></figure>
+<p>Every adjustment becomes a dated entry in the product's stock ledger (shown at the bottom of each product page) and in the audit log. Edit a <b>reorder point</b> directly in the table to get low-stock alerts on the dashboard.</p>
+<h3>Running a stocktake</h3>
+<ol class="steps"><li>Open <b>Inventory → Stocktakes</b> and press <b>Start stocktake</b>; choose all products or one category.</li><li>Count items: type the counted quantity, or <b>scan</b> each item to add +1.</li><li>Press <b>Save progress</b> to continue later, then <b>Complete</b>. Only the differences are posted to stock, so sales made during the count are not lost.</li></ol>
+<figure><img src="img/28-stocktake.png" alt="Counting stock; variances appear in red or orange."><figcaption>Counting stock; variances appear in red or orange.</figcaption></figure>
+<h3>Moving stock between locations</h3>
+<p>Add locations in <b>Settings → Locations</b> (each has its own stock, receipt header and tax region).</p>
+<figure><img src="img/29-locations.png" alt="Locations: name, code used in receipt numbers, address, receipt header and tax region."><figcaption>Locations: name, code used in receipt numbers, address, receipt header and tax region.</figcaption></figure>
+<ol class="steps"><li>Open <b>Transfers</b> and press <b>New transfer</b>. Choose the destination and scan or search the items to send.</li><li>Press <b>Create draft</b>, then <b>Send</b>. Stock leaves the source and is <i>in transit</i>.</li><li>At the destination press <b>Receive</b> and confirm the quantities. Anything not received returns to the source.</li></ol>
+<figure><img src="img/30-transfer.png" alt="Creating a transfer to the Kandy branch."><figcaption>Creating a transfer to the Kandy branch.</figcaption></figure>
+</section><section id="purchasing" class="chapter"><h2><span class="num">10</span>Suppliers and purchase orders</h2>
+<ol class="steps"><li>Open <b>Purchasing</b> and add your suppliers (name, contact, phone, email, address).</li><li>Press <b>New purchase order</b>, choose the supplier and expected date, and add items with quantity and unit cost.</li><li>Press <b>Create draft</b>, then <b>Mark ordered</b> when you send it.</li><li>When goods arrive press <b>Receive stock</b> and enter what arrived. Partial deliveries are allowed; the order shows <i>partial</i> until everything is received. Receiving updates each product's cost.</li></ol>
+<figure><img src="img/31-purchasing.png" alt="Purchase orders and suppliers."><figcaption>Purchase orders and suppliers.</figcaption></figure>
+<figure><img src="img/32-new-po.png" alt="A new purchase order."><figcaption>A new purchase order.</figcaption></figure>
+</section><section id="customers" class="chapter"><h2><span class="num">11</span>Customers, loyalty and gift cards</h2>
+<h3>Customers</h3>
+<p><b>Customers</b> lists everyone with visits, lifetime spend and points. Create customers here or at the register. Each profile shows purchase history, notes, custom fields, points history and gift cards.</p>
+<figure><img src="img/33-customers.png" alt="Customer list."><figcaption>Customer list.</figcaption></figure>
+<figure><img src="img/34-customer-detail.png" alt="A customer profile with lifetime spend, visits and purchase history."><figcaption>A customer profile with lifetime spend, visits and purchase history.</figcaption></figure>
+<h3>Loyalty points</h3>
+<p>Turn loyalty on in <b>Settings → Business → Loyalty</b>: set how much a customer spends per point, what one point is worth and the minimum to redeem. Points are earned automatically when a customer is on the sale, reversed on refunds, and can be used as a tender. Managers can adjust points with a reason.</p>
+<h3>Gift cards</h3>
+<p><b>Gift cards → Issue gift card</b> creates a card with a value, an optional expiry and a scannable code (printable). At the register choose the <i>Gift card</i> tender and scan or type the code; the balance is checked and reduced automatically.</p>
+<figure><img src="img/35-gift-cards.png" alt="Issuing a gift card."><figcaption>Issuing a gift card.</figcaption></figure>
+<h3>Personal data</h3>
+<p>On a customer's page, <b>Export data</b> downloads everything held about them and <b>Erase</b> anonymises their profile while keeping sales for your accounts. Record marketing consent on each profile and set a privacy notice and retention period in Settings.</p>
+</section><section id="reports" class="chapter"><h2><span class="num">12</span>Dashboard and reports</h2>
+<h3>Dashboard</h3>
+<p>The dashboard shows today's sales, transactions, average sale and gross profit compared with yesterday, sales by hour, top products, recent sales, low stock and sales that need review.</p>
+<figure><img src="img/05-dashboard.png" alt="The owner&#x27;s dashboard."><figcaption>The owner's dashboard.</figcaption></figure>
+<h3>Reports</h3>
+<ol class="steps"><li>Open <b>Reports</b> and choose a date range and location (or all locations).</li><li>Pick a report: <b>Sales</b> (by day), <b>Products & profit</b>, <b>Categories</b>, <b>Staff</b>, <b>Tax</b>, <b>Tenders</b> or <b>Inventory</b> valuation.</li><li>Press <b>Export CSV</b> for spreadsheets or <b>Export PDF</b> for a printable report for your accountant.</li></ol>
+<figure><img src="img/36-reports.png" alt="Sales report with totals, discounts, tax, refunds and profit."><figcaption>Sales report with totals, discounts, tax, refunds and profit.</figcaption></figure>
+<figure><img src="img/37-reports-products.png" alt="Products and profit report."><figcaption>Products and profit report.</figcaption></figure>
+</section><section id="quotes" class="chapter"><h2><span class="num">13</span>Quotations and expenses</h2>
+<h3>Quotations</h3>
+<ol class="steps"><li>Open <b>Quotations → New quotation</b>, choose a customer, add products and adjust prices.</li><li>Set <b>Valid until</b> and a note, then press <b>Create</b>. Use <b>Print / PDF</b> to send it.</li><li>When the customer accepts, press <b>Convert to sale</b>: the quote opens in the register with its prices, ready to pay.</li></ol>
+<figure><img src="img/38-quotes.png" alt="Creating a quotation."><figcaption>Creating a quotation.</figcaption></figure>
+<h3>Expenses</h3>
+<p><b>Expenses → Add expense</b> records rent, utilities, salaries and other costs with a category, amount, date and reference. The page totals the month and breaks it down by category.</p>
+<figure><img src="img/39-expenses.png" alt="Recording an electricity bill."><figcaption>Recording an electricity bill.</figcaption></figure>
+</section><section id="restaurant" class="chapter"><h2><span class="num">14</span>Restaurant and café mode</h2>
+<p>Choosing the <b>Restaurant</b> or <b>Café</b> preset switches the register to a tables-first layout, adds modifiers and courses, and turns on the kitchen display.</p>
+<h3>Step 1 — Open a table</h3>
+<p>Tap a table at the top of the register (or <b>Takeaway</b>). For a new table, choose the number of guests. Tables with an open bill show an orange dot.</p>
+<figure><img src="img/49-table-guests.png" alt="Opening table T8 for three guests."><figcaption>Opening table T8 for three guests.</figcaption></figure>
+<h3>Step 2 — Add dishes with options</h3>
+<p>Dishes with modifier groups open an options dialog: choose the spice level and extras, add a kitchen note (“No onions”) and the course.</p>
+<figure><img src="img/50-modifiers.png" alt="Choosing options for Chicken Kottu."><figcaption>Choosing options for Chicken Kottu.</figcaption></figure>
+<h3>Step 3 — Send to the kitchen</h3>
+<p>Press <b>Send to kitchen</b>. New items go to the kitchen display, grouped by course; sent items are marked <i>Sent</i> and cannot be reduced below what was sent. The table's bill is saved on the server, so any device can continue it.</p>
+<figure><img src="img/51-restaurant-order.png" alt="The order for table T8 with modifiers and notes."><figcaption>The order for table T8 with modifiers and notes.</figcaption></figure>
+<h3>Step 4 — The kitchen display</h3>
+<p>Open <b>Kitchen display</b> on a screen in the kitchen. Each ticket shows the table, course, items, options and notes. Press <b>Start</b>, then <b>Ready</b>, then <b>Bump</b>. Tickets older than 15 minutes turn red. <b>Recall</b> brings back the last bumped ticket.</p>
+<figure><img src="img/52-kitchen-display.png" alt="A ticket on the kitchen display."><figcaption>A ticket on the kitchen display.</figcaption></figure>
+<h3>Step 5 — Pay</h3>
+<p>Press <b>Pay</b> on the table's bill as for any sale. The table becomes free and the receipt shows the table number.</p>
+<h3>Setting up tables and modifiers</h3>
+<p><b>Tables & menu</b> is a floor-plan editor: add tables, set seats, area and shape, and drag them to match your room. <b>Products → Modifiers</b> manages modifier groups (for example <i>Spice level</i>: choose one; <i>Extras</i>: up to three, each with an extra price); attach groups to products on the product page.</p>
+<figure><img src="img/53-floor-plan.png" alt="Floor-plan editor. Occupied tables are highlighted."><figcaption>Floor-plan editor. Occupied tables are highlighted.</figcaption></figure>
+<figure><img src="img/54-modifier-groups.png" alt="Modifier groups with extra prices."><figcaption>Modifier groups with extra prices.</figcaption></figure>
+</section><section id="settings" class="chapter"><h2><span class="num">15</span>Settings and administration</h2>
+<h3>Business settings and presets</h3>
+<p><b>Settings → Business</b> holds the business name, currency, language, time zone, the discount limit without a manager, stock rules, loyalty settings and the privacy notice. <b>Business type</b> applies a preset — retail, grocery, restaurant, café or services — which switches modules, register layout and receipt defaults without losing data.</p>
+<figure><img src="img/40-settings-business.png" alt="Business settings and the business-type preset."><figcaption>Business settings and the business-type preset.</figcaption></figure>
+<h3>Staff and roles</h3>
+<ol class="steps"><li>In <b>Settings → Staff & roles</b>, type an email, choose a role and press <b>Send invite</b>. The person receives a link, creates an account and chooses their PIN.</li><li>Press <b>Edit</b> on a staff member to change their role, reset their PIN (which also unlocks it), limit them to certain locations or disable them.</li><li>Use the built-in roles — Owner, Manager, Cashier, Inventory clerk — or press <b>New role</b> and tick exactly the permissions you want.</li></ol>
+<figure><img src="img/41-staff.png" alt="Staff list, invitations and roles."><figcaption>Staff list, invitations and roles.</figcaption></figure>
+<figure><img src="img/42-role-editor.png" alt="Creating a custom role with fine-grained permissions."><figcaption>Creating a custom role with fine-grained permissions.</figcaption></figure>
+<h3>Modules</h3>
+<p><b>Settings → Modules</b> turns features on or off. Modules that depend on others switch together (Loyalty needs Customers; Transfers and Purchasing need Inventory). The menu, register and receipts adapt immediately.</p>
+<figure><img src="img/43-modules.png" alt="Turning modules on and off."><figcaption>Turning modules on and off.</figcaption></figure>
+<h3>Receipt template</h3>
+<p>Edit the title, header and footer lines, paper width (80 or 58 mm), and whether to show the tax breakdown, cashier, customer, table and barcode — with a live preview. The location's address and receipt header (for example your VAT number) are added automatically.</p>
+<figure><img src="img/44-receipt-editor.png" alt="Receipt editor with live preview."><figcaption>Receipt editor with live preview.</figcaption></figure>
+<h3>Custom fields and theme</h3>
+<p><b>Custom fields</b> adds your own text, number, yes/no, date or choice fields to products and customers. <b>Theme</b> sets your brand colour (with a contrast check so text stays readable) and corner style. Each person can switch light/dark mode and language from the top bar.</p>
+<figure><img src="img/45-custom-fields.png" alt="Custom fields for products and customers."><figcaption>Custom fields for products and customers.</figcaption></figure>
+<figure><img src="img/46-theme.png" alt="Brand colour and corner radius."><figcaption>Brand colour and corner radius.</figcaption></figure>
+<h3>Backup, restore and audit log</h3>
+<p><b>Backup</b> downloads every record for your business as one file; <b>Restore</b> replaces the business data with a backup (type RESTORE to confirm). The <b>Audit log</b> lists refunds, voids, price changes, stock adjustments, settings and staff changes, PIN lock-outs and backups — who did what, and when.</p>
+<figure><img src="img/47-backup.png" alt="Backup and restore."><figcaption>Backup and restore.</figcaption></figure>
+<figure><img src="img/48-audit.png" alt="The audit log."><figcaption>The audit log.</figcaption></figure>
+</section><section id="security" class="chapter"><h2><span class="num">16</span>Security and data protection</h2>
+<table class=""><thead><tr><th>Area</th><th>How UniPOS protects it</th></tr></thead><tbody><tr><td>Separation between businesses</td><td>Every record carries its business ID, and the database enforces row-level security, so one business can never read or change another's data — tested automatically, including with deliberately forged queries.</td></tr><tr><td>Sign-in</td><td>Passwords are stored as secure hashes; repeated sign-in attempts are rate-limited. Optional Google sign-in.</td></tr><tr><td>Cashier PINs</td><td>Hashed, rate-limited, locked for 15 minutes after five wrong tries, and every switch is logged.</td></tr><tr><td>Permissions</td><td>Every action on the server checks a permission before touching data; the screen hides what a role cannot do.</td></tr><tr><td>Sensitive actions</td><td>Refunds, voids, price overrides, large discounts, stock adjustments, settings, staff changes and backups are written to the audit log.</td></tr><tr><td>Sales integrity</td><td>The server recalculates every synced sale and rejects tampered totals; unusual sales are flagged for review.</td></tr><tr><td>Personal data</td><td>Consent flag, privacy notice, retention setting, per-customer export and erase (for Sri Lanka's Personal Data Protection Act — confirm obligations with your legal adviser).</td></tr><tr><td>Web security</td><td>Strict content security policy, no framing, safe CSV export, automated dependency and code scanning.</td></tr></tbody></table>
+</section><section id="deploy" class="chapter"><h2><span class="num">17</span>Installation and hardware</h2>
+<h3>Running UniPOS</h3>
+<p>UniPOS needs a server (Node.js) and a PostgreSQL database. The easiest options:</p>
+<table class=""><thead><tr><th>Option</th><th>Best for</th><th>How</th></tr></thead><tbody><tr><td>Docker Compose</td><td>Self-hosting on your own PC or server</td><td>Copy <span class='mono'>.env.example</span> to <span class='mono'>.env</span>, set a secret, run <span class='mono'>docker compose up -d</span>, open port 3000.</td></tr><tr><td>Vercel + Neon or Supabase</td><td>Managed cloud, no servers to look after</td><td>Create the database, run the migrations, import the repository in Vercel and set the environment variables.</td></tr><tr><td>Railway or Render</td><td>Simple managed container hosting</td><td>Deploy the Dockerfile with a Postgres add-on and run migrations before each release.</td></tr></tbody></table>
+<div class="callout note"><strong>Note.</strong> Full steps are in <span class='mono'>docs/deployment.md</span> in the source code. GitHub Pages cannot run UniPOS because it only serves static files.</div>
+<h3>Recommended hardware</h3>
+<table class=""><thead><tr><th>Device</th><th>Support</th></tr></thead><tbody><tr><td>Barcode scanner (USB/Bluetooth)</td><td>Works as a keyboard — set it to send Enter after each code.</td></tr><tr><td>Camera scanning</td><td>Chrome, Edge and Android browsers.</td></tr><tr><td>Receipt printer 80 mm / 58 mm</td><td>Through the browser print dialog; set paper width and zero margins. Chrome's kiosk printing prints without the dialog.</td></tr><tr><td>Label printer / A4 label sheets</td><td>Products → Labels.</td></tr><tr><td>Card terminal</td><td>Standalone: take the payment on the terminal and record it as Card with the reference.</td></tr><tr><td>Cash drawer</td><td>Many printers open the drawer on print; direct drawer control comes with the print bridge in v1.1.</td></tr><tr><td>Tablet / PC / kitchen screen</td><td>Any modern browser; install UniPOS as an app for full-screen and offline start.</td></tr></tbody></table>
+</section><section id="appendix" class="chapter"><h2><span class="num">18</span>Appendix</h2>
+<h3>Glossary</h3>
+<table class=""><thead><tr><th>Term</th><th>Meaning</th></tr></thead><tbody><tr><td>Tender</td><td>A way of paying: cash, card, wallet, gift card, points or other.</td></tr><tr><td>Split tender</td><td>Paying one sale with more than one tender.</td></tr><tr><td>Inclusive tax</td><td>Tax already included in the shelf price (common for VAT in Sri Lanka).</td></tr><tr><td>Outbox</td><td>The queue on the device that holds sales until they reach the server.</td></tr><tr><td>Stock ledger</td><td>The history of every stock movement; on-hand is the sum of it.</td></tr><tr><td>Variance</td><td>The difference between what was expected and what was counted (cash or stock).</td></tr><tr><td>Preset</td><td>A ready-made configuration for a business type.</td></tr><tr><td>Module</td><td>A feature area that can be switched on or off.</td></tr></tbody></table>
+<h3>Roadmap</h3>
+<table class=""><thead><tr><th>Release</th><th>Focus</th></tr></thead><tbody><tr><td>v1.1</td><td>Print bridge for ESC/POS printers and cash drawers; scheduled email reports</td></tr><tr><td>v1.2</td><td>Services and salon module: appointments and staff calendar</td></tr><tr><td>v1.3</td><td>Payment gateway plugins (local gateway first), public API and webhooks</td></tr><tr><td>v2.0</td><td>Online store with shared inventory, accounting export, module marketplace</td></tr></tbody></table>
+<h3>Try the demo</h3>
+<p>A demo installation seeded with <span class="mono">pnpm --filter @unipos/web seed</span> has a retail shop and a restaurant. Sign in as <span class="mono">owner@demo.unipos.app</span> / <span class="mono">demo1234</span> (PIN 1111) or <span class="mono">cashier@demo.unipos.app</span> / <span class="mono">demo1234</span> (PIN 2222).</p>
+<figure><img src="img/55-dark-mode.png" alt="UniPOS in dark mode."><figcaption>UniPOS in dark mode.</figcaption></figure>
+</section>
+</body></html>

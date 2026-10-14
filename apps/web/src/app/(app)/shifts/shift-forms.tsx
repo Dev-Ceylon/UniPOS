@@ -46,7 +46,7 @@ export function CashUp({ shiftId, currency, denominations, expected }: { shiftId
           });
         }}
       >
-        <Select name="type" aria-label="Cash in or out">
+        <Select name="type" aria-label="Cash in or out" className="min-w-28">
           <option value="out">Cash out</option>
           <option value="in">Cash in</option>
         </Select>

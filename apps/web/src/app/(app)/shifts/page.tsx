@@ -53,11 +53,11 @@ export default async function ShiftsPage() {
                 <dt className="text-muted">Cash sales</dt>
                 <dd className="tabular text-right">{m(totals.cashSales)}</dd>
                 <dt className="text-muted">Cash refunds</dt>
-                <dd className="tabular text-right">−{m(totals.cashRefunds)}</dd>
+                <dd className="tabular text-right">{m(-totals.cashRefunds)}</dd>
                 <dt className="text-muted">Cash in</dt>
                 <dd className="tabular text-right">{m(totals.cashIn)}</dd>
                 <dt className="text-muted">Cash out</dt>
-                <dd className="tabular text-right">−{m(totals.cashOut)}</dd>
+                <dd className="tabular text-right">{m(-totals.cashOut)}</dd>
                 <dt className="font-semibold">Expected in drawer</dt>
                 <dd className="tabular text-right font-semibold" data-testid="expected-cash">
                   {m(totals.expected)}
