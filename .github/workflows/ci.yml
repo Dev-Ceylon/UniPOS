@@ -30,7 +30,7 @@ jobs:
       - run: pnpm format:check
       - run: pnpm --filter @unipos/core test:coverage
       - run: pnpm --filter @unipos/web test
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: core-coverage
@@ -102,7 +102,7 @@ jobs:
       - run: pnpm build
       - run: pnpm --filter @unipos/web exec playwright install --with-deps chromium
       - run: pnpm test:e2e
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: failure()
         with:
           name: playwright-report
