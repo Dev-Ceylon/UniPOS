@@ -17,7 +17,7 @@ jobs:
     name: Typecheck, lint, unit tests
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
         with:
@@ -53,7 +53,7 @@ jobs:
       TEST_ADMIN_DATABASE_URL: postgresql://postgres:postgres@localhost:5432/postgres
       SHADOW_DATABASE_URL: postgresql://postgres:postgres@localhost:5432/unipos_shadow
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
         with:
@@ -86,7 +86,7 @@ jobs:
       BETTER_AUTH_URL: http://localhost:3000
       DISABLE_RATE_LIMIT: "1"
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
         with:
