@@ -18,8 +18,8 @@
     "test:integration": "vitest run"
   },
   "dependencies": {
-    "@prisma/adapter-pg": "7.10.0",
-    "@prisma/client": "7.10.0",
+    "@prisma/adapter-pg": "7.10.1",
+    "@prisma/client": "7.10.1",
     "@unipos/core": "workspace:*",
     "pg": "^8.16.0"
   },
@@ -27,7 +27,7 @@
     "@types/node": "^22.10.0",
     "@types/pg": "^8.15.0",
     "dotenv": "^17.2.0",
-    "prisma": "7.10.0",
+    "prisma": "7.10.1",
     "tsx": "^4.20.0",
     "typescript": "~5.9.3",
     "vitest": "^4.0.0"
